@@ -10,7 +10,7 @@ def clipbuff(ruta, radios):
     mxd = arcpy.mapping.MapDocument("CURRENT")
     df = arcpy.mapping.ListDataFrames(mxd)[0]
     manzanas = "Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.localidad + "/cartografia/manzana_localidad.shp"
-
+    
     for radio in radios:
         
         radio1 = radio.replace("'", "")
