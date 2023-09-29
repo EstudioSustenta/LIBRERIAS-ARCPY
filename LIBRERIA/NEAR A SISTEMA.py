@@ -14,7 +14,7 @@ import sys
 elireg = importlib.import_module("LIBRERIA.ELIMINA REGISTROS")
 reload(elireg)
 ordexp = importlib.import_module("LIBRERIA.ORDENAR Y EXPORTAR")
-ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
+ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
 
 # rutaorigen = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/"   --->RUTA DEL ARCHIVO ORIGEN
 # capa = "Corrientes de agua"                                       --->NOMBRE DE LA CAPA A ANALIZAR

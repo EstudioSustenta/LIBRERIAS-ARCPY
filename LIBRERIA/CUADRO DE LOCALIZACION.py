@@ -22,7 +22,7 @@ def dxf(aaa):
     df = arcpy.env.df
     
     # Importar el módulo desde el paquete LIBRERIA utilizando importlib
-    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
+    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
     
     
     # -------------------------------------------------------------------------------

@@ -18,7 +18,7 @@ df = arcpy.env.df
 def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
     print("Iniciando proceso de identificación")
 
-    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")
+    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
     arch = rutaCl + "/" + capaCl
     archtxt = arcpy.env.carp_cliente + capa_salida + ".txt"
     ruta_archivo = archtxt

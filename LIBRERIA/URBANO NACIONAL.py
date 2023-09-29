@@ -18,15 +18,15 @@ def purbano():
     ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
     sys.path.append(ruta_libreria)
     
-    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
-    filtro = importlib.import_module("LIBRERIA.FILTRO 1_0_0")
-    z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT 1_0_0")        #carga el script para aplicar zoom extent a una capa 
-    exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS 1_0_0")     #carga el script para exportar mapas a pdf y jpg
-    formato = importlib.import_module("LIBRERIA.FORMATO 1_0_0")             #carga el script para aplicar formato a layout
-    simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA_LYR 1_0_0")   #carga el script para aplicar simbología a capas
-    transp = importlib.import_module("LIBRERIA.APLICA TRANSPARENCIA 1_0_0")   #carga el script para aplicar transparencia a capas
-    act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS 1_0_0")
-    renombra = importlib.import_module("LIBRERIA.RENOMBRAR_CAPA_1_0_0")       #carga el script para cambiar el nombre a capas
+    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
+    filtro = importlib.import_module("LIBRERIA.FILTRO")
+    z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT")        #carga el script para aplicar zoom extent a una capa 
+    exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS")     #carga el script para exportar mapas a pdf y jpg
+    formato = importlib.import_module("LIBRERIA.FORMATO")             #carga el script para aplicar formato a layout
+    simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA LYR")   #carga el script para aplicar simbología a capas
+    transp = importlib.import_module("LIBRERIA.APLICA TRANSPARENCIA")   #carga el script para aplicar transparencia a capas
+    act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS")
+    renombra = importlib.import_module("LIBRERIA.RENOMBRAR CAPA")       #carga el script para cambiar el nombre a capas
     
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa del municipio:    

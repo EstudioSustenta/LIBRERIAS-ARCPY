@@ -20,12 +20,12 @@ def cliptema(rutas, capas, tipo, ncampo, nummapa, tit):
 
     arcpy.env.overwriteOutput = True
     layout_name = "Layout"
-    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")
-    filtro = importlib.import_module("LIBRERIA.FILTRO 1_0_0")
-    z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT 1_0_0")
-    formato = importlib.import_module("LIBRERIA.FORMATO 1_0_0")
-    exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS 1_0_0")
-    act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS 1_0_0")
+    ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
+    filtro = importlib.import_module("LIBRERIA.FILTRO")
+    z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT")
+    formato = importlib.import_module("LIBRERIA.FORMATO")
+    exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS")
+    act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS")
     extraedato = importlib.import_module("LIBRERIA.EXTRAE DATO")
 
     rbase = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"

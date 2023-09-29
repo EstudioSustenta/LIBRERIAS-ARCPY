@@ -19,15 +19,15 @@ def servicios():
         ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
         sys.path.append(ruta_libreria)
 
-        ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS 1_0_0")
-        filtro = importlib.import_module("LIBRERIA.FILTRO 1_0_0")
-        z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT 1_0_0")
-        exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS 1_0_0")
-        formato = importlib.import_module("LIBRERIA.FORMATO 1_0_0")
-        simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA_LYR 1_0_0")
-        transp = importlib.import_module("LIBRERIA.APLICA TRANSPARENCIA 1_0_0")
-        act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS 1_0_0")
-        renombra = importlib.import_module("LIBRERIA.RENOMBRAR_CAPA_1_0_0")
+        ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
+        filtro = importlib.import_module("LIBRERIA.FILTRO")
+        z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT")
+        exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS")
+        formato = importlib.import_module("LIBRERIA.FORMATO")
+        simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA LYR")
+        transp = importlib.import_module("LIBRERIA.APLICA TRANSPARENCIA")
+        act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS")
+        renombra = importlib.import_module("LIBRERIA.RENOMBRAR CAPA")
 
         # -------------------------------------------------------------------------------
         # Proceso para generar mapa del municipio:
