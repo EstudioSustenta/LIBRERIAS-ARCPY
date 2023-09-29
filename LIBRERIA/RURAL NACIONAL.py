@@ -13,7 +13,7 @@ def prural():
     df = arcpy.env.df
     
     # Agrega la ruta del paquete al path de Python
-    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
     sys.path.append(ruta_libreria)
     
     ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")

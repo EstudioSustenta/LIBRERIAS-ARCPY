@@ -13,7 +13,7 @@ def dxf(aaa):
     carpeta_cliente = arcpy.env.carp_cliente
     
     # Agrega la ruta del paquete al path de Python
-    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
     sys.path.append(ruta_libreria)
     
     arcpy.env.mxd = arcpy.mapping.MapDocument("CURRENT")                    # Obtener acceso al documento actual

@@ -10,7 +10,7 @@ def cliptema(rutas, capas, tipo, ncampo, nummapa, tit):
     print ("iniciando rutina de clip " + tipo + tit)
 
     # Agrega la ruta del paquete al path de Python
-    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
     sys.path.append(ruta_libreria)
 
     mxd = arcpy.env.mxd

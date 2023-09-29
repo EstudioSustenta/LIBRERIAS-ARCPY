@@ -11,7 +11,7 @@ def exportar(r_dest):
     import importlib
     import sys
 
-    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
     sys.path.append(ruta_libreria)
     renombra = importlib.import_module("LIBRERIA.RENOMBRAR CAPA")
 

@@ -15,7 +15,7 @@ def purbano():
 
     layout_name = "Layout"
     # Agrega la ruta del paquete al path de Python
-    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+    ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
     sys.path.append(ruta_libreria)
     
     ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)

@@ -8,7 +8,7 @@ import importlib
 import sys
 
 # Agrega la ruta del paquete al path de Python
-# ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+# ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 # sys.path.append(ruta_libreria)
 
 elireg = importlib.import_module("LIBRERIA.ELIMINA REGISTROS")

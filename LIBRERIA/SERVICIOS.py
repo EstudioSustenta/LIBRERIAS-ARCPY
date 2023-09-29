@@ -16,7 +16,7 @@ def servicios():
         df = arcpy.env.df
         carpeta_cliente = arcpy.env.carp_cliente
 
-        ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
+        ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
         sys.path.append(ruta_libreria)
 
         ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
