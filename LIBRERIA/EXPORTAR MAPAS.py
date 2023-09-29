@@ -13,7 +13,7 @@ def exportar(r_dest):
 
     ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON"
     sys.path.append(ruta_libreria)
-    renombra = importlib.import_module("LIBRERIA.RENOMBRAR_CAPA_1_0_0")
+    renombra = importlib.import_module("LIBRERIA.RENOMBRAR CAPA")
 
 
     mxd = arcpy.env.mxd
