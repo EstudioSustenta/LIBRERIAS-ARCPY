@@ -5,6 +5,16 @@
 # ser numérico y que representa la distancia en metros a la que se aplicará el ajuste de escala.
 
 import arcpy
+import sys
+import importlib
+
+# Agrega la ruta del paquete al path de Python
+
+ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+print(ruta_libreria)
+sys.path.append(ruta_libreria)
+
+z_extent = importlib.import_module("LIBRERIA.zoom_extent")
 
 def extraedato(archivo, ordinal, columna):
     mxd = arcpy.mapping.MapDocument("CURRENT")
@@ -29,6 +39,7 @@ def extraedato(archivo, ordinal, columna):
                     print("distancia = " + str(distancia))
 
                     escala = (distancia * 2) / 20 * 100
+                    z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
                     print ("escala = " + str(escala))
                     df.scale = escala
                     arcpy.RefreshActiveView()
