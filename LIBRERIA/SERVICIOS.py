@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-# SCRIPT PARA ANALIZAR LOS SERVICIOS IDENTIFICADOS POR EL INEGI EN EL SCINCE 2020.
+# SCRIPT PARA ANALIZAR LOS servicios IDENTIFICADOS POR EL INEGI EN EL SCINCE 2020.
 # FUNCION: A NIVEL NACIONAL.
 
-def servicios():
+def servicios(nummapa):
 
         print("iniciando proceso de servicios")
 
@@ -20,14 +20,14 @@ def servicios():
         sys.path.append(ruta_libreria)
 
         ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
-        filtro = importlib.import_module("LIBRERIA.FILTRO")
+        filtro = importlib.import_module("LIBRERIA.filtro")
         z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT")
         exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS")
-        formato = importlib.import_module("LIBRERIA.FORMATO")
+        formato = importlib.import_module("LIBRERIA.formato")
         simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA LYR")
-        transp = importlib.import_module("LIBRERIA.APLICA TRANSPARENCIA")
-        act_rot = importlib.import_module("LIBRERIA.ACTIVA ROTULOS")
-        renombra = importlib.import_module("LIBRERIA.RENOMBRAR CAPA")
+        transp = importlib.import_module("LIBRERIA.aplica_transparencia")
+        act_rot = importlib.import_module("LIBRERIA.activa_rotulos")
+        renombra = importlib.import_module("LIBRERIA.renombrar_capa")
 
         # -------------------------------------------------------------------------------
         # Proceso para generar mapa del municipio:
@@ -68,7 +68,7 @@ def servicios():
         simbologia.aplica_simb("Clip manz 417")
         act_rot.activar_rotulos("CURRENT", "Clip manz 417", "NOMGEO")
         arcpy.RefreshActiveView()
-        r_dest = carpeta_cliente + arcpy.env.proyecto + "_08_servicios"
+        r_dest = carpeta_cliente + arcpy.env.proyecto + " " + str(nummapa) + " servicios"
         transp.transp("Manzanas urbanas",50)
         simbologia.aplica_simb("Clip manz 417")
         simbologia.aplica_simb("Buffer " + distancia)
@@ -89,3 +89,5 @@ def servicios():
         ccapas.remover_capas("Manzanas urbanas")
         ccapas.remover_capas("Buffer " + distancia)
         print("Proceso \"servicios\" terminado.")
+
+        arcpy.env.nummapa = nummapa

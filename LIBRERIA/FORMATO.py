@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 
-# SCRIPT PARA DAR FORMATO AL MAPA
+# SCRIPT PARA DAR formato AL MAPA
 # DEBE EXISTIR UN FRAMEWORK LLAMADO 'Layers', TRES OBJETOS LLAMADOS 'TITULO', 'SUBTITULO' Y 'FECHA' PARA QUE FUNCIONE ADECUADAMENTE
 # DEBE TEMBIÉN CONTENER UNA LEYENDA.
 # ÉSTOS DEBERÁN ESTAR EN EL LAYOUT DE ARCMAP.
 import arcpy
+import datetime  # Importar módulo para obtener fecha y hora
+from datetime import datetime
 
-print("RUTINA DE ASIGNACIÓN DE FORMATO CARGADA EXITOSAMENTE")
+print("RUTINA DE ASIGNACIÓN DE formato CARGADA EXITOSAMENTE")
 
 def formato_layout(subtitulo1):
 
@@ -20,15 +22,8 @@ def formato_layout(subtitulo1):
     subtitulo = arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT", "SUBTITULO")[0]       #debe de existir el elemento de texto en layout llamado "SUBTITULO"
     tfecha = arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT", "FECHA")[0]              #debe de existir el elemento de texto en layout llamado "FECHA"
     leyenda = arcpy.mapping.ListLayoutElements(mxd, "LEGEND_ELEMENT", "Legend")[0]          #debe de existir el elemento de leyenda en layout llamado "Legend"
-    
-    import datetime  # Importar módulo para obtener fecha y hora
-    from datetime import datetime
-    now = datetime.now()
-    fecha = str(now.date())  # Obtener la fecha actual en formato de cadena
-    print (fecha)
-    arcpy.env.fecha = fecha
 
-    titulo.text = arcpy.env.proyecto # Actualiza el título
-    subtitulo.text = subtitulo1 # Actualiza el subtítulo
-    tfecha.text = fecha         # Actualiza la fecha
-    leyenda.title = "SIMBOLOGÍA" # Asigna el rótulo a la simbología
+    titulo.text = arcpy.env.proyecto        # Actualiza el título
+    subtitulo.text = subtitulo1             # Actualiza el subtítulo
+    tfecha.text = arcpy.env.fecha                     # Actualiza la fecha
+    leyenda.title = "SIMBOLOGÍA"            # Asigna el rótulo a la simbología
