@@ -25,20 +25,21 @@ def carga_capas(ruta_arch, nombre_capa):
     # EJEMPLO: Ruta de la carpeta donde se encuentran las capas
     #ruta_arch = "Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/0 UBICACION"
 
-    
-    # mxd = arcpy.mapping.MapDocument("CURRENT")
+    try:
+        # Verificar si la capa ya está agregada al mapa
+        capa_existente = arcpy.mapping.ListLayers(mxd, nombre_capa, df)
+        if not capa_existente:
+            log.log(capa.upper() + u" no existe previamente en el dataframe")
+            # Construir la ruta completa a la capa
+            ruta_capa = ruta_arch + "/" + nombre_capa + ".shp"
+            # Agregar la capa al data frame
+            capa = arcpy.mapping.Layer(ruta_capa)
+            arcpy.mapping.AddLayer(df, capa)
+            log.log(capa.upper() + u" agregada correctamente al dataframe")
+    except:
+        log.log(u">> ERROR, no se pudo agregar la capa al dataframe")
 
-    # Obtener el data frame por su nombre
-    df = arcpy.mapping.ListDataFrames(mxd, "layers")[0]
 
-    # Verificar si la capa ya está agregada al mapa
-    capa_existente = arcpy.mapping.ListLayers(mxd, nombre_capa, df)
-    if not capa_existente:
-        # Construir la ruta completa a la capa
-        ruta_capa = ruta_arch + "/" + nombre_capa + ".shp"
-        # Agregar la capa al data frame
-        capa = arcpy.mapping.Layer(ruta_capa)
-        arcpy.mapping.AddLayer(df, capa)
     log.log(u"Proceso 'clip_tematico -carga_capas-' finalizado")
 
 
@@ -54,5 +55,5 @@ def remover_capas(capa_remover):
         
         log.log(capa_remover + u" removida exitosamente.")
     except Exception as e:
-        print("Error:", str(e))
+        print(">> ERROR: ", str(e))
     log.log(u"Proceso 'clip_tematico -remover_capas-' finalizado")
