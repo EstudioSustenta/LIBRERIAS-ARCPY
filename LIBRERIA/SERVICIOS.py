@@ -28,6 +28,7 @@ def servicios(nummapa):
         transp = importlib.import_module("LIBRERIA.aplica_transparencia")
         act_rot = importlib.import_module("LIBRERIA.activa_rotulos")
         renombra = importlib.import_module("LIBRERIA.renombrar_capa")
+        log = importlib.import_module("LIBRERIA.archivo_log")
 
         # -------------------------------------------------------------------------------
         # Proceso para generar mapa del municipio:

@@ -15,6 +15,8 @@ elireg = importlib.import_module("LIBRERIA.elimina_registros")
 reload(elireg)
 ordexp = importlib.import_module("LIBRERIA.ordenar_y_exportar")
 ccapas = importlib.import_module("LIBRERIA.cargar_capas")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
+log = importlib.import_module("LIBRERIA.archivo_log")
+log.log(u"Librería 'near_a_sistema' cargada con éxito")
 
 # rutaorigen = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/"   --->RUTA DEL ARCHIVO ORIGEN
 # capa = "Corrientes de agua"                                       --->NOMBRE DE LA CAPA A ANALIZAR
@@ -26,7 +28,8 @@ ccapas = importlib.import_module("LIBRERIA.cargar_capas")         #carga el scri
 # cantidad = 20                                                     --->CANTIDAD DE REGISTROS QUE SE INCLUYEN EN EL ARCHIVO DE DISTANCIAS
 
 def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad):
-    
+
+    log.log(u"Proceso 'near_a_sistema' iniciando...")
     arcpy.env.overwriteOutput = True
 
     try:
@@ -45,9 +48,9 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             spatial_grid_1="0",
             spatial_grid_2="0",
             spatial_grid_3="0")
-        print ("Proceso Copy realizado correctamente")
+        log.log("Proceso Copy realizado correctamente")
     except:
-        print ("Error en proceso copy")
+        log.log("Error en proceso copy")
 
     try:
         arcpy.Near_analysis(in_features=capa,
@@ -57,20 +60,20 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             angle="NO_ANGLE",
             method="PLANAR")
 
-        print ("Proceso Near realizado correctamente")
+        log.log("Proceso Near realizado correctamente")
     except:
-        print ("Error en proceso near")
+        log.log("Error en proceso near")
     
     try:
         elireg.eliminaregistros(capa, campo, valor)
-        print("Registros eliminados satisfactoriamente")
+        log.log("Registros eliminados satisfactoriamente")
     except:
-        print("Error en proceso para eliminar registros")
+        log.log("Error en proceso para eliminar registros")
     try:
         reload(ordexp)
         ordexp.ordenayexporta(capa, campo, camporef, archivo, cantidad)
-        print("Archivo exportado satisfactoriamente")
+        log.log("Archivo exportado satisfactoriamente")
     except:
-        print("Error en proceso para exportar el archivo near")
+        log.log("Error en proceso para exportar el archivo near")
     ccapas.remover_capas(capa)
-    print("Proceso Near de " + capa + " finalizado satisfactoriamente")
+    log.log(u"Proceso Near de " + capa + u" finalizado satisfactoriamente")

@@ -7,8 +7,8 @@ import arcpy
 def clipbuff(ruta, radios):
     es_sistema = "Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA_SIMPLIFICADO.shp"
     
-    mxd = arcpy.mapping.MapDocument("CURRENT")
-    df = arcpy.mapping.ListDataFrames(mxd)[0]
+    mxd = arcpy.env.mxd
+    df = arcpy.env.df
     manzanas = "Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.localidad + "/cartografia/manzana_localidad.shp"
     
     for radio in radios:

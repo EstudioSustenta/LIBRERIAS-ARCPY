@@ -15,8 +15,14 @@ print(ruta_libreria)
 sys.path.append(ruta_libreria)
 
 z_extent = importlib.import_module("LIBRERIA.zoom_extent")
+log = importlib.import_module("LIBRERIA.archivo_log")
 
+
+log.log(u"Librería 'extrae_dato' cargada con éxito")
 def extraedato(archivo, ordinal, columna):
+
+    log.log(u"Proceso 'extraedato' iniciando...")
+    
     mxd = arcpy.mapping.MapDocument("CURRENT")
     df = arcpy.mapping.ListDataFrames(mxd)[0]
     ordinal = str(ordinal) + "\t"
@@ -33,13 +39,14 @@ def extraedato(archivo, ordinal, columna):
                 # Verificar si hay al menos tres columnas
                 if len(columns) >= columna:
                     # Extraer el valor de la tercera columna (índice 2)
-                    print ("Ordinal = " + str(ordinal))
-                    print("Columna = " + str(columna))
+                    log.log(u"Ordinal = " + str(ordinal))
+                    log.log(u"Columna = " + str(columna))
                     distancia = int(columns[2].strip())  # strip() elimina espacios en blanco adicionales y saltos de línea
-                    print("distancia = " + str(distancia))
+                    log.log(u"distancia = " + str(distancia))
 
                     escala = (distancia * 2) / 20 * 100
                     z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
-                    print ("escala = " + str(escala))
+                    log.log(u"escala = " + str(escala))
                     df.scale = escala
                     arcpy.RefreshActiveView()
+    log.log(u"Proceso 'extraedato' finalizado!")

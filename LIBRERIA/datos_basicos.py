@@ -110,31 +110,35 @@ def datosbasicos():
     arcpy.env.fecha = fecha
 
 
-    archivo = arcpy.env.carp_cliente + "0 datos_basicos.txt"
+    archivo1 = arcpy.env.carp_cliente + "0 datos_basicos.txt"
+    archivo2 = arcpy.env.carp_cliente + "00 archivo_log.txt"
 
-    with codecs.open(archivo, 'w', encoding='utf-8') as archivo: # se usa la codificación utf-8 para evitar problemas con acentos y caracteres especiales
-        archivo.write(u"DATOS GENERALES DEL PROYECTO" + '\n')
-        archivo.write(u"Fecha de creación: " + arcpy.env.fecha + '\n')
-        archivo.write(u"Autor: " + chr(9) + "Gustavo Martinez Velasco" + '\n\n')
-        archivo.write(u"Proyecto: " + chr(9) + arcpy.env.proyecto + '\n')
-        archivo.write(u"Cliente: " + chr(9) + arcpy.env.cliente + '\n')
-        archivo.write(u"Estado: " + chr(9) + arcpy.env.estado + '\n')
-        archivo.write(u"Municipio: " + chr(9) + arcpy.env.municipio + '\n')
-        archivo.write(u"Localidad: " + chr(9) + arcpy.env.localidad + '\n')
-        archivo.write(u"Colonia: " + chr(9) + arcpy.env.colonia + '\n')
-        archivo.write(u"Codigo postal: " + chr(9) + arcpy.env.cp + '\n')
-        archivo.write(u"Sistema urbano nacional: " + chr(9) + arcpy.env.clavesun + '\n')
-        archivo.write(u"Ambito urbano: " + chr(9) + arcpy.env.ambito + '\n\n')
-        archivo.write(u"Sistema de coordenadas: " + chr(9) + arcpy.env.coordnombre + '\n')
-        archivo.write(u"Tipo de coordenadas: " + chr(9) + arcpy.env.coordtipo + '\n')
-        archivo.write(u"Clave WKID de coordenadas: " + chr(9) + str(arcpy.env.coordWKID) + '\n')
-        archivo.write(u"Altitud (MSNMM): " + chr(9) + str(arcpy.env.altitud) + '\n')
-        archivo.write(u"Latitud: " + chr(9) + str(arcpy.env.latitud) + '\n')
-        archivo.write(u"Longitud: " + chr(9) + str(arcpy.env.longitud) + '\n')
-        archivo.write(u"Coordenada X: " + chr(9) + str(arcpy.env.x) + '\n')
-        archivo.write(u"Coordenada Y: " + chr(9) + str(arcpy.env.y) + '\n')
-        archivo.write(u"Continentalidad (km): " + chr(9) + str(arcpy.env.continentalidad) + '\n\n')
-        archivo.write(u"Ruta de carpeta de proyecto: " + chr(9) + arcpy.env.carp_cliente)
+    archivos = [archivo1, archivo2]
+
+    for archivo in archivos:
+        with codecs.open(archivo, 'w', encoding='utf-8') as archivo: # se usa la codificación utf-8 para evitar problemas con acentos y caracteres especiales
+            archivo.write(u"DATOS GENERALES DEL PROYECTO" + '\n')
+            archivo.write(u"Fecha de creación: " + arcpy.env.fecha + '\n')
+            archivo.write(u"Autor: \t" + "Gustavo Martinez Velasco" + '\n\n')
+            archivo.write(u"Proyecto: \t" + arcpy.env.proyecto + '\n')
+            archivo.write(u"Cliente: \t" + arcpy.env.cliente + '\n')
+            archivo.write(u"Estado: \t" + arcpy.env.estado + '\n')
+            archivo.write(u"Municipio: \t" + arcpy.env.municipio + '\n')
+            archivo.write(u"Localidad: \t" + arcpy.env.localidad + '\n')
+            archivo.write(u"Colonia: \t" + arcpy.env.colonia + '\n')
+            archivo.write(u"Codigo postal: \t" + arcpy.env.cp + '\n')
+            archivo.write(u"Sistema urbano nacional: \t" + arcpy.env.clavesun + '\n')
+            archivo.write(u"Ambito urbano: \t" + arcpy.env.ambito + '\n\n')
+            archivo.write(u"Sistema de coordenadas: \t" + arcpy.env.coordnombre + '\n')
+            archivo.write(u"Tipo de coordenadas: \t" + arcpy.env.coordtipo + '\n')
+            archivo.write(u"Clave WKID de coordenadas: \t" + str(arcpy.env.coordWKID) + '\n')
+            archivo.write(u"Altitud (MSNMM): \t" + str(arcpy.env.altitud) + '\n')
+            archivo.write(u"Latitud: \t" + str(arcpy.env.latitud) + '\n')
+            archivo.write(u"Longitud: \t" + str(arcpy.env.longitud) + '\n')
+            archivo.write(u"Coordenada X: \t" + str(arcpy.env.x) + '\n')
+            archivo.write(u"Coordenada Y: \t" + str(arcpy.env.y) + '\n')
+            archivo.write(u"Continentalidad (km): \t" + str(arcpy.env.continentalidad) + '\n\n')
+            archivo.write(u"Ruta de carpeta de proyecto: \t" + arcpy.env.carp_cliente)
 
     print("Proceso de datos basicos realizado satisfactoriamente")
         

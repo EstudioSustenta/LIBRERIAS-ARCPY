@@ -1,13 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import arcpy
+import importlib
+import sys
 
 # Obtener acceso al documento actual
-mxd = arcpy.mapping.MapDocument("CURRENT")
+mxd = arcpy.env.mxd
+df = arcpy.env.df
 
-print ("ARCHIVO PARA CARGAR Y REMOVER CAPAS CARGADO CON ÉXITO")
+# Agrega la ruta del paquete al path de Python
+ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+sys.path.append(ruta_libreria)
+log = importlib.import_module("LIBRERIA.archivo_log")
+
+log.log(u"Librería 'cargar_capas' cargada con éxito")
 
 def carga_capas(ruta_arch, nombre_capa):
+
+    log.log(u"Proceso 'clip_tematico -carga_capas-' iniciando para " + nombre_capa.upper() + "...")
 
     # EJEMPLO: Lista de nombres de capas a agregar
     #nombres_capas = ["emas01", "emas02"]
@@ -29,20 +39,20 @@ def carga_capas(ruta_arch, nombre_capa):
         # Agregar la capa al data frame
         capa = arcpy.mapping.Layer(ruta_capa)
         arcpy.mapping.AddLayer(df, capa)
+    log.log(u"Proceso 'clip_tematico -carga_capas-' finalizado")
 
-    # Actualizar la vista del mapa
+
+
 
 def remover_capas(capa_remover):
-    # mxd = arcpy.mapping.MapDocument("CURRENT")
+
+    log.log(u"Proceso 'clip_tematico -remover_capas-' iniciando para " + capa_remover + "...")
+
     try:
-
-        # Obtener el DataFrame activo
-        df = arcpy.mapping.ListDataFrames(mxd)[0]
-
         capa = arcpy.mapping.ListLayers(mxd, capa_remover, df)[0]
         arcpy.mapping.RemoveLayer(df, capa)
-
         
-        print(capa_remover + " removida exitosamente.")
+        log.log(capa_remover + u" removida exitosamente.")
     except Exception as e:
         print("Error:", str(e))
+    log.log(u"Proceso 'clip_tematico -remover_capas-' finalizado")
