@@ -15,9 +15,7 @@ mxd = arcpy.env.mxd
 
 def leyenda():
     log.log(u"Iniciando librería 'leyenda_ajuste'")
-    # 
-    
-
+     
     # Encuentra el cuadro de leyendas (legend) en el diseño
     for elemento in arcpy.mapping.ListLayoutElements(mxd, "LEGEND_ELEMENT"):
         cuadro_de_leyendas = elemento
