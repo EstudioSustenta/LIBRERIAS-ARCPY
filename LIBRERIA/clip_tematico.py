@@ -29,25 +29,28 @@ extraedato = importlib.import_module("LIBRERIA.extrae_dato")
 log = importlib.import_module("LIBRERIA.archivo_log")
 leyenda = importlib.import_module("LIBRERIA.leyenda_ajuste")
 
+reload(ccapas)
+reload(filtro)
+reload(z_extent)
+reload(formato)
+reload(exportma)
+reload(act_rot)
+reload(extraedato)
+reload(log)
+reload(leyenda)
+
+
+
 log.log(u"Librería 'clip_tematico' cargada con éxito")
 
 def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     
-    reload(exportma)
-
     log.log(u"Proceso clip_tematico iniciando para " + tit.upper() + "...")
-
-    # log.log(u"rutas: " + rutas)
-    # log.log(u"capas: " + capas)
-    # log.log(u"tipo: " + tipo.upper())
-    # log.log(u"ncampo: " + ncampo)
-    # log.log(u"nummapa: " + nummapa)
-    # log.log(u"ordinal: " + ordinal)
 
     rbase = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     numero_de_elementos = None
 
-    if tipo == "nacional":
+    if tipo == "nacional":          # decisión: asigna valores para la capa base del marco geográfico y el campo para los rótulos
         cbase = "ESTATAL decr185"
         campoRotulo = "NOM_ENT"
         filtr= ""
@@ -65,6 +68,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     ccapas.carga_capas(rbase, cbase)
     filtro.fil_expr(cbase, filtr)
     ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + cbase + ".lyr"
+    act_rot.activar_rotulos(cbase, campoRotulo)
     
     try:
         arcpy.ApplySymbologyFromLayer_management(cbase, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
@@ -73,14 +77,14 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         log.log(u"Falló aplicación de simbología en " + cbase)
 
     z_extent.zoom_extent(layout_name, cbase)   
+    formato.formato_layout(tit.upper() + " A NIVEL " + tipo.upper())
 
-    # proceso de bucle
+    # proceso de bucle para capas de interés
     i = 0
     for ruta in rutas:
         capa = capas[i]
-        log.log(u"Cargando capa complementaria y aplicando formato: " + capa)
-        
-        formato.formato_layout(tit.upper() + " A NIVEL " + tipo.upper())
+
+        log.log(u"Bucle para proceso de capa " + capa)
         
         ccapas.carga_capas(ruta, capa)
         ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
@@ -98,56 +102,52 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         try:
             act_rot.activar_rotulos(capa, ncampo[i])
         except:
-            log.log(u">>> ERROR: No se ha podido aplicar rótulos en capa: " + capa + u", campo: " + ncampo[i])
+            log.log(u">>> ERROR: No se ha podido iniciar el proceso para rótulos en capa: " + capa + u", campo: " + ncampo[i])
 
-        
-    
         if tipo == "nacional":
-            gus = None
-        else:
+            log.log(u"Proceso 'nacional', no se realiza clip del archivo para la capa " + capa)
+        else:           # si la visualización no es nacional, hace un recorte (clip) del área de interés (estatal o municipal)
             arcpy.Clip_analysis(in_features=arch,
                 clip_features=cbase,
                 out_feature_class=capasalida,
                 cluster_tolerance="")
-            ccapas.remover_capas(capasalida)
+            # ccapas.remover_capas(capasalida)
             numero_de_elementos = int(arcpy.GetCount_management(capasal).getOutput(0))
             log.log("elementos en clip " + tit.upper() + ":" + str(numero_de_elementos))
 
-        
-
-        if numero_de_elementos == 0 and capasalida is None:
-            print("CAPA VACÍA")
-            ccapas.remover_capas(capasal)
-        else:
-            ccapas.remover_capas(capa)
-            if tipo == "nacional":
-                gus = None
+            if numero_de_elementos == 0 and capasalida is None:     # Se evalúa si la capa producto del clip tiene algún contenido y si el archivo existe en la carpeta de temporales
+                log.log(u"La capa " + capasal + " no tiene elementos, se eliminará del dataset")
+                ccapas.remover_capas(capasal)
             else:
-                
-                temp1 = ruta + "/" + capa + ".shp"
-                log.log("Capa de trabajo no nacional:\t" + temp1)
-                desc = arcpy.Describe(temp1)
-                tipo_geometria = desc.shapeType
-                if not tipo_geometria == "Point":
-                    capa_diss = "Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
-                    arcpy.Dissolve_management(in_features=capasalida,
-                        out_feature_class=capa_diss,
-                        dissolve_field=ncampo[i],
-                        statistics_fields="", 
-                        multi_part="MULTI_PART", 
-                        unsplit_lines="DISSOLVE_LINES")
-                    ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
-                    ccapas.remover_capas(capasal)
+                ccapas.remover_capas(capa)
+                if tipo == "nacional":
+                    gus = None
                 else:
-                    ccapas.carga_capas(ruta, capa)
-                    # print("\n\n\n capa a SIMBOLOGIZAR: " + capa)
-                    # print("archivo de simbología: " + ruta_lyr)
-               
-                try:
-                    arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
                     
-                except:
-                    print("Falló aplicación de simbología en " + capa)
+                    temp1 = ruta + "/" + capa + ".shp"
+                    log.log("Capa de trabajo no nacional:\t" + temp1)
+                    desc = arcpy.Describe(temp1)
+                    tipo_geometria = desc.shapeType
+                    if not tipo_geometria == "Point":
+                        capa_diss = "Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
+                        arcpy.Dissolve_management(in_features=capasalida,
+                            out_feature_class=capa_diss,
+                            dissolve_field=ncampo[i],
+                            statistics_fields="", 
+                            multi_part="MULTI_PART", 
+                            unsplit_lines="DISSOLVE_LINES")
+                        ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
+                        ccapas.remover_capas(capasal)
+                    else:
+                        ccapas.carga_capas(ruta, capa)
+                        # print("\n\n\n capa a SIMBOLOGIZAR: " + capa)
+                        # print("archivo de simbología: " + ruta_lyr)
+                
+                    try:
+                        arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
+                        
+                    except:
+                        print("Falló aplicación de simbología en " + capa)
     #             print("durmiendo")
     #             time.sleep(5)
     #             log.log(u"Datos para rótulos, capa: " + capa + u", campo: " + ncampo[i])
@@ -167,7 +167,6 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         archivo = arcpy.env.carp_cliente + capa + " near.txt"
         log.log(u"Ordinal mayor que cero, se visualizarán " + str(ordinal) + " elementos para " + archivo)
         columna = 3
-        reload(extraedato)
         extraedato.extraedato(archivo, ordinal, columna)
         
     r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " " + tit
