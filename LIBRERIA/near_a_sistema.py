@@ -27,9 +27,11 @@ log.log(u"Librería 'near_a_sistema' cargada con éxito")
 # archivo = capa + " near"                                          --->NOMBRE DEL ARCHIVO DE TEXTO, LA RUTA DEL ARCHIVO LA TOMA DE LA CARPETA DEL PROYECTO
 # cantidad = 20                                                     --->CANTIDAD DE REGISTROS QUE SE INCLUYEN EN EL ARCHIVO DE DISTANCIAS
 
+log.log(u"Proceso 'near_a_sistema' cargado con éxito")
+
 def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad):
 
-    log.log(u"Proceso 'near_a_sistema' iniciando...")
+    log.log(u"'near_a_sistema' iniciando...")
     arcpy.env.overwriteOutput = True
 
     try:
