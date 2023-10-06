@@ -2,11 +2,32 @@
 
 
 import arcpy
+import importlib
+import sys
+
+# Agrega la ruta del paquete al path de Python
+ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+sys.path.append(ruta_libreria)
+log = importlib.import_module("LIBRERIA.archivo_log")
+
+mxd = arcpy.env.mxd
+
+log.log(u"filtro.py cargado con éxito")
 
 def fil_expr(capa_nombre, expr):     #Esta función acepta la cadena de expresión completa, ejemplo:---> "NOM_MUN = 'Jesús María' AND NOM_ENT = 'Aguascalientes'"
-    mxd = arcpy.mapping.MapDocument("CURRENT")
-    capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
-    capa.definitionQuery = expr
+    
+    log.log(u"'filtro.fil_expr' iniciando para " + capa_nombre + u" con la expresión " + expr)
+    
+    try:
+        capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
+        capa.definitionQuery = expr
+        log.log(u"Filtro aplicado correctamente para la capa " + capa_nombre)
+    except:
+        log.log(u">> ERROR, el proceso filtro falló para la capa " + capa_nombre)
+
+    log.log(u"'filtro.fil_expr' finalizado para " + capa_nombre)
+
+
 
 def aplicar_defq(capa_nombre, campo, texto_a_buscar):
     try:
