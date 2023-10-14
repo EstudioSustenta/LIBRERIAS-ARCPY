@@ -45,7 +45,7 @@ log.log(u"Librería 'clip_tematico' cargada con éxito")
 
 def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     
-    log.log(u"Proceso clip_tematico iniciando para " + tit.upper() + "...")
+    log.log(u"'clip_tematico' iniciando para " + tit.upper() + "...")
 
     rbase = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     numero_de_elementos = None
@@ -61,7 +61,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     else:
         cbase = "MUNICIPAL CENSO 2020 DECRETO 185"
         filtr= "NOM_MUN = '" + arcpy.env.municipio + "' AND NOM_ENT = '" + arcpy.env.estado + "'"
-        campoRotulo = "NOM_ENT"
+        campoRotulo = "NOM_MUN" # CAMBIÉ EL CAMPO DE RÓTULO, ESPERO NO DÉ PROBLEMAS, EL ANTERIOR ERA "NOM_ENT"
 
     # proceso de capa base
     log.log(u"Cargando capa base y aplicando formato: " + cbase)
@@ -73,8 +73,9 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     try:
         arcpy.ApplySymbologyFromLayer_management(cbase, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
         log.log(u"Aplicando simbología a " + cbase)
-    except:
+    except Exception as e:
         log.log(u"Falló aplicación de simbología en " + cbase)
+        log.log(str(e))
 
     z_extent.zoom_extent(layout_name, cbase)   
     formato.formato_layout(tit.upper() + " A NIVEL " + tipo.upper())
@@ -91,8 +92,9 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         try:
             arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
             log.log(u"Aplicando simbología a " + capa)
-        except:
+        except Exception as e:
             log.log(u"Falló aplicación de simbología en " + capa)
+            log.log(str(e))
 
         arch = ruta + "/" + capa + ".shp"
         capasal = "Clip " + capa
@@ -101,8 +103,9 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         
         try:
             act_rot.activar_rotulos(capa, ncampo[i])
-        except:
-            log.log(u">>> ERROR: No se ha podido iniciar el proceso para rótulos en capa: " + capa + u", campo: " + ncampo[i])
+        except Exception as e:
+            log.log(u">> ERROR: No se ha podido iniciar el proceso para rótulos en capa: " + capa + u", campo: " + ncampo[i])
+            log.log(str(e))
 
         if tipo == "nacional":
             log.log(u"Proceso 'nacional', no se realiza clip del archivo para la capa " + capa)
@@ -146,21 +149,15 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                     try:
                         arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
                         
-                    except:
+                    except Exception as e:
                         print("Falló aplicación de simbología en " + capa)
-    #             print("durmiendo")
-    #             time.sleep(5)
-    #             log.log(u"Datos para rótulos, capa: " + capa + u", campo: " + ncampo[i])
-    #             act_rot.activar_rotulos("CURRENT", capa, ncampo[i])
-    #             ccapas.remover_capas(capasal)
-    #         
-    #     mensaje = ("hora" + "CAMPO: " + capasalida + ", "  + ncampo[i])
-    #     time.sleep(10)
-    #     print("durmiendo...")
-    #     act_rot.activar_rotulos("CURRENT", capasalida, ncampo[i])
-            
+                        log.log(str(e))
 
-    #     print("Ruta destino " + r_dest)
+        if capa_diss == None:
+            capa_diss = capasalida
+
+        act_rot.activar_rotulos(capa_diss, ncampo[i])
+                        
         i=i + 1
 
     if ordinal > 0:
@@ -170,6 +167,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         extraedato.extraedato(archivo, ordinal, columna)
         
     r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " " + tit
+
     exportma.exportar(r_dest)
 
     # elimina todas las capas, excepto "SISTEMA"
@@ -191,5 +189,5 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     
     nummapa = nummapa + 1
     arcpy.env.nummapa = nummapa 
-    log.log(u"Proceso clip temático finalizado para mapa " + str(nummapa) + " " + tit)
+    log.log(u"'clip temático' finalizado")
 

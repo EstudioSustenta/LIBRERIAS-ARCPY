@@ -22,14 +22,18 @@ def fil_expr(capa_nombre, expr):     #Esta función acepta la cadena de expresi�
         capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
         capa.definitionQuery = expr
         log.log(u"Filtro aplicado correctamente para la capa " + capa_nombre)
-    except:
+    except Exception as e:
         log.log(u">> ERROR, el proceso filtro falló para la capa " + capa_nombre)
+        log.log(str(e))
 
     log.log(u"'filtro.fil_expr' finalizado para " + capa_nombre)
 
 
 
 def aplicar_defq(capa_nombre, campo, texto_a_buscar):
+
+    log.log(u"'filtro.plicar_defq' iniciando para " + capa_nombre + u" con la expresión " + campo)
+
     try:
         # Obtener el mapa actual
         mxd = arcpy.mapping.MapDocument("CURRENT")
@@ -44,20 +48,22 @@ def aplicar_defq(capa_nombre, campo, texto_a_buscar):
         # Aplicar el definition query a la capa
         capa.definitionQuery = expresion
         
-        print("Definition query aplicado exitosamente.")
+        log.log("Definition query aplicado exitosamente.")
         
     except Exception as e:
-        print("Error:", str(e))
+
+        log.log(str(e))
+
+    log.log(u"'filtro.plicar_defq' finalizado para " + capa_nombre)
 
 # Ejemplo de uso
 # aplicar_defq("ESTATAL", "NOMGEO", "'Aguascalientes'")  <------ sintaxis correcta y verificada
 
-import arcpy
-
 def deshacer_defq(capa_nombre):
+
+    log.log(u"'filtro.plicar_defq' iniciando para " + capa_nombre + u" con la expresión " + campo)
+
     try:
-        # Obtener el mapa actual
-        mxd = arcpy.mapping.MapDocument("CURRENT")
         
         # Obtener la capa por su nombre
         capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
@@ -65,10 +71,13 @@ def deshacer_defq(capa_nombre):
         # Borrar el definition query
         capa.definitionQuery = ""
         
-        print("Definition query eliminado, mostrando todos los objetos.")
+        log.log("Definition query eliminado, mostrando todos los objetos.")
         
     except Exception as e:
-        print("Error:", str(e))
+        log.log(u">> ERROR. Se ha producido un error aplicando 'filtro.plicar_defq' para: " + capa_nombre)
+        log.log(str(e))
+    
+    log.log(u"'filtro.plicar_defq' finalizado para " + capa_nombre)
 
 # Ejemplo de uso
 # deshacer_defq("ESTATAL") <------ sintaxis correcta y verificada

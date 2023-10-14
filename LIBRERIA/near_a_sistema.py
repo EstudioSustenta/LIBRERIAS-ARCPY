@@ -3,20 +3,18 @@
 # SCRIPT PARA REALIZAR EL PROCESO 'NEAR' EN UNA CAPA CON RELACIÓN A LA UBICACIÓN DEL SISTEMA
 print ("libreria cargada")
 import arcpy
-import datetime
 import importlib
 import sys
 
 # Agrega la ruta del paquete al path de Python
-# ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
-# sys.path.append(ruta_libreria)
+ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+sys.path.append(ruta_libreria)
 
 elireg = importlib.import_module("LIBRERIA.elimina_registros")
-reload(elireg)
 ordexp = importlib.import_module("LIBRERIA.ordenar_y_exportar")
 ccapas = importlib.import_module("LIBRERIA.cargar_capas")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
 log = importlib.import_module("LIBRERIA.archivo_log")
-log.log(u"Librería 'near_a_sistema' cargada con éxito")
+
 
 # rutaorigen = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/"   --->RUTA DEL ARCHIVO ORIGEN
 # capa = "Corrientes de agua"                                       --->NOMBRE DE LA CAPA A ANALIZAR
@@ -37,7 +35,7 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
     try:
         # verifica si distancia es una cadena de texto
         if not isinstance(distancia, str):
-            print("La variable no es de tipo string (cadena)")
+            log.log(u"La variable no es de tipo string (cadena)")
             distancia = str(distancia) # si no es cadena, la convierte a cadena
 
         origen = rutaorigen + capa + ".shp"
@@ -51,8 +49,9 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             spatial_grid_2="0",
             spatial_grid_3="0")
         log.log("Proceso Copy realizado correctamente")
-    except:
+    except Exception as e:
         log.log("Error en proceso copy")
+        log.log(str(e))
 
     try:
         arcpy.Near_analysis(in_features=capa,
@@ -63,19 +62,22 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             method="PLANAR")
 
         log.log("Proceso Near realizado correctamente")
-    except:
+    except Exception as e:
         log.log("Error en proceso near")
+        log.log(str(e))
     
     try:
         elireg.eliminaregistros(capa, campo, valor)
         log.log("Registros eliminados satisfactoriamente")
-    except:
+    except Exception as e:
         log.log("Error en proceso para eliminar registros")
+        log.log(str(e))
     try:
         reload(ordexp)
         ordexp.ordenayexporta(capa, campo, camporef, archivo, cantidad)
         log.log("Archivo exportado satisfactoriamente")
-    except:
+    except Exception as e:
         log.log("Error en proceso para exportar el archivo near")
+        log.log(str(e))
     ccapas.remover_capas(capa)
     log.log(u"Proceso Near de " + capa + u" finalizado satisfactoriamente")

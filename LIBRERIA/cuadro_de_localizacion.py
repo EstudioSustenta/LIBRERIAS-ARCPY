@@ -103,7 +103,7 @@ def dxf(aaa):
                                 cluster_tolerance="")
             
             ccapas.remover_capas("buffer " + distancia)
-            listamanz = "clip vial " + distancia
+            listamanz = "Y:/0_SIG_PROCESO/X TEMPORAL/clip vial " + distancia + ".shp"
             manz.append(listamanz)
     
         manz.append("SISTEMA")
@@ -112,6 +112,7 @@ def dxf(aaa):
         listaarch = "\"'" + listaarch + "'\""
     
         print("archivos a convertir a dwg " + listaarch)
+        print("carpeta de cliente: " + carpeta_cliente)
     
         arcpy.ExportCAD_conversion(in_features=listaarch,
             Output_Type="DWG_R2013",

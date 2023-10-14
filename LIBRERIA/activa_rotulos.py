@@ -24,11 +24,12 @@ def activar_rotulos(capa, campo_rotulo):
         # Configura la expresión de rótulo
         labelClass = capa.labelClasses[0]
         labelClass.expression = "[{}]".format(campo_rotulo)
-        log.log(u"Rótulos activados satisfactoriamente'...")
-    except:
-        log.log(u">> ERROR, los rótulos no se han activado'...")
+        log.log(u"Rótulos activados satisfactoriamente para capa " + capa.name)
+    except Exception as e:
+        log.log(u">> ERROR, los rótulos no se han activado para capa " + capa.name)
+        log.log(str(e))
 
-    log.log(u"'activar_rotulos' terminado...")
+    log.log(u"'activar_rotulos' finalizado")
 
 
 def desactivar_rotulos(capa):
@@ -39,9 +40,10 @@ def desactivar_rotulos(capa):
         capa = arcpy.mapping.ListLayers(mxd, capa)[0]  # Ajusta el nombre de la capa según tu capa específica
         # Habilita los rótulos para la capa
         capa.showLabels = False
-        log.log(u"Rótulos desactivados satisfactoriamente'...")
-    except:
-        log.log(u">> ERROR, los rótulos no se han desactivado'...")
+        log.log(u"Rótulos desactivados satisfactoriamente para capa " + capa.name)
+    except Exception as e:
+        log.log(u">> ERROR, los rótulos no se han desactivado para capa " + capa.name)
+        log.log(str(e))
 
     log.log(u"'desactivar_rotulos' terminado...")
 

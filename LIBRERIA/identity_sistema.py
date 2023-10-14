@@ -67,7 +67,8 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
                         i = i + 1
         ccapas.remover_capas(capa_salida)
         log.log(u"'idproy.idproy' Se ha ejecutado satisfactoriamente")
-    except:
+    except Exception as e:
         log.log(u">> ERROR, no se ha podido ejecutar identity_sistema.py adecuadamente")
+        log.log(str(e))
 
     log.log(u"'idproy.idproy' finalizado")

@@ -19,12 +19,12 @@ def servicios(nummapa):
         ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
         sys.path.append(ruta_libreria)
 
-        ccapas = importlib.import_module("LIBRERIA.CARGAR CAPAS")
+        ccapas = importlib.import_module("LIBRERIA.cargar_capas")
         filtro = importlib.import_module("LIBRERIA.filtro")
-        z_extent = importlib.import_module("LIBRERIA.ZOOM EXTENT")
-        exportma = importlib.import_module("LIBRERIA.EXPORTAR MAPAS")
+        z_extent = importlib.import_module("LIBRERIA.zoom_extent")
+        exportma = importlib.import_module("LIBRERIA.exportar_mapas")
         formato = importlib.import_module("LIBRERIA.formato")
-        simbologia = importlib.import_module("LIBRERIA.SIMBOLOGIA LYR")
+        simbologia = importlib.import_module("LIBRERIA.simbologia_lyr")
         transp = importlib.import_module("LIBRERIA.aplica_transparencia")
         act_rot = importlib.import_module("LIBRERIA.activa_rotulos")
         renombra = importlib.import_module("LIBRERIA.renombrar_capa")
@@ -67,7 +67,7 @@ def servicios(nummapa):
         ccapas.remover_capas("Servicios")
 
         simbologia.aplica_simb("Clip manz 417")
-        act_rot.activar_rotulos("CURRENT", "Clip manz 417", "NOMGEO")
+        act_rot.activar_rotulos("Clip manz 417", "NOMGEO")
         arcpy.RefreshActiveView()
         r_dest = carpeta_cliente + arcpy.env.proyecto + " " + str(nummapa) + " servicios"
         transp.transp("Manzanas urbanas",50)

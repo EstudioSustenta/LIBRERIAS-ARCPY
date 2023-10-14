@@ -112,4 +112,6 @@ def prural(nummapa):
     arcpy.env.nummapa = nummapa
 
     log.log(u"Proceso sitio terminado")
+
+    
     log.log(u"'prural' terminado...")
