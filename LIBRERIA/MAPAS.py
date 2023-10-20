@@ -896,6 +896,341 @@ def clima_koppen(nummapa):
     log.log(u"'Clima' finalizado! \n\n")
 
 
+def clima_olgyay(nummapa):
+
+    #-----------------> CLIMA <------------------------------------------
+
+    log.log(u"Proceso 'Clima Olgyay' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/00 PROPIOS/CLIMA" # ruta del archivo a identificar
+    capaCl = "MEXICO_OLGYAY.shp" # archivo a identificar
+    capa_salida = "Climas Olgyay" # capa a crear en el mapa
+    camposCons = ["CLIMA"] # campos a escribir en el archivo identity
+    dAlter = ["CLIMA OLGYAY"] # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["MEXICO_OLGYAY"]
+    rutas = [rutaCl]
+    ncampo = ["CLIMA"]                          # campo para el rótulo
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 2                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "nacional"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Clima Olgyay' finalizado! \n\n")
+
+
+
+def cuenca(nummapa):
+
+    #-----------------> CUENCA HIDROLOGICA <------------------------------------------
+
+    log.log(u"Proceso 'Cuenca hidrologica' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                       # ruta del archivo a identificar
+    capaCl = "Cuenca hidrologica.shp"                                   # archivo a identificar
+    capa_salida = "Cuenca hidrologica"                                  # capa a crear en el mapa
+    camposCons = ["CUENCA", "REGION"]  # campos a escribir en el archivo identity
+    dAlter = ["CUENCA", "REGION"]     # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Cuenca hidrologica"]
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "nacional"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Cuenca hidrologica' finalizado! \n\n")
+
+
+def edafologia(nummapa):
+
+    #-----------------> EDAFOLOGIA <------------------------------------------
+
+    log.log(u"Proceso 'Edafologia' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+    capaCl = "Edafologia.shp"                                                       # archivo a identificar
+    capa_salida = "Edafologia"                                                      # capa a crear en el mapa
+    camposCons = ["DESCRIPCIO","SUE1","DESC_TEX","DESC_FASFI","DESC_FAQUI"]     # campos a escribir en el archivo identity
+    dAlter = ["DESCRIPCION","CLAVE EDAFOLÓGICA","TEXTURA","FASE FÍSICA","FASE QUÍMICA"]    # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Edafologia"]                      #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Edafologia' finalizado! \n\n")
+
+
+def humedad(nummapa):
+
+    #-----------------> HUMEDAD DEL SUELO <------------------------------------------
+
+    log.log(u"Proceso 'Humedad del suelo' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+    capaCl = "Humedad del suelo.shp"                                                # archivo a identificar
+    capa_salida = "Humedad del suelo"                                               # capa a crear en el mapa
+    camposCons = ["TIPO"]                                                           # campos a escribir en el archivo identity
+    dAlter = ["Tipo de humedad en suelo"]                                           # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Humedad del suelo"]               #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Humedad del suelo' finalizado! \n\n")
+
+
+def precip(nummapa):
+
+    #-----------------> PRECIPITACION ISOYETAS <------------------------------------------
+
+    log.log(u"Proceso 'Precipitacion isoyetas' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+    capaCl = "Precipitacion isoyetas.shp"                                           # archivo a identificar
+    capa_salida = "Precipitación isoyetas"                                          # capa a crear en el mapa
+    camposCons = ["PRECI_RANG"]                                                     # campos a escribir en el archivo identity
+    dAlter = ["Rango de precipitacion (l/m2)"]                                      # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Precipitacion isoyetas"]          #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Precipitacion isoyetas' finalizado! \n\n")
+
+
+def subcuenca(nummapa):
+
+    #-----------------> SUBCUENCA HIDROLÓGICA <------------------------------------------
+
+    log.log(u"Proceso 'Subcuencas hidrologicas' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+    capaCl = "Subcuencas hidrologicas.shp"                                          # archivo a identificar
+    capa_salida = "Subcuencas hidrólgicas"                                          # capa a crear en el mapa
+    camposCons = ["NOMBRE", "DESCRIPCI", "TIPO"]                                    # campos a escribir en el archivo identity
+    dAlter = ["NOMBRE", "DESCRIPCIÓN", "TIPO"]                                      # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Subcuencas hidrologicas"]         #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Subcuencas hidrologicas' finalizado! \n\n")
+
+
+def subregion(nummapa):
+
+    #-----------------> SUBREGIÓN HIDROLÓGICA <------------------------------------------
+
+    log.log(u"Proceso 'Subregiones hidrologicas' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+    capaCl = "Subregiones hidrologicas.shp"                                         # archivo a identificar
+    capa_salida = "Subregiones hidrólgicas"                                         # capa a crear en el mapa
+    camposCons = ["NOMBRE"]                                    # campos a escribir en el archivo identity
+    dAlter = ["NOMBRE"]                                      # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Subregiones hidrologicas"]        #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Subregiones hidrologicas' finalizado! \n\n")
+
+
+
+def zonaecol(nummapa):
+
+    #-----------------> ZONAS ECOLÓGICAS <------------------------------------------
+
+    log.log(u"Proceso 'Zonas ecologicas' iniciando...")
+
+        # tabla
+    rutaCl = "Y:/GIS/MEXICO/VARIOS/conabio/WGS84"               # ruta del archivo a identificar
+    capaCl = "Zonas ecologicas.shp"                             # archivo a identificar
+    capa_salida = "Zonas ecológicas"                            # capa a crear en el mapa
+    camposCons = ["NOMZONECOL", "TIPO_ZONA"]                    # campos a escribir en el archivo identity
+    dAlter = ["NOMBRE", "TIPO"]                                 # descriptores para los campos en el archivo identity de salida
+
+    idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+
+        
+    capas = ["Zonas ecologicas"]                #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+    rutas = [rutaCl]
+    ncampo = dAlter [0]                         # campo para el rótulo de los features en el mapa
+    tit = capa_salida.upper()                   # título del mapa en el layout
+
+        # near 
+    rutaorigen = rutaCl + "/"                   # Ruta del archivo a analizar
+    capa = capas[0]                             # Capa a analizar
+    distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
+    campo = "NEAR_DIST"                         # campo donde se guarda la distancia al sistema
+    valor = -1                                  # valor a eliminar del campo 'campo'
+    n=0
+    camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
+    archivo = capa + " near"                    # nombre del archivo de texto a generar para proceso 'near'
+    cantidad = 10                               # cantidad de registros más cercanos
+    nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+
+    tipo = "estatal"                            # código para el nivel de representación
+    nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
+    ordinal = 0
+    cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
+    
+    log.log(u"'Zonas ecologicas' finalizado! \n\n")
+
+
+
+
+#========================================INICIO DEL PROCESO=============================================
+
+# Con algunos fallos de generación de mapas, funciona correr por secciones los procesos siguientes
 
 
 
@@ -909,10 +1244,13 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # mapaPais(arcpy.env.nummapa)
 # mapaEstatal(arcpy.env.nummapa)
 # mapaMunicipal(arcpy.env.nummapa)
+
 # cuadroConstruccion()
+
 # #----------------------------CARTOGRAFÍA MAPAS TEMÁTICOS INEGI
+
 # servicios_urbanos(arcpy.env.nummapa)
-curvasdeNivel(arcpy.env.nummapa)
+# curvasdeNivel(arcpy.env.nummapa)
 # hidrologia(arcpy.env.nummapa)
 # lineasElectricas(arcpy.env.nummapa)
 # malpais(arcpy.env.nummapa)
@@ -928,8 +1266,15 @@ curvasdeNivel(arcpy.env.nummapa)
 # #----------------------------CARTOGRAFÍA INIFAP
 
 # area_nat_protegida(nummapa)
-clima_koppen(nummapa)
-
+# clima_koppen(nummapa)
+# clima_olgyay(nummapa)
+# cuenca(nummapa)
+edafologia(nummapa)
+humedad(nummapa)
+precip(nummapa)
+subcuenca(nummapa)
+subregion(nummapa)
+zonaecol(nummapa)
 
 log.log(u"\n\n PROCESO SIG FINALIZADO!!")
 print ("\n\n\n\n PROCESO SIG FINALIZADO!! \n\n No es necesario guardar el mapa.")
