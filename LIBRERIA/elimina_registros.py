@@ -31,7 +31,7 @@ def eliminaregistros(capa, campo, valor):
 
     try:
 
-        log.log(u"Eliminando registros con valor " + campo + u" de la capa " + capa + u"con valor = " + str(valor))
+        log.log(u"Eliminando registros con valor " + campo + u" de la capa " + capa + u" con valor = " + str(valor))
 
         # Crear un objeto de tabla de atributos
         tabla_atributos = arcpy.da.TableToNumPyArray(capa, [campo])
