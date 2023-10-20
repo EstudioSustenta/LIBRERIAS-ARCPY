@@ -28,6 +28,7 @@ act_rot = importlib.import_module("LIBRERIA.activa_rotulos")
 extraedato = importlib.import_module("LIBRERIA.extrae_dato")
 log = importlib.import_module("LIBRERIA.archivo_log")
 leyenda = importlib.import_module("LIBRERIA.leyenda_ajuste")
+transp = importlib.import_module("LIBRERIA.aplica_transparencia")
 
 reload(ccapas)
 reload(filtro)
@@ -153,10 +154,15 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                         print("Falló aplicación de simbología en " + capa)
                         log.log(str(e))
 
-        if capa_diss == None:
-            capa_diss = capasalida
+        #evalúa si el tipo de geometría de la capa es tipo polígono, si es así, aplica una transparencia
+        desc = arcpy.Describe(capa)
+        tipo_geometria = desc.shapeType
+        log.log(u"geometría tipo " + tipo_geometria)
+        print(tipo_geometria)
+        if tipo_geometria == "Polygon":
+                transp.transp(capa, 50)
 
-        act_rot.activar_rotulos(capa_diss, ncampo[i])
+        act_rot.activar_rotulos(capa, ncampo[i])
                         
         i=i + 1
 
