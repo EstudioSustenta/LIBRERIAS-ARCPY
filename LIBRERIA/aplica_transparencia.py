@@ -6,9 +6,9 @@ import arcpy
 import importlib
 import sys
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"aplica_transparencia.py cargado con éxito")
 

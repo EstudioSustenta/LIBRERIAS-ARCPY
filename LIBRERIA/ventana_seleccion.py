@@ -8,12 +8,12 @@ def ini():
     def mostrar_seleccion():
         seleccion = entry.get()
         if seleccion:
-            print("Selección: " + seleccion)
+            print(u"Selección: " + seleccion)
         ventana.destroy()
 
 
     # Archivo shapefile de entrada
-    shapefile = "Y:/0_SIG_PROCESO/ORIGEN/PROYECTOS.shp"
+    shapefile = u"Y:/0_SIG_PROCESO/ORIGEN/PROYECTOS.shp"
 
     # Campo 'DESCRIP'
     campo_descrip = 'DESCRIP'
@@ -24,7 +24,7 @@ def ini():
 
     # Crear una ventana principal
     ventana = tk.Tk()
-    ventana.title("Seleccionar Valor")
+    ventana.title(u"Seleccionar Valor")
 
     # Obtener las dimensiones de la pantalla
     ancho_pantalla = ventana.winfo_screenwidth()
@@ -37,7 +37,7 @@ def ini():
     # Configurar el tamaño y posición de la ventana
     x = (ancho_pantalla - nuevo_ancho) // 2
     y = (alto_pantalla - nuevo_alto) // 2
-    ventana.geometry("{}x{}+{}+{}".format(nuevo_ancho, nuevo_alto, x, y))
+    ventana.geometry(u"{}x{}+{}+{}".format(nuevo_ancho, nuevo_alto, x, y))
 
     # Etiqueta con instrucciones
     etiqueta = ttk.Label(ventana, text="Selecciona un valor:")

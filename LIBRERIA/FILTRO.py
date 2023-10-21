@@ -6,9 +6,9 @@ import importlib
 import sys
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 mxd = arcpy.env.mxd
 
@@ -36,19 +36,19 @@ def aplicar_defq(capa_nombre, campo, texto_a_buscar):
 
     try:
         # Obtener el mapa actual
-        mxd = arcpy.mapping.MapDocument("CURRENT")
+        mxd = arcpy.mapping.MapDocument(u"CURRENT")
         
         # Obtener la capa por su nombre
         capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
         
         # Construir la expresión de consulta
-        # expresion = "{} LIKE '%{}%'".format(arcpy.AddFieldDelimiters(capa.dataSource, campo), texto_a_buscar) ------ expresión original sustituida por la línea siguiente
-        expresion = campo + " = " + texto_a_buscar
+        # expresion = u"{} LIKE '%{}%'".format(arcpy.AddFieldDelimiters(capa.dataSource, campo), texto_a_buscar) ------ expresión original sustituida por la línea siguiente
+        expresion = campo + " = u" + texto_a_buscar
         
         # Aplicar el definition query a la capa
         capa.definitionQuery = expresion
         
-        log.log("Definition query aplicado exitosamente.")
+        log.log(u"Definition query aplicado exitosamente.")
         
     except Exception as e:
 
@@ -57,7 +57,7 @@ def aplicar_defq(capa_nombre, campo, texto_a_buscar):
     log.log(u"'filtro.plicar_defq' finalizado para " + capa_nombre)
 
 # Ejemplo de uso
-# aplicar_defq("ESTATAL", "NOMGEO", "'Aguascalientes'")  <------ sintaxis correcta y verificada
+# aplicar_defq(u"ESTATAL", u"NOMGEO", u"'Aguascalientes'")  <------ sintaxis correcta y verificada
 
 def deshacer_defq(capa_nombre):
 
@@ -69,9 +69,9 @@ def deshacer_defq(capa_nombre):
         capa = arcpy.mapping.ListLayers(mxd, capa_nombre)[0]
         
         # Borrar el definition query
-        capa.definitionQuery = ""
+        capa.definitionQuery = u""
         
-        log.log("Definition query eliminado, mostrando todos los objetos.")
+        log.log(u"Definition query eliminado, mostrando todos los objetos.")
         
     except Exception as e:
         log.log(u">> ERROR. Se ha producido un error aplicando 'filtro.plicar_defq' para: " + capa_nombre)
@@ -80,4 +80,4 @@ def deshacer_defq(capa_nombre):
     log.log(u"'filtro.plicar_defq' finalizado para " + capa_nombre)
 
 # Ejemplo de uso
-# deshacer_defq("ESTATAL") <------ sintaxis correcta y verificada
+# deshacer_defq(u"ESTATAL") <------ sintaxis correcta y verificada

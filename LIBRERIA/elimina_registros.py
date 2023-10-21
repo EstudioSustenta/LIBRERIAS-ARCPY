@@ -14,15 +14,15 @@ import arcpy
 import importlib
 import sys
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"elimina_registros.py cargado con éxito")
 
 # Ruta a la capa de interés
-# capa = "Cuerpoaguaintermitente"
-# campo = "NEAR_DIST"
+# capa = u"Cuerpoaguaintermitente"
+# campo = u"NEAR_DIST"
 # valor = -1
 
 def eliminaregistros(capa, campo, valor):
@@ -31,7 +31,7 @@ def eliminaregistros(capa, campo, valor):
 
     try:
 
-        log.log(u"Eliminando registros con valor " + campo + u" de la capa " + capa + u" con valor = " + str(valor))
+        log.log(u"Eliminando registros con valor " + campo + u" de la capa " + capa + u" con valor = u" + str(valor))
 
         # Crear un objeto de tabla de atributos
         tabla_atributos = arcpy.da.TableToNumPyArray(capa, [campo])

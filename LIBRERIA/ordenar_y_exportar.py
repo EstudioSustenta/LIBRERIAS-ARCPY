@@ -7,16 +7,16 @@ import codecs
 import importlib
 import sys
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"ordenar_y_exportar.py cargado con éxito")
 
-# capa = "Cuerpoaguaintermitente"
-# campo = "NEAR_DIST"
-# camporef = "NOMBRE"
-# archivo = "i.txt"
+# capa = u"Cuerpoaguaintermitente"
+# campo = u"NEAR_DIST"
+# camporef = u"NOMBRE"
+# archivo = u"i.txt"
 # cantidad = 20
 
 def ordenayexporta(capa, campo, camporef, archivo, cantidad):
@@ -41,17 +41,17 @@ def ordenayexporta(capa, campo, camporef, archivo, cantidad):
         valores.sort(key=lambda x: x[0])
 
         with codecs.open(archivo, 'w', encoding='utf-8') as archivo: # se usa la codificación utf-8 para evitar problemas con acentos y caracteres especiales
-            archivo.write("Resultados de proceso de seleccion de registros en base a su valor de ordenamiento" + '\n')
-            archivo.write("Proyecto: " + arcpy.env.proyecto + "\n")
-            archivo.write("Capa de trabajo: " + capa + '\n')
-            archivo.write("Campo de ordenamiento: " + campo + '\n')
-            archivo.write("Campo anexo: " + camporef + '\n')
-            archivo.write("Fecha: " + str((datetime.datetime.now()).date()) + ", Hora: " + str((datetime.datetime.now()).time()) + '\n\n')
+            archivo.write(u"Resultados de proceso de seleccion de registros en base a su valor de ordenamiento" + '\n')
+            archivo.write(u"Proyecto: " + arcpy.env.proyecto + "\n")
+            archivo.write(u"Capa de trabajo: " + capa + '\n')
+            archivo.write(u"Campo de ordenamiento: " + campo + '\n')
+            archivo.write(u"Campo anexo: " + camporef + '\n')
+            archivo.write(u"Fecha: " + str((datetime.datetime.now()).date()) + ", Hora: " + str((datetime.datetime.now()).time()) + '\n\n')
             archivo.write(chr(9) + camporef + chr(9) + campo + chr(9) + "UNIDADES\n\n")
 
             # Imprimir los primeros 'cantidad' valores ordenados con sus valores 'camporef'
             for i in range(cantidad):
-                linea = "{n}{tab}{valor_camporef}{tab}{valor}{tab}metros".format(n=i+1, valor_camporef=valores[i][1], valor=int(valores[i][0]), tab=chr(9))
+                linea = u"{n}{tab}{valor_camporef}{tab}{valor}{tab}metros".format(n=i+1, valor_camporef=valores[i][1], valor=int(valores[i][0]), tab=chr(9))
                 archivo.write(linea + '\n')
             archivo.close()
 

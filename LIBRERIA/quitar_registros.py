@@ -3,10 +3,10 @@
 
 def quitaregistros(capa, campoord)
 # Ruta al shapefile o capa de interés
-capa = "Cuerpoaguaintermitente"
+capa = u"Cuerpoaguaintermitente"
 
 # Nombre del campo 'distancia'
-campoord = "NEAR_DIST"
+campoord = u"NEAR_DIST"
 
 # Crear una lista vacía para almacenar los valores de distancia
 cercanos = []

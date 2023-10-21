@@ -8,32 +8,32 @@ import sys
 import importlib
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SIG_PROYECTO"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SIG_PROYECTO"
 sys.path.append(ruta_libreria)
 
-# defproy = importlib.import_module("LIBRERIA.ventana_seleccion")
+# defproy = importlib.import_module(u"LIBRERIA.ventana_seleccion")
 
 
 # Función que se ejecuta cuando se hace clic en el botón "Sí"
 def iniciar_proceso():
     # Aquí puedes poner el código para iniciar tu proceso
     ventana.destroy()
-    # arcpy.AddMessage("Proceso iniciado")
-    print("SELECCIONAR NUEVO PROYECTO")
+    # arcpy.AddMessage(u"Proceso iniciado")
+    print(u"SELECCIONAR NUEVO PROYECTO")
 
-    importlib.import_module("LIBRERIA.ventana_seleccion")
+    importlib.import_module(u"LIBRERIA.ventana_seleccion")
     # reload(ventSel)
-    # importlib.import_module("EJECUTABLES.generacion_sistema")
+    # importlib.import_module(u"EJECUTABLES.generacion_sistema")
 
 # Función que se ejecuta cuando se hace clic en el botón "No"
 def no_iniciar_proceso():
     ventana.destroy()
-    # arcpy.AddMessage("Proceso no iniciado")
-    print("PROCESO CON EL PROYECTO PREDEFINIDO")
+    # arcpy.AddMessage(u"Proceso no iniciado")
+    print(u"PROCESO CON EL PROYECTO PREDEFINIDO")
 
 # Crear una ventana principal
 ventana = tk.Tk()
-ventana.title("DEFINIR PROYECTO")
+ventana.title(u"DEFINIR PROYECTO")
 
 # Obtener las dimensiones actuales de la ventana
 ventana_ancho_actual = ventana.winfo_reqwidth()
@@ -44,7 +44,7 @@ nuevo_ancho = ventana_ancho_actual * 2
 nuevo_alto = ventana_alto_actual * 1
 
 # Configurar el tamaño de la ventana
-ventana.geometry("{}x{}".format(nuevo_ancho, nuevo_alto))
+ventana.geometry(u"{}x{}".format(nuevo_ancho, nuevo_alto))
 
 # Obtener las dimensiones de la pantalla
 ancho_pantalla = ventana.winfo_screenwidth()
@@ -55,7 +55,7 @@ x = (ancho_pantalla - nuevo_ancho) / 2
 y = (alto_pantalla - nuevo_alto) / 2
 
 # Configurar la posición de la ventana en el centro de la pantalla
-ventana.geometry("+%d+%d" % (x, y))
+ventana.geometry(u"+%d+%d" % (x, y))
 
 # Etiqueta con la pregunta
 pregunta_label = tk.Label(ventana, text="¿Definir nuevo proyecto?")

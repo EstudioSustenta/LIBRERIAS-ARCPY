@@ -7,7 +7,7 @@ import sys
 import codecs
 
 def datosbasicos():
-    capa = "Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp"  # Ruta al archivo shapefile
+    capa = u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp"  # Ruta al archivo shapefile
 
     # Crear un objeto de descripción de capa
     desc = arcpy.Describe(capa)
@@ -29,27 +29,27 @@ def datosbasicos():
 
     
     # Leer el valor 'DESCRIP' del primer registro en el shapefile
-    with arcpy.da.SearchCursor(capa, ("DESCRIP")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"DESCRIP")) as cursor:
         for row in cursor:
             arcpy.env.proyecto = (row[0])
     
-    with arcpy.da.SearchCursor(capa, ("CLIENTE")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"CLIENTE")) as cursor:
         for row in cursor:
             arcpy.env.cliente = (row[0])
     
-    with arcpy.da.SearchCursor(capa, ("NOM_ENT")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"NOM_ENT")) as cursor:
         for row in cursor:
             arcpy.env.estado = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("NOM_MUN")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"NOM_MUN")) as cursor:
         for row in cursor:
             arcpy.env.municipio = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("NOM_LOC")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"NOM_LOC")) as cursor:
         for row in cursor:
             arcpy.env.localidad = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("COLONIA")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"COLONIA")) as cursor:
         for row in cursor:
             arcpy.env.colonia = (row[0])
 
@@ -59,48 +59,48 @@ def datosbasicos():
     fecha = str(now.date())  # Obtener la fecha actual en formato de cadena
     arcpy.env.fecha = fecha
 
-    with arcpy.da.SearchCursor(capa, ("ALTITUD")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"ALTITUD")) as cursor:
         for row in cursor:
             arcpy.env.altitud = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("AMBITO")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"AMBITO")) as cursor:
         for row in cursor:
             ambito = (row[0])
             if ambito == "U":
-                ambito = "Urbano"
+                ambito = u"Urbano"
             else:
-                ambito = "Rural"
+                ambito = u"Rural"
     arcpy.env.ambito = ambito
 
-    with arcpy.da.SearchCursor(capa, ("CODIGOPOST")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"CODIGOPOST")) as cursor:
         for row in cursor:
             arcpy.env.cp = (row[0])     #código postal
 
-    with arcpy.da.SearchCursor(capa, ("CONTINENTA")) as cursor:
+    with arcpy.da.SearchCursor(capa, (u"CONTINENTA")) as cursor:
         for row in cursor:
             arcpy.env.continentalidad = (row[0])    # continentalidad
     
-    with arcpy.da.SearchCursor(capa, ("CVE_SUN")) as cursor: # clave sistema urbano nacional
+    with arcpy.da.SearchCursor(capa, (u"CVE_SUN")) as cursor: # clave sistema urbano nacional
         for row in cursor:
             arcpy.env.clavesun = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("CVELOC")) as cursor: # clave de localidad
+    with arcpy.da.SearchCursor(capa, (u"CVELOC")) as cursor: # clave de localidad
         for row in cursor:
             arcpy.env.claveloc = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("LAT")) as cursor: # latitud
+    with arcpy.da.SearchCursor(capa, (u"LAT")) as cursor: # latitud
         for row in cursor:
             arcpy.env.latitud = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("LON")) as cursor: # longitud
+    with arcpy.da.SearchCursor(capa, (u"LON")) as cursor: # longitud
         for row in cursor:
             arcpy.env.longitud = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("POINT_X")) as cursor: # coordenada x
+    with arcpy.da.SearchCursor(capa, (u"POINT_X")) as cursor: # coordenada x
         for row in cursor:
             arcpy.env.x = (row[0])
 
-    with arcpy.da.SearchCursor(capa, ("POINT_y")) as cursor: # coordenada y
+    with arcpy.da.SearchCursor(capa, (u"POINT_y")) as cursor: # coordenada y
         for row in cursor:
             arcpy.env.y = (row[0])
 
@@ -140,6 +140,6 @@ def datosbasicos():
             archivo.write(u"Continentalidad (km): \t" + str(arcpy.env.continentalidad) + '\n\n')
             archivo.write(u"Ruta de carpeta de proyecto: \t" + arcpy.env.carp_cliente)
 
-    print("Proceso de datos basicos realizado satisfactoriamente")
+    print(u"Proceso de datos basicos realizado satisfactoriamente")
         
     

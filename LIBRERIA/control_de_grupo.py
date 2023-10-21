@@ -5,15 +5,15 @@
 
 import arcpy
 
-print ("control_de_grupo CARGADO EXITOSAMENTE")
+print (u"control_de_grupo CARGADO EXITOSAMENTE")
 #------------------------------FUNCIÓN PARA APAGAR UN GRUPO-----------------------
 def apagagr(group_name):
     # Redefine el nombre con comillas
     #group_name = '"' + group_name + '"'
-    print("APAGANDO GRUPO " + group_name)
+    print(u"APAGANDO GRUPO " + group_name)
 
     # Obtener el mapa actual
-    mxd = arcpy.mapping.MapDocument("CURRENT")
+    mxd = arcpy.mapping.MapDocument(u"CURRENT")
 
     # Iterar a través de los data frames en el mapa
     for df in arcpy.mapping.ListDataFrames(mxd):
@@ -28,10 +28,10 @@ def apagagr(group_name):
 def enciendegr(group_name):
     # Redefine el nombre con comillas
     #group_name = '"' + group_name + '"'
-    print("ENCENDIENDO GRUPO " + group_name)
+    print(u"ENCENDIENDO GRUPO " + group_name)
 
     # Obtener el mapa actual
-    mxd = arcpy.mapping.MapDocument("CURRENT")
+    mxd = arcpy.mapping.MapDocument(u"CURRENT")
 
     # Iterar a través de los data frames en el mapa
     for df in arcpy.mapping.ListDataFrames(mxd):

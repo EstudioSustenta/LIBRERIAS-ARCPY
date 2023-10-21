@@ -7,10 +7,10 @@ import sys
 mxd = arcpy.env.mxd
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"Librería 'activa_rotulos' se ha cargado con éxito")
 
@@ -23,7 +23,7 @@ def activar_rotulos(capa, campo_rotulo):
         capa.showLabels = True
         # Configura la expresión de rótulo
         labelClass = capa.labelClasses[0]
-        labelClass.expression = "[{}]".format(campo_rotulo)
+        labelClass.expression = u"[{}]".format(campo_rotulo)
         log.log(u"Rótulos activados satisfactoriamente para capa " + capa.name)
     except Exception as e:
         log.log(u">> ERROR, los rótulos no se han activado para capa " + capa.name)
@@ -50,4 +50,4 @@ def desactivar_rotulos(capa):
     # Refresca la vista de datos para aplicar los cambios de rótulos
 
 # Ejemplo de uso:
-# desactivar_rotulos("MUNICIPAL CENSO 2020 DECRETO 185")
+# desactivar_rotulos(u"MUNICIPAL CENSO 2020 DECRETO 185")

@@ -10,25 +10,25 @@ import datetime
 import codecs
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
 mxd = arcpy.env.mxd
 df = arcpy.env.df
 
 arcpy.env.overwriteOutput = True
-layout_name = "Layout"
+layout_name = u"Layout"
 
-ccapas = importlib.import_module("LIBRERIA.cargar_capas")
-filtro = importlib.import_module("LIBRERIA.filtro")
-z_extent = importlib.import_module("LIBRERIA.zoom_extent")
-formato = importlib.import_module("LIBRERIA.formato")
-exportma = importlib.import_module("LIBRERIA.exportar_mapas")
-act_rot = importlib.import_module("LIBRERIA.activa_rotulos")
-extraedato = importlib.import_module("LIBRERIA.extrae_dato")
-log = importlib.import_module("LIBRERIA.archivo_log")
-leyenda = importlib.import_module("LIBRERIA.leyenda_ajuste")
-transp = importlib.import_module("LIBRERIA.aplica_transparencia")
+ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")
+filtro = importlib.import_module(u"LIBRERIA.filtro")
+z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")
+formato = importlib.import_module(u"LIBRERIA.formato")
+exportma = importlib.import_module(u"LIBRERIA.exportar_mapas")
+act_rot = importlib.import_module(u"LIBRERIA.activa_rotulos")
+extraedato = importlib.import_module(u"LIBRERIA.extrae_dato")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
+leyenda = importlib.import_module(u"LIBRERIA.leyenda_ajuste")
+transp = importlib.import_module(u"LIBRERIA.aplica_transparencia")
 
 reload(ccapas)
 reload(filtro)
@@ -46,29 +46,29 @@ log.log(u"Librería 'clip_tematico' cargada con éxito")
 
 def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     
-    log.log(u"'clip_tematico' iniciando para " + tit.upper() + "...")
+    log.log(u"'clip_tematico' iniciando para " + "tit" + "...")
 
-    rbase = "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
+    rbase = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     numero_de_elementos = None
 
     if tipo == "nacional":          # decisión: asigna valores para la capa base del marco geográfico y el campo para los rótulos
-        cbase = "ESTATAL decr185"
-        campoRotulo = "NOM_ENT"
+        cbase = u"ESTATAL decr185"
+        campoRotulo = u"NOM_ENT"
         filtr= ""
     elif tipo == "estatal":
-        cbase = "MUNICIPAL CENSO 2020 DECRETO 185"
+        cbase = u"MUNICIPAL CENSO 2020 DECRETO 185"
         filtr= "NOM_ENT = '" + arcpy.env.estado + "'"
-        campoRotulo = "NOM_MUN"
+        campoRotulo = u"NOM_MUN"
     else:
-        cbase = "MUNICIPAL CENSO 2020 DECRETO 185"
+        cbase = u"MUNICIPAL CENSO 2020 DECRETO 185"
         filtr= "NOM_MUN = '" + arcpy.env.municipio + "' AND NOM_ENT = '" + arcpy.env.estado + "'"
-        campoRotulo = "NOM_MUN" # CAMBIÉ EL CAMPO DE RÓTULO, ESPERO NO DÉ PROBLEMAS, EL ANTERIOR ERA "NOM_ENT"
+        campoRotulo = u"NOM_MUN"
 
     # proceso de capa base
     log.log(u"Cargando capa base y aplicando formato: " + cbase)
     ccapas.carga_capas(rbase, cbase)
     filtro.fil_expr(cbase, filtr)
-    ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + cbase + ".lyr"
+    ruta_lyr = u"Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + cbase + ".lyr"
     act_rot.activar_rotulos(cbase, campoRotulo)
     
     try:
@@ -89,7 +89,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         log.log(u"Bucle para proceso de capa " + capa)
         
         ccapas.carga_capas(ruta, capa)
-        ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
+        ruta_lyr = u"Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
         try:
             arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
             log.log(u"Aplicando simbología a " + capa)
@@ -98,8 +98,8 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
             log.log(str(e))
 
         arch = ruta + "/" + capa + ".shp"
-        capasal = "Clip " + capa
-        capasalida = "Y:/0_SIG_PROCESO/X TEMPORAL/" + capasal + ".shp"
+        capasal = u"Clip " + capa
+        capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/" + capasal + ".shp"
         log.log(u"rótulos en capa: " + capa + u", campo: " + ncampo[i])
         
         try:
@@ -117,42 +117,39 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                 cluster_tolerance="")
             # ccapas.remover_capas(capasalida)
             numero_de_elementos = int(arcpy.GetCount_management(capasal).getOutput(0))
-            log.log("elementos en clip " + tit.upper() + ":" + str(numero_de_elementos))
+            log.log(u"elementos en clip " + tit.upper() + ":" + str(numero_de_elementos))
 
             if numero_de_elementos == 0 and capasalida is None:     # Se evalúa si la capa producto del clip tiene algún contenido y si el archivo existe en la carpeta de temporales
                 log.log(u"La capa " + capasal + " no tiene elementos, se eliminará del dataset")
                 ccapas.remover_capas(capasal)
             else:
                 ccapas.remover_capas(capa)
-                if tipo == "nacional":
-                    gus = None
+                   
+                temp1 = ruta + "/" + capa + ".shp"
+                log.log(u"Capa de trabajo no nacional:\t" + temp1)
+                desc = arcpy.Describe(temp1)
+                tipo_geometria = desc.shapeType
+                if not tipo_geometria == "Point":
+                    capa_diss = u"Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
+                    arcpy.Dissolve_management(in_features=capasalida,
+                        out_feature_class=capa_diss,
+                        dissolve_field=ncampo[i],
+                        statistics_fields="", 
+                        multi_part="MULTI_PART", 
+                        unsplit_lines="DISSOLVE_LINES")
+                    ruta_lyr = u"Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
+                    ccapas.remover_capas(capasal)
                 else:
+                    ccapas.carga_capas(ruta, capa)
+                    # print(u"\n\n\n capa a SIMBOLOGIZAR: " + capa)
+                    # print(u"archivo de simbología: " + ruta_lyr)
+            
+                try:
+                    arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
                     
-                    temp1 = ruta + "/" + capa + ".shp"
-                    log.log("Capa de trabajo no nacional:\t" + temp1)
-                    desc = arcpy.Describe(temp1)
-                    tipo_geometria = desc.shapeType
-                    if not tipo_geometria == "Point":
-                        capa_diss = "Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
-                        arcpy.Dissolve_management(in_features=capasalida,
-                            out_feature_class=capa_diss,
-                            dissolve_field=ncampo[i],
-                            statistics_fields="", 
-                            multi_part="MULTI_PART", 
-                            unsplit_lines="DISSOLVE_LINES")
-                        ruta_lyr = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/" + capa + ".lyr"
-                        ccapas.remover_capas(capasal)
-                    else:
-                        ccapas.carga_capas(ruta, capa)
-                        # print("\n\n\n capa a SIMBOLOGIZAR: " + capa)
-                        # print("archivo de simbología: " + ruta_lyr)
-                
-                    try:
-                        arcpy.ApplySymbologyFromLayer_management(capa, ruta_lyr) # esta línea ocasionalmente genera errores en la selección del archivo de simbología
-                        
-                    except Exception as e:
-                        print("Falló aplicación de simbología en " + capa)
-                        log.log(str(e))
+                except Exception as e:
+                    print(u"Falló aplicación de simbología en " + capa)
+                    log.log(str(e))
 
         #evalúa si el tipo de geometría de la capa es tipo polígono, si es así, aplica una transparencia
         desc = arcpy.Describe(capa)

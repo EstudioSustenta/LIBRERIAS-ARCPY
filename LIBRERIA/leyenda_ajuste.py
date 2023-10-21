@@ -5,13 +5,13 @@ import sys
 import importlib
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"Librería 'leyenda_ajuste' cargada con éxito")
-# mxd = arcpy.mapping.MapDocument("CURRENT")
+# mxd = arcpy.mapping.MapDocument(u"CURRENT")
 mxd = arcpy.env.mxd
 
 def leyenda():
@@ -38,7 +38,7 @@ def leyenda():
 
             # Establece la nueva altura para el cuadro de leyendas
             cuadro_de_leyendas.elementHeight = nueva_altura
-            log.log("Se ha ajustado la leyenda a " + str(nueva_altura) + "cm")
+            log.log(u"Se ha ajustado la leyenda a " + str(nueva_altura) + "cm")
         
         numero_de_elementos = len(cuadro_de_leyendas.items)
 

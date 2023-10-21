@@ -9,9 +9,9 @@ mxd = arcpy.env.mxd
 df = arcpy.env.df
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-log = importlib.import_module("LIBRERIA.archivo_log")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 log.log(u"Librería 'cargar_capas' cargada con éxito")
 
@@ -22,10 +22,10 @@ def carga_capas(ruta_arch, nombre_capa):
     log.log(u"Capa: " + nombre_capa)
 
     # EJEMPLO: Lista de nombres de capas a agregar
-    #nombres_capas = ["emas01", "emas02"]
+    #nombres_capas = [u"emas01", u"emas02"]
 
     # EJEMPLO: Ruta de la carpeta donde se encuentran las capas
-    #ruta_arch = "Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/0 UBICACION"
+    #ruta_arch = u"Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/0 UBICACION"
 
     try:
         # Verificar si la capa ya está agregada al mapa

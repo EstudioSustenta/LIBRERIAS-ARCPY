@@ -23,4 +23,4 @@ def zoom_extent(layout_name, nombre_capa):
     df.extent = extent
     
 # ejemplo de uso: 
-# zoom_extent("Layout", "ESTATAL")
+# zoom_extent(u"Layout", u"ESTATAL")

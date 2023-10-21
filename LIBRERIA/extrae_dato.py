@@ -10,12 +10,12 @@ import importlib
 
 # Agrega la ruta del paquete al path de Python
 
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 print(ruta_libreria)
 sys.path.append(ruta_libreria)
 
-z_extent = importlib.import_module("LIBRERIA.zoom_extent")
-log = importlib.import_module("LIBRERIA.archivo_log")
+z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 
 log.log(u"Librería 'extrae_dato' cargada con éxito")
@@ -23,7 +23,7 @@ def extraedato(archivo, ordinal, columna):
 
     log.log(u"Proceso 'extraedato' iniciando...")
     
-    mxd = arcpy.mapping.MapDocument("CURRENT")
+    mxd = arcpy.mapping.MapDocument(u"CURRENT")
     df = arcpy.mapping.ListDataFrames(mxd)[0]
     ordinal = str(ordinal) + "\t"
 
@@ -39,14 +39,14 @@ def extraedato(archivo, ordinal, columna):
                 # Verificar si hay al menos tres columnas
                 if len(columns) >= columna:
                     # Extraer el valor de la tercera columna (índice 2)
-                    log.log(u"Ordinal = " + str(ordinal))
-                    log.log(u"Columna = " + str(columna))
+                    log.log(u"Ordinal = u" + str(ordinal))
+                    log.log(u"Columna = u" + str(columna))
                     distancia = int(columns[2].strip())  # strip() elimina espacios en blanco adicionales y saltos de línea
-                    log.log(u"distancia = " + str(distancia))
+                    log.log(u"distancia = u" + str(distancia))
 
                     escala = (distancia * 2) / 20 * 100
                     z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
-                    log.log(u"escala = " + str(escala))
+                    log.log(u"escala = u" + str(escala))
                     df.scale = escala
                     arcpy.RefreshActiveView()
     log.log(u"Proceso 'extraedato' finalizado!")

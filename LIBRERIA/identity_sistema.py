@@ -9,10 +9,10 @@ import sys
 import codecs
 
 # Agrega la ruta del paquete al path de Python
-ruta_libreria = "Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
-ccapas = importlib.import_module("LIBRERIA.cargar_capas")
-log = importlib.import_module("LIBRERIA.archivo_log")
+ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")
+log = importlib.import_module(u"LIBRERIA.archivo_log")
 
 mxd = arcpy.env.mxd
 df = arcpy.env.df
@@ -20,6 +20,13 @@ log.log(u"'identity_sistema.py' cargado con éxito")
 def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
     
     log.log(u"'idproy.idproy' iniciando...")
+    log.log(u"rutaCl: " + rutaCl)
+    log.log(u"capaCl: " + capaCl)
+    log.log(u"capa_salida: " + capa_salida)
+    for campo in camposCons:
+        log.log(u"campo: " + campo)
+    for dato in dAlter:
+        log.log(u"dAlter: " + dato)
     
     try:
         arch = rutaCl + "/" + capaCl
@@ -34,8 +41,7 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
 
         with codecs.open(ruta_archivo, 'w', encoding='utf-8') as archivo:
             archivo.write('Archivo de datos.\n')
-            archivo.write('Archivo fuente: ' + rutaCl + capaCl + chr(10))
-            archivo.write(chr(10))
+            archivo.write('Archivo fuente: ' + arch + "\n\n")
             log.log(u"El archivo " + ruta_archivo + u" ha sido creado.")
 
         arcpy.env.overwriteOutput = True
@@ -60,10 +66,10 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
                     if isinstance(valor_del_campo, int) or isinstance(valor_del_campo, float):
                         valor_del_campo = str(valor_del_campo)
                         if valor_del_campo == None:
-                            valor_del_campo = "Sistema fuera de área de " + capa_salida
+                            valor_del_campo = u"Sistema fuera de área de " + capa_salida
                     
                     with codecs.open(ruta_archivo, 'a', encoding='utf-8') as archivo:
-                        archivo.write(nombre + chr(9) + dAlter[i] + chr(9) + valor_del_campo + chr(10))
+                        archivo.write(nombre + chr(9) + dAlter[i] + chr(9) + valor_del_campo + "\n")
                         i = i + 1
         ccapas.remover_capas(capa_salida)
         log.log(u"'idproy.idproy' Se ha ejecutado satisfactoriamente")

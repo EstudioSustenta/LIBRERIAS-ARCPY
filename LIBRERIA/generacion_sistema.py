@@ -19,140 +19,140 @@ import arcpy
 # Script arguments
 # Expression = arcpy.GetParameterAsText(0)
 # if Expression == '#' or not Expression:
-#     Expression = "\"DESCRIP\" = 'CASA ALONSO DE LARA'" # provide a default value if unspecified
+#     Expression = u"\"DESCRIP\" = 'CASA ALONSO DE LARA'" # provide a default value if unspecified
 # print (Expression)
 
 
 def start(seleccion):
 
     arcpy.env.overwriteOutput = True
-    # arcpy.env.addOutputsToMap = "NONE"
+    # arcpy.env.addOutputsToMap = u"NONE"
 
-    Expression = "\"DESCRIP\" = '{}'".format(seleccion)
+    Expression = u"\"DESCRIP\" = '{}'".format(seleccion)
         
     # Local variables:
-    PROYECTOS_shp__2_ = "Y:\\0_SIG_PROCESO\\ORIGEN\\PROYECTOS.shp"
+    PROYECTOS_shp__2_ = u"Y:\\0_SIG_PROCESO\\ORIGEN\\PROYECTOS.shp"
     PROYECTOS_shp = PROYECTOS_shp__2_
-    SISTEMA_WGS_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_WGS.shp"
-    SISTEMA_LAT_LON_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA LAT-LON.shp"
+    SISTEMA_WGS_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_WGS.shp"
+    SISTEMA_LAT_LON_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA LAT-LON.shp"
     SISTEMA_LAT_LON_shp__2_ = SISTEMA_LAT_LON_shp
     SISTEMA_LAT_LON_shp__6_ = SISTEMA_LAT_LON_shp__2_
     SISTEMA_LAT_LON_shp__7_ = SISTEMA_LAT_LON_shp__6_
     SISTEMA_LAT_LON_shp__5_ = SISTEMA_LAT_LON_shp__7_
     SISTEMA_LAT_LON_shp__4_ = SISTEMA_LAT_LON_shp__5_
-    SISTEMA_PROYECTADO_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO.shp"
+    SISTEMA_PROYECTADO_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO.shp"
     SISTEMA_shp__3_ = SISTEMA_PROYECTADO_shp
     SISTEMA_PROYECTADO_shp__2_ = SISTEMA_shp__3_
     SISTEMA_PROYECTADO_shp__3_ = SISTEMA_PROYECTADO_shp__2_
-    MUNICIPAL_CENSO_2020_DECRETO_185_shp__2_ = "Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\MUNICIPAL CENSO 2020 DECRETO 185.shp"
-    SISTEMA_PROYECTADO_Identity1_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO_Identity.shp"
+    MUNICIPAL_CENSO_2020_DECRETO_185_shp__2_ = u"Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\MUNICIPAL CENSO 2020 DECRETO 185.shp"
+    SISTEMA_PROYECTADO_Identity1_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO_Identity.shp"
     SISTEMA_PROYECTADO_Identity1_shp__2_ = SISTEMA_PROYECTADO_Identity1_shp
-    LOCALIDADES_URBANAS_Y_RURALES_shp = "Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\LOCALIDADES_URBANAS_Y_RURALES.shp"
-    SISTEMA_PROYECTADO_Identity2__shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO_Identity2_.shp"
+    LOCALIDADES_URBANAS_Y_RURALES_shp = u"Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\LOCALIDADES_URBANAS_Y_RURALES.shp"
+    SISTEMA_PROYECTADO_Identity2__shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_PROYECTADO_Identity2_.shp"
     SISTEMA_PROYECTADO_Identity2__shp__2_ = SISTEMA_PROYECTADO_Identity2__shp
-    COLONIAS_shp = "Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\NUMEROSLOCOS\\COLONIAS.shp"
-    SISTEMA1_shp__2_ = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA1.shp"
+    COLONIAS_shp = u"Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\NUMEROSLOCOS\\COLONIAS.shp"
+    SISTEMA1_shp__2_ = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA1.shp"
     SISTEMA_shp__2_ = SISTEMA1_shp__2_
     SISTEMA_shp__5_ = SISTEMA_shp__2_
-    Republica60_wgs84_tif = "Y:\\GIS\\MEXICO\\VARIOS\\INEGI\\RASTER\\CEM 60M\\Republica60 wgs84.tif"
-    SISTEMA2_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA2.shp"
+    Republica60_wgs84_tif = u"Y:\\GIS\\MEXICO\\VARIOS\\INEGI\\RASTER\\CEM 60M\\Republica60 wgs84.tif"
+    SISTEMA2_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA2.shp"
     Extract_SISTEMA1_shp__2_ = SISTEMA2_shp
     Extract_SISTEMA1_shp__3_ = Extract_SISTEMA1_shp__2_
     Extract_SISTEMA1_shp__4_ = Extract_SISTEMA1_shp__3_
-    MARES_Y_OCEANOS_shp = "Y:\\GIS\\MEXICO\\VARIOS\\00 PROPIOS\\GEOGRAFICOS\\MARES Y OCEANOS.shp"
+    MARES_Y_OCEANOS_shp = u"Y:\\GIS\\MEXICO\\VARIOS\\00 PROPIOS\\GEOGRAFICOS\\MARES Y OCEANOS.shp"
     Extract_SISTEMA1_shp__5_ = Extract_SISTEMA1_shp__4_
     Extract_SISTEMA1_shp__7_ = Extract_SISTEMA1_shp__5_
     SISTEMA2_shp__2_ = Extract_SISTEMA1_shp__7_
-    SISTEMA_URBANO_NACIONAL_shp = "Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\SISTEMA URBANO NACIONAL.shp"
-    SISTEMA_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA.shp"
+    SISTEMA_URBANO_NACIONAL_shp = u"Y:\\0_SIG_PROCESO\\BASES DE DATOS\\00 MEXICO\\INEGI\\SISTEMA URBANO NACIONAL.shp"
+    SISTEMA_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA.shp"
     SISTEMA_shp__6_ = SISTEMA_shp
-    DATOS_DE_UBICACION_GENERAL_xls = "Y:\\0_SIG_PROCESO\\00 GENERAL\\DATOS DE UBICACION GENERAL.xls"
-    MULTIBUFFER_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\MULTIBUFFER.shp"
-    SISTEMA_SIMPLIFICADO_shp = "Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_SIMPLIFICADO.shp"
+    DATOS_DE_UBICACION_GENERAL_xls = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\DATOS DE UBICACION GENERAL.xls"
+    MULTIBUFFER_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\MULTIBUFFER.shp"
+    SISTEMA_SIMPLIFICADO_shp = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\SISTEMA_SIMPLIFICADO.shp"
     SISTEMA_SIMPLIFICADO__3_ = SISTEMA_SIMPLIFICADO_shp
     PROYECTOS_shp__4_ = PROYECTOS_shp
-    PROYECTOS_XLS = "Y:\\0_SIG_PROCESO\\00 GENERAL\\PROYECTOS.XLS"
+    PROYECTOS_XLS = u"Y:\\0_SIG_PROCESO\\00 GENERAL\\PROYECTOS.XLS"
 
     # Process: Select
     arcpy.Select_analysis(PROYECTOS_shp__2_, SISTEMA_WGS_shp, Expression)
-    print("1")
+    print(u"1")
     # Process: Project
-    arcpy.Project_management(SISTEMA_WGS_shp, SISTEMA_LAT_LON_shp, "GEOGCS['GCS_NAD_1927_Definition_1976',DATUM['D_NAD_1927_Definition_1976',SPHEROID['Clarke_1866',6378206.4,294.9786982]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]", "", "PROJCS['WGS_1984_UTM_Zone_13N',GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-105.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]", "NO_PRESERVE_SHAPE", "", "NO_VERTICAL")
-    print("2")
+    arcpy.Project_management(SISTEMA_WGS_shp, SISTEMA_LAT_LON_shp, "GEOGCS['GCS_NAD_1927_Definition_1976',DATUM['D_NAD_1927_Definition_1976',SPHEROID['Clarke_1866',6378206.4,294.9786982]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]", u"", u"PROJCS['WGS_1984_UTM_Zone_13N',GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-105.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]", u"NO_PRESERVE_SHAPE", u"", u"NO_VERTICAL")
+    print(u"2")
     # Process: Add XY Coordinates (2)
     arcpy.AddXY_management(SISTEMA_LAT_LON_shp)
-    print("3")
+    print(u"3")
     # Process: Add Field
-    arcpy.AddField_management(SISTEMA_LAT_LON_shp__2_, "LAT", "DOUBLE", "3", "", "", "", "NULLABLE", "NON_REQUIRED", "")
-    print("4")
+    arcpy.AddField_management(SISTEMA_LAT_LON_shp__2_, "LAT", u"DOUBLE", u"3", u"", u"", u"", u"NULLABLE", u"NON_REQUIRED", u"")
+    print(u"4")
     # Process: Calculate Field
-    arcpy.CalculateField_management(SISTEMA_LAT_LON_shp__6_, "LAT", "[POINT_Y]", "VB", "")
-    print("5")
+    arcpy.CalculateField_management(SISTEMA_LAT_LON_shp__6_, "LAT", u"[POINT_Y]", u"VB", u"")
+    print(u"5")
     # Process: Add Field (2)
-    arcpy.AddField_management(SISTEMA_LAT_LON_shp__7_, "LON", "DOUBLE", "3", "", "", "", "NULLABLE", "NON_REQUIRED", "")
-    print("6")
+    arcpy.AddField_management(SISTEMA_LAT_LON_shp__7_, "LON", u"DOUBLE", u"3", u"", u"", u"", u"NULLABLE", u"NON_REQUIRED", u"")
+    print(u"6")
     # Process: Calculate Field (2)
-    arcpy.CalculateField_management(SISTEMA_LAT_LON_shp__5_, "LON", "[POINT_X]", "VB", "")
-    print("7")
+    arcpy.CalculateField_management(SISTEMA_LAT_LON_shp__5_, "LON", u"[POINT_X]", u"VB", u"")
+    print(u"7")
     # Process: Project (2)
-    arcpy.Project_management(SISTEMA_LAT_LON_shp__4_, SISTEMA_PROYECTADO_shp, "PROJCS['WGS_1984_UTM_Zone_13N',GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-105.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]", "", "GEOGCS['GCS_NAD_1927_Definition_1976',DATUM['D_NAD_1927_Definition_1976',SPHEROID['Clarke_1866',6378206.4,294.9786982]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]", "NO_PRESERVE_SHAPE", "", "NO_VERTICAL")
-    print("8")
+    arcpy.Project_management(SISTEMA_LAT_LON_shp__4_, SISTEMA_PROYECTADO_shp, "PROJCS['WGS_1984_UTM_Zone_13N',GEOGCS['GCS_WGS_1984',DATUM['D_WGS_1984',SPHEROID['WGS_1984',6378137.0,298.257223563]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]],PROJECTION['Transverse_Mercator'],PARAMETER['False_Easting',500000.0],PARAMETER['False_Northing',0.0],PARAMETER['Central_Meridian',-105.0],PARAMETER['Scale_Factor',0.9996],PARAMETER['Latitude_Of_Origin',0.0],UNIT['Meter',1.0]]", u"", u"GEOGCS['GCS_NAD_1927_Definition_1976',DATUM['D_NAD_1927_Definition_1976',SPHEROID['Clarke_1866',6378206.4,294.9786982]],PRIMEM['Greenwich',0.0],UNIT['Degree',0.0174532925199433]]", u"NO_PRESERVE_SHAPE", u"", u"NO_VERTICAL")
+    print(u"8")
     # Process: Add XY Coordinates
     arcpy.AddXY_management(SISTEMA_PROYECTADO_shp)
-    print("9")
+    print(u"9")
     # Process: Calculate Field (3)
-    arcpy.CalculateField_management(SISTEMA_shp__3_, "POINT_X", "[POINT_X]", "VB", "")
-    print("10")
+    arcpy.CalculateField_management(SISTEMA_shp__3_, "POINT_X", u"[POINT_X]", u"VB", u"")
+    print(u"10")
     # Process: Calculate Field (4)
-    arcpy.CalculateField_management(SISTEMA_PROYECTADO_shp__2_, "POINT_Y", "[POINT_Y]", "VB", "")
-    print("11")
+    arcpy.CalculateField_management(SISTEMA_PROYECTADO_shp__2_, "POINT_Y", u"[POINT_Y]", u"VB", u"")
+    print(u"11")
     # Process: Identity
-    arcpy.Identity_analysis(SISTEMA_PROYECTADO_shp__3_, MUNICIPAL_CENSO_2020_DECRETO_185_shp__2_, SISTEMA_PROYECTADO_Identity1_shp, "ALL", "", "NO_RELATIONSHIPS")
-    print("12")
+    arcpy.Identity_analysis(SISTEMA_PROYECTADO_shp__3_, MUNICIPAL_CENSO_2020_DECRETO_185_shp__2_, SISTEMA_PROYECTADO_Identity1_shp, "ALL", u"", u"NO_RELATIONSHIPS")
+    print(u"12")
     # Process: Delete Field (2)
     # arcpy.DeleteField_management(SISTEMA_PROYECTADO_Identity1_shp, "FID_SISTEM;FID_MUNICI")
-    print("13")
+    print(u"13")
     # Process: Identity (2)
-    arcpy.Identity_analysis(SISTEMA_PROYECTADO_Identity1_shp__2_, LOCALIDADES_URBANAS_Y_RURALES_shp, SISTEMA_PROYECTADO_Identity2__shp, "ALL", "", "NO_RELATIONSHIPS")
-    print("14")
+    arcpy.Identity_analysis(SISTEMA_PROYECTADO_Identity1_shp__2_, LOCALIDADES_URBANAS_Y_RURALES_shp, SISTEMA_PROYECTADO_Identity2__shp, "ALL", u"", u"NO_RELATIONSHIPS")
+    print(u"14")
     # Process: Identity (3)
-    arcpy.Identity_analysis(SISTEMA_PROYECTADO_Identity2__shp__2_, COLONIAS_shp, SISTEMA1_shp__2_, "ALL", "", "NO_RELATIONSHIPS")
-    print("15")
+    arcpy.Identity_analysis(SISTEMA_PROYECTADO_Identity2__shp__2_, COLONIAS_shp, SISTEMA1_shp__2_, "ALL", u"", u"NO_RELATIONSHIPS")
+    print(u"15")
     # Process: Add Field (3)
-    arcpy.AddField_management(SISTEMA_shp__2_, "ALTITUD", "SHORT", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
-    print("16")
+    arcpy.AddField_management(SISTEMA_shp__2_, "ALTITUD", u"SHORT", u"", u"", u"", u"", u"NULLABLE", u"NON_REQUIRED", u"")
+    print(u"16")
     # Process: Extract Values to Points
-    arcpy.gp.ExtractValuesToPoints_sa(SISTEMA_shp__5_, Republica60_wgs84_tif, SISTEMA2_shp, "NONE", "VALUE_ONLY")
-    print("17")
+    arcpy.gp.ExtractValuesToPoints_sa(SISTEMA_shp__5_, Republica60_wgs84_tif, SISTEMA2_shp, "NONE", u"VALUE_ONLY")
+    print(u"17")
     # Process: Calculate Field (6)
-    arcpy.CalculateField_management(SISTEMA2_shp, "ALTITUD", "[RASTERVALU]", "VB", "")
-    print("18")
+    arcpy.CalculateField_management(SISTEMA2_shp, "ALTITUD", u"[RASTERVALU]", u"VB", u"")
+    print(u"18")
     # Process: Near (2)
-    arcpy.Near_analysis(Extract_SISTEMA1_shp__3_, "'Y:\\GIS\\MEXICO\\VARIOS\\00 PROPIOS\\GEOGRAFICOS\\MARES Y OCEANOS.shp'", "", "NO_LOCATION", "NO_ANGLE", "PLANAR")
-    print("19")
+    arcpy.Near_analysis(Extract_SISTEMA1_shp__3_, "'Y:\\GIS\\MEXICO\\VARIOS\\00 PROPIOS\\GEOGRAFICOS\\MARES Y OCEANOS.shp'", u"", u"NO_LOCATION", u"NO_ANGLE", u"PLANAR")
+    print(u"19")
     # Process: Add Field (4)
-    arcpy.AddField_management(Extract_SISTEMA1_shp__4_, "CONTINENTA", "FLOAT", "", "", "", "", "NULLABLE", "NON_REQUIRED", "")
-    print("20")
+    arcpy.AddField_management(Extract_SISTEMA1_shp__4_, "CONTINENTA", u"FLOAT", u"", u"", u"", u"", u"NULLABLE", u"NON_REQUIRED", u"")
+    print(u"20")
     # Process: Calculate Field (5)
-    arcpy.CalculateField_management(Extract_SISTEMA1_shp__5_, "CONTINENTA", "[NEAR_DIST] /1000", "VB", "")
-    print("21")
+    arcpy.CalculateField_management(Extract_SISTEMA1_shp__5_, "CONTINENTA", u"[NEAR_DIST] /1000", u"VB", u"")
+    print(u"21")
     # Process: Identity (4)
-    arcpy.Identity_analysis(SISTEMA2_shp__2_, SISTEMA_URBANO_NACIONAL_shp, SISTEMA_shp, "ALL", "", "NO_RELATIONSHIPS")
-    print("22")
+    arcpy.Identity_analysis(SISTEMA2_shp__2_, SISTEMA_URBANO_NACIONAL_shp, SISTEMA_shp, "ALL", u"", u"NO_RELATIONSHIPS")
+    print(u"22")
     # Process: Table To Excel
-    # arcpy.TableToExcel_conversion(SISTEMA_shp__6_, DATOS_DE_UBICACION_GENERAL_xls, "NAME", "CODE")
-    print("23")
+    # arcpy.TableToExcel_conversion(SISTEMA_shp__6_, DATOS_DE_UBICACION_GENERAL_xls, "NAME", u"CODE")
+    print(u"23")
     # Process: Multiple Ring Buffer
-    # arcpy.MultipleRingBuffer_analysis(SISTEMA_shp__2_, MULTIBUFFER_shp, "50;100;200;500;1000", "Meters", "DISTANCIA", "ALL", "FULL")
-    print("24")
+    # arcpy.MultipleRingBuffer_analysis(SISTEMA_shp__2_, MULTIBUFFER_shp, "50;100;200;500;1000", u"Meters", u"DISTANCIA", u"ALL", u"FULL")
+    print(u"24")
     # Process: Copy Features
-    # arcpy.CopyFeatures_management(SISTEMA_PROYECTADO_shp__3_, SISTEMA_SIMPLIFICADO_shp, "", "0", "0", "0")
-    print("25")
+    # arcpy.CopyFeatures_management(SISTEMA_PROYECTADO_shp__3_, SISTEMA_SIMPLIFICADO_shp, "", u"0", u"0", u"0")
+    print(u"25")
 
     # # Process: Table To Excel (2)
-    # arcpy.TableToExcel_conversion(PROYECTOS_shp__4_, PROYECTOS_XLS, "NAME", "CODE")
+    # arcpy.TableToExcel_conversion(PROYECTOS_shp__4_, PROYECTOS_XLS, "NAME", u"CODE")
 
-    # arcpy.env.addOutputsToMap = "CURRENT"
+    # arcpy.env.addOutputsToMap = u"CURRENT"
 
-    print("\n\nFin de proceso de selección de proyecto para :" + seleccion +"\n\n")
+    print(u"\n\nFin de proceso de selección de proyecto para :" + seleccion +"\n\n")
 
