@@ -3,6 +3,7 @@
 import arcpy
 import importlib
 import sys
+import datetime
 
 mxd = arcpy.env.mxd
 
@@ -11,11 +12,13 @@ ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
 log.log(u"Librería 'activa_rotulos' se ha cargado con éxito")
 
 def activar_rotulos(capa, campo_rotulo):
-    log.log(u"Iniciando 'activar_rotulos'...")
+    tiempo_act_rot_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"Iniciando 'activar_rotulos' para '{}' con el campo '{}'...".format(capa, campo_rotulo))
 
     try:
         capa = arcpy.mapping.Layer(capa)
@@ -29,10 +32,14 @@ def activar_rotulos(capa, campo_rotulo):
         log.log(u">> ERROR, los rótulos no se han activado para capa " + capa.name)
         log.log(str(e))
 
-    log.log(u"'activar_rotulos' finalizado")
+    tiempo_act_rot_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería identity_sistema.py: {}".format(tiempo.tiempo([tiempo_act_rot_ini,tiempo_act_rot_fin])))
+
+    log.log(u"'activar_rotulos' finalizado!")
 
 
 def desactivar_rotulos(capa):
+    tiempo_dact_rot_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     log.log(u"Iniciando 'desactiva_rotulos'...")
 
     try:
@@ -45,7 +52,10 @@ def desactivar_rotulos(capa):
         log.log(u">> ERROR, los rótulos no se han desactivado para capa " + capa.name)
         log.log(str(e))
 
-    log.log(u"'desactivar_rotulos' terminado...")
+    tiempo_dact_rot_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería activa_rotulos.py: {}".format(tiempo.tiempo([tiempo_dact_rot_ini,tiempo_dact_rot_fin])))
+
+    log.log(u"'desactivar_rotulos' finalizado!")
 
     # Refresca la vista de datos para aplicar los cambios de rótulos
 

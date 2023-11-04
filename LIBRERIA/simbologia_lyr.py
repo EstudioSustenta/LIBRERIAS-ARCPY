@@ -8,6 +8,7 @@
 import arcpy
 import importlib
 import sys
+import datetime
 
 mxd = arcpy.env.mxd
 df = arcpy.env.df
@@ -17,29 +18,52 @@ ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Proceso 'simbologia_lyr' cargado con éxito")
+log.log(u"Librería 'simbologia_lyr' cargado con éxito")
 
 
 def aplica_simb(capa):
 
-    log.log(u"'simbologia_lyr.aplica_simb' iniciando ...")
+    tiempo_aplica_simb_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    simbologia = 'Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/' + capa + '.lyr'
-    lyr_capa = arcpy.mapping.ListLayers(mxd,capa,df)[0]
-    lyr_capa = lyr_capa.datasetName
-    arcpy.ApplySymbologyFromLayer_management(lyr_capa,simbologia)
-    print(u"Simbología de capa " + capa + " aplicada.")
+    try:
+        log.log(u"'simbologia_lyr.aplica_simb' iniciando para '{}'...".format(capa))
 
-    log.log(u"'simbologia_lyr.aplica_simb' finalizado")
+        simbologia = 'Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/{}.lyr'.format(capa)
+        lyr_capa = arcpy.mapping.ListLayers(mxd,capa,df)[0]
+        lyr_capa = lyr_capa.datasetName
+        arcpy.ApplySymbologyFromLayer_management(lyr_capa,simbologia)
+        log.log(u"Simbología de capa '{}' aplicada con la plantilla '{}'.".format(capa,simbologia))
+
+    except Exception as e:
+        log.log(u">> ERROR, aplicar simbología falló para '{}' con '{}'".format(capa,simbologia))
+        log.log(str(e))
+
+    tiempo_aplica_simb_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'aplica_simb': {}".format(tiempo.tiempo([tiempo_aplica_simb_ini,tiempo_aplica_simb_fin])))
+
+    log.log(u"'simbologia_lyr.aplica_simb' finalizado!")
+
 
 def aplica_simb2(capa,lyr):
 
-    log.log(u"'simbologia_lyr.aplica_simb2' iniciando ...")
+    tiempo_aplica_simb2_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+    try:
+        log.log(u"'simbologia_lyr.aplica_simb2' iniciando para '{}'...".format(capa))
 
-    simbologia = 'Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/' + lyr + '.lyr'
-    lyr_capa = arcpy.mapping.ListLayers(mxd,capa,df)[0]
-    lyr_capa = lyr_capa.datasetName
-    arcpy.ApplySymbologyFromLayer_management(lyr_capa,simbologia)
+        simbologia = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/{}.lyr".format(lyr)
+        lyr_capa = arcpy.mapping.ListLayers(mxd,capa,df)[0]
+        lyr_capa = lyr_capa.datasetName
+        arcpy.ApplySymbologyFromLayer_management(lyr_capa,simbologia)
+        log.log(u"'simbologia_lyr.aplica_simb' en '{}' con '{}' finalizado!".format(capa,simbologia))
 
-    log.log(u"'simbologia_lyr.aplica_simb2' finalizado")
+    except Exception as e:
+        log.log(u">> ERROR, aplicar simbología falló para '{}' con '{}'".format(capa,simbologia))
+        log.log(str(e))
+    
+    tiempo_aplica_simb2_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'aplica_simb2': {}".format(tiempo.tiempo([tiempo_aplica_simb2_ini,tiempo_aplica_simb2_fin])))
+
+    log.log(u"'simbologia_lyr.aplica_simb2' finalizado!")

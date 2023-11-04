@@ -5,8 +5,25 @@
 import arcpy
 import sys
 import codecs
+import datetime  # Importar módulo para obtener fecha y hora
+import importlib
+
+# Agrega la ruta del paquete al path de Python
+ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
+sys.path.append(ruta_libreria)
+log = importlib.import_module(u"LIBRERIA.archivo_log")
+
+# from datetime import datetime
+now = datetime.datetime.now()
+fecha = str(now.date())  # Obtener la fecha actual en formato de cadena
+arcpy.env.fecha = fecha
+
+log.log(u"datos básicos cargado con éxito")
 
 def datosbasicos():
+
+    log.log(u"'datos_basicos.datosbasicos' iniciando...")
+
     capa = u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp"  # Ruta al archivo shapefile
 
     # Crear un objeto de descripción de capa
@@ -20,8 +37,11 @@ def datosbasicos():
         arcpy.env.coordnombre = proyeccion.name
         arcpy.env.coordtipo = proyeccion.type
         arcpy.env.coordWKID = proyeccion.factoryCode
+        log.log(u"Sistema de coordenadas: " + arcpy.env.coordnombre)
+        log.log(u"Tipo de coordenadas: " + arcpy.env.coordtipo)
+        log.log(u"Código WKID de coordenadas" + str(arcpy.env.coordWKID))
     else:
-        print(u"La capa no tiene una proyección definida.")
+        log.log(u"La capa no tiene una proyección definida.")
         arcpy.env.coordnombre = u"Sin sistema de coordenadas definido"
         arcpy.env.coordtipo = u"Sin tipo de sistema de coordenadas"
         arcpy.env.coordWKID = u"Sin codigo WKID (ID de proyeccion)"
@@ -32,36 +52,37 @@ def datosbasicos():
     with arcpy.da.SearchCursor(capa, (u"DESCRIP")) as cursor:
         for row in cursor:
             arcpy.env.proyecto = (row[0])
+            log.log(arcpy.env.proyecto)
     
     with arcpy.da.SearchCursor(capa, (u"CLIENTE")) as cursor:
         for row in cursor:
             arcpy.env.cliente = (row[0])
+            log.log(arcpy.env.cliente)
     
     with arcpy.da.SearchCursor(capa, (u"NOM_ENT")) as cursor:
         for row in cursor:
             arcpy.env.estado = (row[0])
+            log.log(arcpy.env.estado)
 
     with arcpy.da.SearchCursor(capa, (u"NOM_MUN")) as cursor:
         for row in cursor:
             arcpy.env.municipio = (row[0])
+            log.log(arcpy.env.municipio)
 
     with arcpy.da.SearchCursor(capa, (u"NOM_LOC")) as cursor:
         for row in cursor:
             arcpy.env.localidad = (row[0])
+            log.log(arcpy.env.localidad)
 
     with arcpy.da.SearchCursor(capa, (u"COLONIA")) as cursor:
         for row in cursor:
             arcpy.env.colonia = (row[0])
-
-    import datetime  # Importar módulo para obtener fecha y hora
-    from datetime import datetime
-    now = datetime.now()
-    fecha = str(now.date())  # Obtener la fecha actual en formato de cadena
-    arcpy.env.fecha = fecha
+            log.log(arcpy.env.colonia)
 
     with arcpy.da.SearchCursor(capa, (u"ALTITUD")) as cursor:
         for row in cursor:
             arcpy.env.altitud = (row[0])
+            log.log(str(arcpy.env.altitud))
 
     with arcpy.da.SearchCursor(capa, (u"AMBITO")) as cursor:
         for row in cursor:
@@ -71,47 +92,57 @@ def datosbasicos():
             else:
                 ambito = u"Rural"
     arcpy.env.ambito = ambito
+    log.log(arcpy.env.ambito)
 
     with arcpy.da.SearchCursor(capa, (u"CODIGOPOST")) as cursor:
         for row in cursor:
             arcpy.env.cp = (row[0])     #código postal
+            log.log(str(arcpy.env.cp))
 
     with arcpy.da.SearchCursor(capa, (u"CONTINENTA")) as cursor:
         for row in cursor:
             arcpy.env.continentalidad = (row[0])    # continentalidad
+            log.log(str(arcpy.env.continentalidad))
     
     with arcpy.da.SearchCursor(capa, (u"CVE_SUN")) as cursor: # clave sistema urbano nacional
         for row in cursor:
             arcpy.env.clavesun = (row[0])
+            # log.log(arcpy.env.clavesun)
 
     with arcpy.da.SearchCursor(capa, (u"CVELOC")) as cursor: # clave de localidad
         for row in cursor:
             arcpy.env.claveloc = (row[0])
+            # log.log(arcpy.env.claveloc)
 
     with arcpy.da.SearchCursor(capa, (u"LAT")) as cursor: # latitud
         for row in cursor:
             arcpy.env.latitud = (row[0])
+            # log.log(arcpy.env.latitud)
 
     with arcpy.da.SearchCursor(capa, (u"LON")) as cursor: # longitud
         for row in cursor:
             arcpy.env.longitud = (row[0])
+            # log.log(arcpy.env.longitud)
 
     with arcpy.da.SearchCursor(capa, (u"POINT_X")) as cursor: # coordenada x
         for row in cursor:
             arcpy.env.x = (row[0])
+            # log.log(arcpy.env.x)
 
     with arcpy.da.SearchCursor(capa, (u"POINT_y")) as cursor: # coordenada y
         for row in cursor:
             arcpy.env.y = (row[0])
+            # log.log(arcpy.env.y)
 
-    now = datetime.now()
-    fecha = str(now.date())  # Obtener la fecha actual en formato de cadena
-    print (fecha)
-    arcpy.env.fecha = fecha
+    fechahora = (now.strftime(u"%Y-%m-%d %H:%M:%S")).replace(":", "-")
+    log.log(str(arcpy.env.fechahora))
 
+    archivo1 = arcpy.env.carp_cliente + "0 datos_basicos " + fechahora + ".txt"
+    archivo2 = arcpy.env.archivolog
 
-    archivo1 = arcpy.env.carp_cliente + "0 datos_basicos.txt"
-    archivo2 = arcpy.env.carp_cliente + "00 archivo_log.txt"
+    log.log(archivo1)
+    log.log(archivo2)
+    
 
     archivos = [archivo1, archivo2]
 

@@ -1,10 +1,14 @@
 # -*- coding: utf-8 -*-
 
 # SCRIPT PARA REALIZAR EL PROCESO 'NEAR' EN UNA CAPA CON RELACIÓN A LA UBICACIÓN DEL SISTEMA
-print (u"libreria cargada")
 import arcpy
 import importlib
 import sys
+import datetime
+
+
+
+
 
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
@@ -14,7 +18,7 @@ elireg = importlib.import_module(u"LIBRERIA.elimina_registros")
 ordexp = importlib.import_module(u"LIBRERIA.ordenar_y_exportar")
 ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")         #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
-
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
 # rutaorigen = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/"   --->RUTA DEL ARCHIVO ORIGEN
 # capa = u"Corrientes de agua"                                       --->NOMBRE DE LA CAPA A ANALIZAR
@@ -25,21 +29,25 @@ log = importlib.import_module(u"LIBRERIA.archivo_log")
 # archivo = capa + " near"                                          --->NOMBRE DEL ARCHIVO DE TEXTO, LA RUTA DEL ARCHIVO LA TOMA DE LA CARPETA DEL PROYECTO
 # cantidad = 20                                                     --->CANTIDAD DE REGISTROS QUE SE INCLUYEN EN EL ARCHIVO DE DISTANCIAS
 
-log.log(u"Proceso 'near_a_sistema' cargado con éxito")
+log.log(u"Librería 'near_a_sistema' cargado con éxito")
 
 def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad):
 
-    log.log(u"'near_a_sistema' iniciando...")
+    tiempo_nearproceso_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
+    log.log(u"'nearproceso' iniciando...")
     arcpy.env.overwriteOutput = True
 
     try:
         # verifica si distancia es una cadena de texto
         if not isinstance(distancia, str):
-            log.log(u"La variable no es de tipo string (cadena)")
+            log.log(u"La variable '{}' no es de tipo string (cadena)".format(str(distancia)))
             distancia = str(distancia) # si no es cadena, la convierte a cadena
+            log.log(u"La variable '{}' se ha convertido a cadena".format(str(distancia)))
 
         origen = rutaorigen + capa + ".shp"
-        destino = u"Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
+        capadest = capa + " near"
+        destino = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capadest)
         radio = distancia + " Kilometers"
 
         arcpy.CopyFeatures_management(in_features=origen,
@@ -48,36 +56,28 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             spatial_grid_1="0",
             spatial_grid_2="0",
             spatial_grid_3="0")
-        log.log(u"Proceso Copy realizado correctamente")
+        log.log(u"Proceso Copy realizado correctamente para '{}' en '{}'".format(origen, destino))
     except Exception as e:
         log.log(u"Error en proceso copy")
         log.log(str(e))
 
     try:
-        arcpy.Near_analysis(in_features=capa,
+        arcpy.Near_analysis(in_features=destino,
             near_features="SISTEMA",
-            search_radius=radio,
+            search_radius="",
             location="NO_LOCATION",
             angle="NO_ANGLE",
             method="PLANAR")
 
-        log.log(u"Proceso Near realizado correctamente")
+        log.log(u"Proceso Near realizado correctamente para '{}' con un radio de '{}'".format(capadest, radio))
     except Exception as e:
-        log.log(u"Error en proceso near")
+        log.log(u">> ERROR, no se ha ejecutado near para '{}' con un radio de '{}'".format(capadest, radio))
         log.log(str(e))
     
-    try:
-        elireg.eliminaregistros(capa, campo, valor)
-        log.log(u"Registros eliminados satisfactoriamente")
-    except Exception as e:
-        log.log(u"Error en proceso para eliminar registros")
-        log.log(str(e))
-    try:
-        reload(ordexp)
-        ordexp.ordenayexporta(capa, campo, camporef, archivo, cantidad)
-        log.log(u"Archivo exportado satisfactoriamente")
-    except Exception as e:
-        log.log(u"Error en proceso para exportar el archivo near")
-        log.log(str(e))
-    ccapas.remover_capas(capa)
-    log.log(u"Proceso Near de " + capa + u" finalizado satisfactoriamente")
+    reload(ordexp)
+    ordexp.ordenayexporta(destino, campo, camporef, archivo, cantidad)
+    
+    tiempo_nearproceso_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'nearproceso': {}".format(tiempo.tiempo([tiempo_nearproceso_ini,tiempo_nearproceso_fin])))
+
+    log.log(u"Proceso 'nearproceso' de " + capa + u" finalizado satisfactoriamente")

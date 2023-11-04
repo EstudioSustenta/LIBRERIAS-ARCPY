@@ -8,21 +8,25 @@
 import arcpy
 import importlib
 import sys
+import datetime
+
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"formato.py cargado con éxito")
+
+log.log(u"Librería 'formato.py 'cargado con éxito")
 
 mxd = arcpy.env.mxd
 
 def formato_layout(subtitulo1):
 
-    log.log(u"'formato.formato_layout' iniciando ...")
-   
-    
+    tiempo_formato_layout_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     try:
+        log.log(u"'formato.formato_layout' iniciando ...")
         # Acceder a elementos de diseño por su nombre
         titulo = arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT", u"TITULO")[0]             #debe de existir el elemento de texto en layout llamado "TITULO"
         subtitulo = arcpy.mapping.ListLayoutElements(mxd, "TEXT_ELEMENT", u"SUBTITULO")[0]       #debe de existir el elemento de texto en layout llamado "SUBTITULO"
@@ -33,9 +37,13 @@ def formato_layout(subtitulo1):
         subtitulo.text = subtitulo1             # Actualiza el subtítulo
         tfecha.text = arcpy.env.fecha           # Actualiza la fecha
         leyenda.title = u"SIMBOLOGÍA"            # Asigna el rótulo a la simbología
+        log.log(u"Aplicación de formato para el layout en '{}' aplicada correctamente".format(subtitulo1))
     
     except Exception as e:
-        log.log(u">> ERROR, el proceso formato falló")
+        log.log(u">> ERROR, el proceso formato falló para {}".format(subtitulo1))
         log.log(str(e))
 
-    log.log(u"'formato.formato_layout' terminado")
+    tiempo_formato_layout_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'formato_layout': {}".format(tiempo.tiempo([tiempo_formato_layout_ini,tiempo_formato_layout_fin])))
+
+    log.log(u"'formato.formato_layout' finalizado!")

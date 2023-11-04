@@ -3,19 +3,24 @@
 import arcpy
 import sys
 import importlib
+import datetime
 
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
 log.log(u"Librería 'leyenda_ajuste' cargada con éxito")
 # mxd = arcpy.mapping.MapDocument(u"CURRENT")
 mxd = arcpy.env.mxd
 
 def leyenda():
-    log.log(u"'leyenda_ajuste' iniciando...")
+
+    tiempo_leyenda_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+    log.log(u"'leyenda' iniciando...")
     try:
             
         # Encuentra el cuadro de leyendas (legend) en el diseño
@@ -42,10 +47,15 @@ def leyenda():
         
         numero_de_elementos = len(cuadro_de_leyendas.items)
 
+        log.log(u"No se requiere ajuste de leyenda ")
+
     except Exception as e:
         log.log(u">> ERROR, el proceso de ajuste de leyenda falló")
         log.log(str(e))
-        
-    log.log(u"'leyenda_ajuste' finalizado")
+
+    tiempo_leyenda_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'leyenda': {}".format(tiempo.tiempo([tiempo_leyenda_ini,tiempo_leyenda_fin])))
+
+    log.log(u"'leyenda' finalizado!")
 
 

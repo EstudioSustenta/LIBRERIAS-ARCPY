@@ -5,7 +5,6 @@
 
 import arcpy
 
-print (u"control_de_grupo CARGADO EXITOSAMENTE")
 #------------------------------FUNCIÓN PARA APAGAR UN GRUPO-----------------------
 def apagagr(group_name):
     # Redefine el nombre con comillas

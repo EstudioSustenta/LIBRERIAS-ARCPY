@@ -5,10 +5,10 @@
 import arcpy
 import sys
 import importlib
-import codecs
-import datetime
-
-# arcpy.env.addOutputsToMap = u"CURRENT"
+# import codecs
+import datetime  # Importar módulo para obtener fecha y hora
+fechahora = (str(datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S"))).replace(":", "-")
+arcpy.env.fechahora = fechahora
 
 # Proceso para inicializar cuadros de diálogo
 import Tkinter as tk
@@ -21,140 +21,153 @@ root.withdraw()
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 
-arcpy.env.mxd = arcpy.mapping.MapDocument(u"CURRENT")                    # Obtener acceso al documento actual
+arcpy.env.mxd = arcpy.mapping.MapDocument("CURRENT")                   # Obtener acceso al documento actual
 mxd = arcpy.env.mxd
 arcpy.env.df = arcpy.mapping.ListDataFrames(mxd)[0]
 df = arcpy.env.df
 arcpy.env.layout = u"Layout"
 
-# Importar el módulo desde el paquete LIBRERIA utilizando importlib
-dbas = importlib.import_module(u"LIBRERIA.datos_basicos")
-log = importlib.import_module(u"LIBRERIA.archivo_log")
+
 
 
 def rutacarp():
 
+    print("Eligiendo carpeta iniciando...")
+
     try:
+        print("Eligiendo carpeta")
         # Abre un cuadro de diálogo para seleccionar una carpeta
-        carp_mapas = u"Y:/02 CLIENTES (EEX-CLI)/(2001-0001) FAMILIA MARTINEZ DEL RIO/(2008-PIN-0005) CASA BUENAVISTA/SIG"
-        carpeta_cliente = tkFileDialog.askdirectory(initialdir=carp_mapas, title="Selecciona la carpeta destino de los mapas") + u"/"
+        carp_mapas = u"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion"
+        carpeta_cliente = tkFileDialog.askdirectory(initialdir=carp_mapas, title=u"Selecciona la carpeta destino de los mapas") + u"/"
         arcpy.env.carp_cliente = carpeta_cliente
+        arcpy.env.archivolog = carpeta_cliente + u"00 archivo_log " + fechahora + u".txt"          # define una variable de entorno con el nombre del archivo log.
+        print("arcpy.env.archivolog: " + arcpy.env.archivolog)
+
         # Verifica si el usuario seleccionó una carpeta
         if carpeta_cliente:
-            log.log(u"Ruta de la carpeta seleccionada: %s" % carpeta_cliente)
+            print(u"Ruta de la carpeta seleccionada: " + carpeta_cliente)
+            
         else:
             print(u"No se seleccionó ninguna carpeta.")
-            log.log(u"No se seleccionó ninguna carpeta.")
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'rutacarp'")
-        log.log(str(e) + u"\n\n\n\n")
-        borrainn()
+        print(u">> Error en 'rutacarp'")
+    print("Elección de carpeta terminada")
 
     
 
 # Preliminares
 def db():
 
-    try:
+# try:
+    # log.log(u"'db' iniciando...")
 
-        dbas.datosbasicos() # define los datos básicos del proyecto y crea el archivo txt correspondiente
-        log.log(u"\n\n\n")
-        log.log(u"--------------INICIO DE SECCIÓN LOG \--------------------------")
-        log.log(u"\n")
-        log.log(u"Proceso 'datos básicos' iniciando...")
-        log.log(u"Proceso 'datos básicos' finalizado! \n\n")
+    # Importar el módulo desde el paquete LIBRERIA utilizando importlib
+    global log
+    dbas = importlib.import_module(u"LIBRERIA.datos_basicos")
+    log = importlib.import_module(u"LIBRERIA.archivo_log")
 
-    except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'db'")
-        log.log(str(e) + u"\n\n\n\n")
-        borrainn()
+    reload(dbas)
+    reload(log)
+    
+    dbas.datosbasicos() # define los datos básicos del proyecto y crea el archivo txt correspondiente
+    log.log(u"\n\n\n")
+    log.log(u"--------------INICIO DE SECCIÓN LOG \--------------------------")
+    log.log(u"\n")
+    log.log(u"Proceso 'datos básicos' finalizado\n")
+
+# except Exception as e:
+    # log.log(u"\n\n>> ERROR, no se pudo ejecutar 'db'")
+    # log.log(str(e) + u"\n\n\n\n")
+    # borrainn()
+    # log.log(u"'db' finalizado\n\n")
 
 def cargalib():
 
-    try:
+    # try:
 
-        log.log(u"Proceso 'cargalib' iniciando...")
+    log = importlib.import_module(u"LIBRERIA.archivo_log")
+    reload(log)
 
-        global ccapas
-        global ctrlcapa
-        global ctrlgrup
-        global exportma
-        global filtro
-        global formato
-        global simbologia
-        global z_extent
-        global act_rot
-        global buff_cl
-        global transp
-        global renombra
-        global urbano
-        global rural
-        global dwgs
-        global servicios
-        global cliptema
-        global idproy
-        global nearexp
-        global log
-        global leyenda
+    log.log(u"'cargalib' iniciando...")
 
-        ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")               #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
-        ctrlcapa = importlib.import_module(u"LIBRERIA.control_de_capa")          #carga el script de control de capas  -----> funciones: apagacapa(capa_a_apagar), encendercapa(capa_a_encender)
-        ctrlgrup = importlib.import_module(u"LIBRERIA.control_de_grupo")         #carga el script de control de grupos
-        exportma = importlib.import_module(u"LIBRERIA.exportar_mapas")           #carga el script para exportar mapas a pdf y jpg
-        filtro = importlib.import_module(u"LIBRERIA.filtro")                     #carga el script para aplicar filtros a una capa
-        formato = importlib.import_module(u"LIBRERIA.formato")                   #carga el script para aplicar formato a layout
-        simbologia = importlib.import_module(u"LIBRERIA.simbologia_lyr")         #carga el script para aplicar simbología a capas
-        z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")              #carga el script para aplicar zoom extent a una capa 
-        act_rot = importlib.import_module(u"LIBRERIA.activa_rotulos")            #carga el script para activar y desactivar los rótulos de una capa  -----> funciones: 
-        buff_cl = importlib.import_module(u"LIBRERIA.buffer_clip")               #carga el script para activar y desactivar los rótulos de una capa  -----> funciones: clip(ruta, radio)
-        transp = importlib.import_module(u"LIBRERIA.aplica_transparencia")       #carga el script para aplicar transparencia a capas
-        renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")           #carga el script para cambiar el nombre a capas
-        urbano = importlib.import_module(u"LIBRERIA.urbano_nacional")            # ejecuta rutina de zonas urbanas
-        rural = importlib.import_module(u"LIBRERIA.rural_nacional")              # ejecuta rutina de zonas rurales
-        dwgs = importlib.import_module(u"LIBRERIA.cuadro_de_localizacion")
-        servicios = importlib.import_module(u"LIBRERIA.servicios")
-        cliptema = importlib.import_module(u"LIBRERIA.clip_tematico")
-        idproy = importlib.import_module(u"LIBRERIA.identity_sistema")
-        nearexp = importlib.import_module(u"LIBRERIA.near_a_sistema")
-        log = importlib.import_module(u"LIBRERIA.archivo_log")
-        leyenda = importlib.import_module(u"LIBRERIA.leyenda_ajuste")
-        
-        
-        
-        reload(ctrlcapa)
-        reload(ctrlgrup)
-        reload(exportma)
-        reload(filtro)
-        reload(formato)
-        reload(simbologia)
-        reload(z_extent)
-        reload(act_rot)
-        reload(buff_cl)
-        reload(transp)
-        reload(renombra)
-        reload(urbano)
-        reload(rural)
-        reload(dwgs)
-        reload(servicios)
-        reload(cliptema)
-        reload(idproy)
-        reload(nearexp)
-        reload(log)
-        reload(leyenda)
+    global ccapas
+    global ctrlcapa
+    global ctrlgrup
+    global exportma
+    global filtro
+    global formato
+    global simbologia
+    global z_extent
+    global act_rot
+    global buff_cl
+    global transp
+    global renombra
+    global urbano
+    global rural
+    global dwgs
+    global servicios
+    global cliptema
+    global idproy
+    global nearexp
+    
+    global leyenda
+    global tiempo
 
-        ccapas.carga_capas(u"Y:/0_SIG_PROCESO/00 GENERAL", u"SISTEMA")
-        simbologia.aplica_simb(u"SISTEMA")
-        transp.transp(u"SISTEMA",50)
-        z_extent.zoom_extent(arcpy.env.layout, u"SISTEMA")
+    ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")               #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
+    ctrlcapa = importlib.import_module(u"LIBRERIA.control_de_capa")          #carga el script de control de capas  -----> funciones: apagacapa(capa_a_apagar), encendercapa(capa_a_encender)
+    ctrlgrup = importlib.import_module(u"LIBRERIA.control_de_grupo")         #carga el script de control de grupos
+    exportma = importlib.import_module(u"LIBRERIA.exportar_mapas")           #carga el script para exportar mapas a pdf y jpg
+    filtro = importlib.import_module(u"LIBRERIA.filtro")                     #carga el script para aplicar filtros a una capa
+    formato = importlib.import_module(u"LIBRERIA.formato")                   #carga el script para aplicar formato a layout
+    simbologia = importlib.import_module(u"LIBRERIA.simbologia_lyr")         #carga el script para aplicar simbología a capas
+    z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")              #carga el script para aplicar zoom extent a una capa 
+    act_rot = importlib.import_module(u"LIBRERIA.activa_rotulos")            #carga el script para activar y desactivar los rótulos de una capa  -----> funciones: 
+    buff_cl = importlib.import_module(u"LIBRERIA.buffer_clip")               #carga el script para activar y desactivar los rótulos de una capa  -----> funciones: clip(ruta, radio)
+    transp = importlib.import_module(u"LIBRERIA.aplica_transparencia")       #carga el script para aplicar transparencia a capas
+    renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")           #carga el script para cambiar el nombre a capas
+    urbano = importlib.import_module(u"LIBRERIA.urbano_nacional")            # ejecuta rutina de zonas urbanas
+    rural = importlib.import_module(u"LIBRERIA.rural_nacional")              # ejecuta rutina de zonas rurales
+    dwgs = importlib.import_module(u"LIBRERIA.cuadro_de_localizacion")
+    servicios = importlib.import_module(u"LIBRERIA.servicios")
+    cliptema = importlib.import_module(u"LIBRERIA.clip_tematico")
+    idproy = importlib.import_module(u"LIBRERIA.identity_sistema")
+    nearexp = importlib.import_module(u"LIBRERIA.near_a_sistema")
+    leyenda = importlib.import_module(u"LIBRERIA.leyenda_ajuste")
+    tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-        #formato.formato_layout(u"Preparacion")
+    # log.log("\n\n")
+    
+    
+    
+    reload(ctrlcapa)
+    reload(ctrlgrup)
+    reload(exportma)
+    reload(filtro)
+    reload(formato)
+    reload(simbologia)
+    reload(z_extent)
+    reload(act_rot)
+    reload(buff_cl)
+    reload(transp)
+    reload(renombra)
+    reload(urbano)
+    reload(rural)
+    reload(dwgs)
+    reload(servicios)
+    reload(cliptema)
+    reload(idproy)
+    reload(nearexp)
+    reload(log)
+    reload(leyenda)
+    reload(tiempo)
 
-        log.log(u"Proceso 'cargalib' finalizado! \n\n")
+    ccapas.cargar(u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp")
+    simbologia.aplica_simb(u"SISTEMA")
+    transp.transp(u"SISTEMA",50)
+    act_rot.activar_rotulos("SISTEMA","DESCRIP")
+    z_extent.zoom_extent(arcpy.env.layout, u"SISTEMA")
 
-    except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cargalib'")
-        log.log(str(e) + u"\n\n\n\n")
-        borrainn()
+    log.log(u"'cargalib' finalizado\n\n")
 
     # nota, para poder cargar las librería y que se genere el archivo .pyc adecuadamente, cada librería debe iniciar con la línea: # -*- coding: utf-8 -*-
 
@@ -197,6 +210,9 @@ def borrainn():
 
 def mapaPais(nummapa):
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'mapaPais' iniciando...")
@@ -211,22 +227,31 @@ def mapaPais(nummapa):
         z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
         simbologia.aplica_simb(nombre_capa)
         formato.formato_layout(u"UBICACIÓN A NIVEL PAÍS")
-        r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + u" " + str(nummapa) + u" pais"
+        r_dest = arcpy.env.carp_cliente
+        nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" pais"
         nnomb = u"Entidades Federativas"
         renombra.renomb(nombre_capa, nnomb)
-        exportma.exportar(r_dest)
+        exportma.exportar(r_dest,nombarch)
         ccapas.remover_capas(nnomb)
         arcpy.env.nummapa = nummapa + 1
-        log.log(u"Proceso 'mapaPais' finalizado! \n\n")
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaPais'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+    
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(u"Mapa País",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'mapaPais' finalizado!...\n\n")
+
 
 def mapaEstatal(nummapa):
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa estatal
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
@@ -234,12 +259,12 @@ def mapaEstatal(nummapa):
         log.log(u"Proceso 'mapaEstatal' iniciando...")
 
         nombre_capa = u"MUNICIPAL CENSO 2020 DECRETO 185"
-        ruta_arch = u"Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/INEGI"
+        ruta_arch = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
         ruta_arch1 = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.estado + u"/cartografia"
         nombre_capa1 = u"manzana_localidad"
-        campo = u"NOM_ENT"
         ccapas.carga_capas(ruta_arch, nombre_capa)
-        filtro.aplicar_defq(nombre_capa, campo, u"'" + arcpy.env.estado + u"'")
+        filtr= "\"NOM_ENT\" = '{}'".format(arcpy.env.estado)
+        filtro.fil_expr(nombre_capa, filtr)
         z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
         simbologia.aplica_simb(nombre_capa)
         formato.formato_layout(u"UBICACIÓN A NIVEL ESTADO")
@@ -249,25 +274,35 @@ def mapaEstatal(nummapa):
         transp.transp(u"red nacional de caminos",50)
         ccapas.carga_capas(ruta_arch1, nombre_capa1)        # carga las manzanas del estado correspondiente.
         simbologia.aplica_simb(nombre_capa1)
-        r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + u" " + str(nummapa) + u" estado"
+        r_dest = arcpy.env.carp_cliente
+        nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" estado"
         nnomb = u"Municipios " + arcpy.env.estado
         renombra.renomb(nombre_capa, nnomb)
         renombra.renomb(u"manzana_localidad", u"Manzanas urbanas")
-        exportma.exportar(r_dest)
+        exportma.exportar(r_dest,nombarch)
         ccapas.remover_capas(nnomb)
         ccapas.remover_capas(u"Manzanas urbanas")
+        ccapas.remover_capas(u"red nacional de caminos")
         arcpy.env.nummapa = nummapa + 1
-        log.log(u"Proceso 'mapaEstatal' finalizado! \n\n")
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaEstatal'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(u"Ubicación a nivel estado",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'mapaEstatal' finalizado!...\n\n")
+
 
 def mapaMunicipal(nummapa):
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa municipal
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+    reload(urbano)
 
     try:
 
@@ -282,34 +317,47 @@ def mapaMunicipal(nummapa):
         else:
             # proceso si el sistema es rural
             rural.prural(nummapa)
-        log.log(u"Proceso 'mapaMunicipal' finalizado! \n\n")
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaMunicipal'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(u"Mapa municipal",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-def cuadroConstruccion():
+    log.log(u"Proceso 'mapaMunicipal' finalizado!...\n\n")
+
+
+def cuadrodeLocalizacion():
     # -------------------------------------------------------------------------------
     # Proceso para generar cuadros de construcción en formato dwg
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     try:
 
-        log.log(u"Proceso 'cuadroConstruccion' iniciando...")
+        log.log(u"Proceso 'cuadrodeLocalizacion' iniciando...")
         
-        # reload(dwgs)
-        dwgs.dxf(u"aaaa")
-        log.log(u"Proceso 'cuadroConstruccion' finalizado! \n\n")
+        dwgs.dxf()
+        log.log(u"Proceso 'cuadrodeLocalizacion' finalizado! \n\n")
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cuadroConstruccion'")
+        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cuadrodeLocalizacion'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de proceso '{}': {}".format(u"Archivos dxf",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'cuadrodeLocalizacion' finalizado!...\n\n")
 
 def servicios_urbanos(nummapa):
     # -------------------------------------------------------------------------------
     # Proceso para analizar servicios cercanos al sistema (5 minutos caminando a 5 km/hr)
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
@@ -328,6 +376,10 @@ def servicios_urbanos(nummapa):
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(u"Servicios urbanos",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'servicios' finalizado!...\n\n")
 
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
@@ -337,22 +389,24 @@ def servicios_urbanos(nummapa):
 def usodeSuelo(nummapa):
     #-----------------> USO DE SUELO<------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     try:
 
         log.log(u"Proceso 'usodeSuelo' iniciando...")
 
-            # tabla
-        rutaCl = u"Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/INEGI"                  # ruta del archivo a identificar
+            # IDENTITY
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"                  # ruta del archivo a identificar (sin el slash final)
         capaCl = u"USO DE SUELO INEGI SERIE IV.shp"                                  # archivo a identificar
         capa_salida = u"Uso de suelo"                                                # capa a crear en el mapa
-        camposCons =  [u"INFYS_0409", u"VEG_FORES"]                                    # campos a escribir en el archivo de identificación
-        dAlter =  [u"USO DE SUELO", u"VEGETACION FORESTAL"]                            # descripciones de campos de archivo de identificación
+        camposCons =  [u"ECOS_VEGE", u"INFYS_0409", u"VEG_FORES"]                                    # campos a escribir en el archivo de identificación
+        dAlter =  [u"USO DE SUELO", U"INFORMACIÓN COMPLEMENTARIA", u"VEGETACION FORESTAL"]                            # descripciones de campos de archivo de identificación
 
         idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
 
-            # mapa
+            # MAPA
         capas =  [u"USO DE SUELO INEGI SERIE IV"]
-        rutas =  [u"Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/INEGI"]
+        rutas =  [u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"]
         ncampo = [camposCons[0]]
         tipo = u"municipal"
         nummapa = arcpy.env.nummapa
@@ -367,10 +421,17 @@ def usodeSuelo(nummapa):
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa {}: {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'usodeSuelo' para {} finalizado! \n\n".format(capa_salida))
+
 
 
 def curvasdeNivel(nummapa):
     #----------------->CURVAS DE NIVEL<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
@@ -385,50 +446,58 @@ def curvasdeNivel(nummapa):
         tit = u"Curvas de nivel"
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'curvasdeNivel' finalizado! \n\n")
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'curvasdeNivel'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
+    log.log(u"Proceso 'curvasdeNivel' finalizado!...\n\n")
 
 def hidrologia(nummapa):
     #----------------->HIDROLOGÍA<------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     try:
 
-        log.log(u"Proceso 'hidrologia' iniciando...")
+        log.log(u"Proceso 'hidrología' iniciando...")
 
             # mapa
         capas =  [u"Corrientes de agua", u"Cuerpos de agua"]
+        # capas =  [u"Cuerpos de agua"]
         rutaor = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"
         rutas = [rutaor, rutaor]
+        # rutas = [rutaor]
         tipo = u"municipal"
         ncampo =  [u"NOMBRE", u"NOMBRE"]
+        # ncampo =  [u"NOMBRE"]
+
         nummapa = arcpy.env.nummapa
         
 
             # near a corrientes de agua
+        n=0
         rutaorigen = rutaor + u"/"
-        capa = capas[0]
-        distancia = 50
+        capa = capas[n]
+        distancia = 200
         campo = u"NEAR_DIST"
         valor = -1
-        n=0
         camporef = ncampo[n]
         archivo = capa + u" near"
         cantidad = 20
         nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+        n = n + 1
 
             # near a cuerpos de agua
         rutaorigen = rutaor + u"/"
-        capa = capas[1]
+        capa = capas[n]
         distancia = 50
         campo = u"NEAR_DIST"
         valor = -1
-        n=1
         camporef = ncampo[n]
         archivo = capa + u" near"
         cantidad = 20
@@ -437,25 +506,30 @@ def hidrologia(nummapa):
         tit = u"Hidrología"
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-
-        log.log(u"Proceso 'hidrologia' finalizado! \n\n")
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'hidroligia'")
+        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'hidrología'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'hidrología' finalizado!...\n\n")
 
 
 def lineasElectricas(nummapa):
     
     #----------------->LINEAS DE TRANSMISIÓN ELECTRICA<------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     try:
     
         log.log(u"Proceso 'lineasElectricas' iniciando...")
 
             # mapa
-        rutaCl = u"Y:/0_SIG_PROCESO/BASES DE DATOS/00 MEXICO/INEGI" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capas =  [u"Linea de transmision electrica", u"Planta generadora", u"Subestacion electrica"]
         rutaor = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"
         rutas = [rutaor, rutaor, rutaor]
@@ -465,7 +539,7 @@ def lineasElectricas(nummapa):
 
             # near primera capa
         n=0
-        rutaorigen = rutaCl + u"/"                   # Ruta del archivo a analizar
+        rutaorigen = rutaor + u"/"                   # Ruta del archivo a analizar
         capa = capas[n]                             # Capa a analizar
         distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
         campo = u"NEAR_DIST"                         # campo donde se guarda la distancia al sistema
@@ -477,7 +551,7 @@ def lineasElectricas(nummapa):
 
             # near segunda capa
         n=1
-        rutaorigen = rutaCl + u"/"                   # Ruta del archivo a analizar
+        rutaorigen = rutaor + u"/"                   # Ruta del archivo a analizar
         capa = capas[n]                             # Capa a analizar
         distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
         campo = u"NEAR_DIST"                         # campo donde se guarda la distancia al sistema
@@ -489,7 +563,7 @@ def lineasElectricas(nummapa):
 
             # near tercera capa
         n=2
-        rutaorigen = rutaCl + u"/"                   # Ruta del archivo a analizar
+        rutaorigen = rutaor + u"/"                   # Ruta del archivo a analizar
         capa = capas[n]                             # Capa a analizar
         distancia = 1000                            # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
         campo = u"NEAR_DIST"                         # campo donde se guarda la distancia al sistema
@@ -510,23 +584,29 @@ def lineasElectricas(nummapa):
         nummapa = arcpy.env.nummapa
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'lineasElectricas' finalizado! \n\n")
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'lineasElectricas'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'lineasElectricas' finalizado!...\n\n")
+
 
 def malpais(nummapa):
     #-----------------> MALPAIS<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
         log.log(u"Proceso 'malpais' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"      # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"      # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Malpais.shp"                                          # archivo a identificar
         capa_salida = u"Malpais"                                         # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"CODIGO"]             # campos a escribir en el archivo
@@ -548,7 +628,7 @@ def malpais(nummapa):
         capa = capas[0]                                                 # Capa a analizar
         distancia = 1000                                                # Distancia a realizar el análisis en km (incluye cualquier elemento que esté a esa distancia)
         campo = u"NEAR_DIST"                                             # campo donde se guarda la distancia al sistema
-        valor = -1                                                      # valor a eliminar del campo 'campo'
+        valor = -1                                                   # valor a eliminar del campo 'campo'
         n=0                 
         camporef = ncampo[n]                                            # campo de referencia (para agregar a la descripción del archivo)
         archivo = capa + u" near"                                        # nombre del archivo de texto a generar
@@ -556,23 +636,29 @@ def malpais(nummapa):
         nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
 
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'malpais' finalizado! \n\n")
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'malpais'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'malpais' finalizado! \n\n")
+
 
 def pantano(nummapa):
     #-----------------> PANTANO<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
         log.log(u"Proceso 'pantano' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Pantano.shp" # archivo a identificar
         capa_salida = u"Pantano" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA"]   # campos a imprimi en el archivo de identidad
@@ -603,23 +689,30 @@ def pantano(nummapa):
         nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
 
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'pantano' finalizado! \n\n")
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'pantano'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'pantano' finalizado! \n\n")
+
 
 def pistadeAviacion(nummapa):
     #-----------------> PISTA DE AVIACIÓN<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
 
     try:
 
         log.log(u"Proceso 'pistadeAviacion' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Pista de aviacion.shp" # archivo a identificar
         capa_salida = u"Pista de aviacion" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"NOMBRE", u"CONDICION", u"TIPO"] # campos a escribir en el archivo
@@ -648,12 +741,17 @@ def pistadeAviacion(nummapa):
 
         nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'pistadeAviacion' finalizado! \n\n")
+        
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'pistadeAviacion'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'pistadeAviacion' finalizado! \n\n")
 
 
 
@@ -661,13 +759,16 @@ def presa(nummapa):
 
     #-----------------> PRESA<------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
     
         log.log(u"Proceso 'presa' iniciando...")
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Presa.shp" # archivo a identificar
         capa_salida = u"Presa" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"NOMBRE", u"CONDICION"] # campos a escribir en el archivo
@@ -703,19 +804,25 @@ def presa(nummapa):
         nummapa = arcpy.env.nummapa                       # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 5
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'presa' finalizado! \n\n")
+        
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'presa'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
+    log.log(u"Proceso 'presa' finalizado! \n\n")
 
 
 def rasgoArqueologico(nummapa):
 
     #-----------------> RASGO ARQUEOLOGICO<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
@@ -723,7 +830,7 @@ def rasgoArqueologico(nummapa):
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Rasgo arqueologico.shp" # archivo a identificar
         capa_salida = u"Rasgo arqueologico" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"NOMBRE", u"TIPO"] # campos a escribir en el archivo
@@ -758,17 +865,25 @@ def rasgoArqueologico(nummapa):
         nummapa = arcpy.env.nummapa                       # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 4
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'rasgoArqueologico' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'rasgoArqueologico'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'rasgoArqueologico' finalizado! \n\n")
+
 
 def salina(nummapa):
 
     #-----------------> SALINA<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
@@ -776,7 +891,7 @@ def salina(nummapa):
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Salina.shp" # archivo a identificar
         capa_salida = u"Salina" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"NOMBRE", u"TIPO"] # campos a escribir en el archivo
@@ -812,19 +927,25 @@ def salina(nummapa):
         nummapa = arcpy.env.nummapa                       # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 3
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'salina' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'salina'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
+    log.log(u"Proceso 'salina' finalizado! \n\n")
 
 
 def viaferrea(nummapa):
 
     #-----------------> VIA FERREA<------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
@@ -832,7 +953,7 @@ def viaferrea(nummapa):
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Via ferrea.shp" # archivo a identificar
         capa_salida = u"Via ferrea" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"CONDICION", u"TIPO"] # campos a escribir en el archivo
@@ -868,12 +989,17 @@ def viaferrea(nummapa):
         nummapa = arcpy.env.nummapa                       # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 5
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'Via ferrea' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'viaferrea'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'Via ferrea' finalizado! \n\n")
 
 
 
@@ -881,13 +1007,16 @@ def zonaarenosa(nummapa):
 
     #-----------------> ZONA ARENOSA<------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Zona arenosa' iniciando...")
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Zona arenosa.shp" # archivo a identificar
         capa_salida = u"Zona arenosa" # capa a crear en el mapa
         camposCons =  [u"GEOGRAFICO", u"IDENTIFICA", u"CALI_REPR", u"TIPO"] # campos a escribir en el archivo
@@ -923,13 +1052,17 @@ def zonaarenosa(nummapa):
         nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 5
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'Zona arenosa' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'zonaarenosa'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    
+    log.log(u"Proceso 'Zona arenosa' finalizado! \n\n")
 
 #----------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -944,13 +1077,16 @@ def area_nat_protegida(nummapa):
 
     #-----------------> AREA NATURAL PROTEGIDA <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Areas naturales protegidas' iniciando...")
 
             # tabla
 
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Areas naturales protegidas.shp" # archivo a identificar
         capa_salida = u"Areas naturales protegidas" # capa a crear en el mapa
         camposCons =  [u"NOMBRE", u"TIPO", u"CATEGORIA", u"FUENTE", u"SUP_DEC2", u"ESTADO"] # campos a escribir en el archivo identity
@@ -986,12 +1122,17 @@ def area_nat_protegida(nummapa):
         nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'Areas naturales protegidas' finalizado! \n\n")
+        
     
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'area_nat_protegida'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"Proceso 'Areas naturales protegidas' finalizado! \n\n")
 
 
 
@@ -999,12 +1140,15 @@ def clima_koppen(nummapa):
 
     #-----------------> CLIMA <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Climas' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Climas.shp" # archivo a identificar
         capa_salida = u"Climas" # capa a crear en el mapa
         camposCons =  [u"CLIMA_TIPO", u"DES_TEM", u"DESC_PREC"] # campos a escribir en el archivo identity
@@ -1034,25 +1178,31 @@ def clima_koppen(nummapa):
         nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        
-        log.log(u"'Clima' finalizado! \n\n")
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'clima_koppen'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+    
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Clima' finalizado! \n\n")
 
 
 def clima_olgyay(nummapa):
 
     #-----------------> CLIMA <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Clima Olgyay' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/00 PROPIOS/CLIMA" # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/00 PROPIOS/CLIMA" # ruta del archivo a identificar (sin el slash final)
         capaCl = u"MEXICO_OLGYAY.shp" # archivo a identificar
         capa_salida = u"Climas Olgyay" # capa a crear en el mapa
         camposCons =  [u"CLIMA"] # campos a escribir en el archivo identity
@@ -1083,25 +1233,31 @@ def clima_olgyay(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Clima Olgyay' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'clima_olgyay'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
+    log.log(u"'Clima Olgyay' finalizado! \n\n")
 
 def cuenca(nummapa):
 
     #-----------------> CUENCA HIDROLOGICA <------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
         log.log(u"Proceso 'Cuenca hidrologica' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                       # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                       # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Cuenca hidrologica.shp"                                   # archivo a identificar
         capa_salida = u"Cuenca hidrologica"                                  # capa a crear en el mapa
         camposCons =  [u"CUENCA", u"REGION"]  # campos a escribir en el archivo identity
@@ -1132,28 +1288,39 @@ def cuenca(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Cuenca hidrologica' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cuenca'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+    
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Cuenca hidrologica' finalizado! \n\n")
 
 
 def edafologia(nummapa):
 
     #-----------------> EDAFOLOGIA <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    capa_salida = u"Edafologia" 
+    tit = capa_salida                           # título del mapa en el layout
+    
+
     try:
 
         log.log(u"Proceso 'Edafologia' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Edafologia.shp"                                                       # archivo a identificar
         capa_salida = u"Edafologia"                                                      # capa a crear en el mapa
-        camposCons =  [u"DESCRIPCIO","SUE1","DESC_TEX","DESC_FASFI","DESC_FAQUI"]     # campos a escribir en el archivo identity
-        dAlter =  [u"DESCRIPCION","CLAVE EDAFOLÓGICA","TEXTURA","FASE FÍSICA","FASE QUÍMICA"]    # descriptores para los campos en el archivo identity de salida
+        camposCons =  [u"DESCRIPCIO",u"SUE1",u"DESC_TEX",u"DESC_FASFI",u"DESC_FAQUI"]     # campos a escribir en el archivo identity
+        dAlter =  [u"DESCRIPCION",u"CLAVE EDAFOLÓGICA",u"TEXTURA",u"FASE FÍSICA",u"FASE QUÍMICA"]    # descriptores para los campos en el archivo identity de salida
+        tit = capa_salida
 
         idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
 
@@ -1161,7 +1328,7 @@ def edafologia(nummapa):
         capas =  [u"Edafologia"]                      #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
         rutas = [rutaCl]
         ncampo = [camposCons[0]]                          # campo para el rótulo de los features en el mapa
-        tit = capa_salida                           # título del mapa en el layout
+        
 
             # near 
         rutaorigen = rutaCl + u"/"                   # Ruta del archivo a analizar
@@ -1180,24 +1347,33 @@ def edafologia(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Edafologia' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'edafologia'")
         log.log(str(e) + u"\n\n\n\n")
+        print(u"\n\n>> ERROR, no se pudo ejecutar 'edafologia'")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Edafologia' finalizado! \n\n")
 
 
 def humedad(nummapa):
 
     #-----------------> HUMEDAD DEL SUELO <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Humedad del suelo' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Humedad del suelo.shp"                                                # archivo a identificar
         capa_salida = u"Humedad del suelo"                                               # capa a crear en el mapa
         camposCons =  [u"TIPO"]                                                           # campos a escribir en el archivo identity
@@ -1228,24 +1404,32 @@ def humedad(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Humedad del suelo' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'humedad'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Humedad del suelo' finalizado! \n\n")
+
 
 def precip(nummapa):
 
     #-----------------> PRECIPITACION ISOYETAS <------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
         log.log(u"Proceso 'Precipitacion isoyetas' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Precipitacion isoyetas.shp"                                           # archivo a identificar
         capa_salida = u"Precipitacion isoyetas"                                          # capa a crear en el mapa
         camposCons =  [u"PRECI_RANG"]                                                     # campos a escribir en el archivo identity
@@ -1276,24 +1460,32 @@ def precip(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Precipitacion isoyetas' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'precip'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Precipitacion isoyetas' finalizado! \n\n")
+
 
 def subcuenca(nummapa):
 
     #-----------------> SUBCUENCA HIDROLÓGICA <------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
         log.log(u"Proceso 'Subcuencas hidrologicas' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Subcuencas hidrologicas.shp"                                          # archivo a identificar
         capa_salida = u"Subcuencas hidrólgicas"                                          # capa a crear en el mapa
         camposCons =  [u"NOMBRE", u"DESCRIPCI", u"TIPO"]                                    # campos a escribir en el archivo identity
@@ -1324,24 +1516,32 @@ def subcuenca(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Subcuencas hidrologicas' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'subcuenca'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
 
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Subcuencas hidrologicas' finalizado! \n\n") 
+
 
 def subregion(nummapa):
 
     #-----------------> SUBREGIÓN HIDROLÓGICA <------------------------------------------
+
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
 
     try:
 
         log.log(u"Proceso 'Subregiones hidrologicas' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Subregiones hidrologicas.shp"                                         # archivo a identificar
         capa_salida = u"Subregiones hidrólgicas"                                         # capa a crear en el mapa
         camposCons =  [u"NOMBRE"]                                    # campos a escribir en el archivo identity
@@ -1372,12 +1572,17 @@ def subregion(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Subregiones hidrologicas' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'subregion'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Subregiones hidrologicas' finalizado! \n\n")
 
 
 
@@ -1385,12 +1590,15 @@ def zonaecol(nummapa):
 
     #-----------------> ZONAS ECOLÓGICAS <------------------------------------------
 
+    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    
+
     try:
 
         log.log(u"Proceso 'Zonas ecologicas' iniciando...")
 
             # tabla
-        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"               # ruta del archivo a identificar
+        rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"               # ruta del archivo a identificar (sin el slash final)
         capaCl = u"Zonas ecologicas.shp"                             # archivo a identificar
         capa_salida = u"Zonas ecologicas"                            # capa a crear en el mapa
         camposCons = [u"NOMZONECOL", u"TIPO_ZONA"]                    # campos a escribir en el archivo identity
@@ -1421,12 +1629,17 @@ def zonaecol(nummapa):
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
         
-        log.log(u"'Zonas ecologicas' finalizado! \n\n")
+        
 
     except Exception as e:
         log.log(u"\n\n>> ERROR, no se pudo ejecutar 'zonaecol'")
         log.log(str(e) + u"\n\n\n\n")
         borrainn()
+
+    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+
+    log.log(u"'Zonas ecologicas' finalizado! \n\n")
 
 
 
@@ -1438,46 +1651,51 @@ def zonaecol(nummapa):
 
 
 rutacarp()
-cargalib()
+tiempoprocini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 db()
+cargalib()
 
 borrainn()
 arcpy.env.nummapa = 1
 nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 mapaPais(arcpy.env.nummapa)
-mapaEstatal(arcpy.env.nummapa)
-mapaMunicipal(arcpy.env.nummapa)
+# mapaEstatal(arcpy.env.nummapa)
+# mapaMunicipal(arcpy.env.nummapa)
 
-cuadroConstruccion()
+# cuadrodeLocalizacion()
 
-#----------------------------CARTOGRAFÍA MAPAS TEMÁTICOS INEGI
+# # ----------------------------CARTOGRAFÍA MAPAS TEMÁTICOS INEGI (Y:\GIS\MEXICO\VARIOS\INEGI)
 
-servicios_urbanos(arcpy.env.nummapa)
-curvasdeNivel(arcpy.env.nummapa)
-hidrologia(arcpy.env.nummapa)
-lineasElectricas(arcpy.env.nummapa)
-malpais(arcpy.env.nummapa)
-pantano(arcpy.env.nummapa)
-pistadeAviacion(arcpy.env.nummapa)
-presa(arcpy.env.nummapa) 
-rasgoArqueologico(arcpy.env.nummapa)
-salina(arcpy.env.nummapa)
-usodeSuelo(arcpy.env.nummapa)
-viaferrea(nummapa)
-zonaarenosa(nummapa)
+# servicios_urbanos(arcpy.env.nummapa)
+# curvasdeNivel(arcpy.env.nummapa)
+# hidrologia(arcpy.env.nummapa)
+# lineasElectricas(arcpy.env.nummapa)
+# malpais(arcpy.env.nummapa)
+# pantano(arcpy.env.nummapa)
+# pistadeAviacion(arcpy.env.nummapa)
+# presa(arcpy.env.nummapa) 
+# rasgoArqueologico(arcpy.env.nummapa)
+# salina(arcpy.env.nummapa)
+# usodeSuelo(arcpy.env.nummapa)
+# viaferrea(arcpy.env.nummapa)
+# zonaarenosa(arcpy.env.nummapa)
 
-#----------------------------CARTOGRAFÍA INIFAP
+# #----------------------------CARTOGRAFÍA conabio (Y:\GIS\MEXICO\VARIOS\conabio\WGS84)
 
-area_nat_protegida(nummapa)
-clima_koppen(nummapa)
-clima_olgyay(nummapa)
-cuenca(nummapa)
-edafologia(nummapa)
-humedad(nummapa)
-precip(nummapa)
-subcuenca(nummapa)
-subregion(nummapa)
-zonaecol(nummapa)
+# area_nat_protegida(arcpy.env.nummapa)
+# clima_koppen(arcpy.env.nummapa)
+# clima_olgyay(arcpy.env.nummapa)
+# cuenca(arcpy.env.nummapa)
+# edafologia(arcpy.env.nummapa)
+# humedad(arcpy.env.nummapa)
+# precip(arcpy.env.nummapa)
+# subcuenca(arcpy.env.nummapa)
+# subregion(arcpy.env.nummapa)
+# zonaecol(arcpy.env.nummapa)
 
-log.log(u"\n\n PROCESO SIG FINALIZADO!! Revisar archivo log para mayor informacion del proceso")
-print (u"\n\n\n\n PROCESO SIG FINALIZADO!! \n\n No es necesario guardar el mapa.")
+log.log(u"FIN DE PROCESO")
+tiempoprocfin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+log.log(u"tiempo total de proceso de mapas: {}".format(tiempo.tiempo([tiempoprocini,tiempoprocfin])))
+
+print (u"\n\n\n\nPROCESO SIG finalizado! \nNo es necesario guardar el mapa.")
+print(u"Revisar archivo log para mayor informacion del proceso.")

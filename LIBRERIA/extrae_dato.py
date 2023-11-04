@@ -7,46 +7,60 @@
 import arcpy
 import sys
 import importlib
+import datetime
+
+mxd = arcpy.env.mxd
+df = arcpy.env.df
 
 # Agrega la ruta del paquete al path de Python
 
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
-print(ruta_libreria)
 sys.path.append(ruta_libreria)
 
 z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
 
 log.log(u"Librería 'extrae_dato' cargada con éxito")
 def extraedato(archivo, ordinal, columna):
 
-    log.log(u"Proceso 'extraedato' iniciando...")
+    tiempo_extraedato_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
+    log.log(u"Proceso 'extraedato' iniciando para '{}'...".format(archivo))
+
+    try:
     
-    mxd = arcpy.mapping.MapDocument(u"CURRENT")
-    df = arcpy.mapping.ListDataFrames(mxd)[0]
-    ordinal = str(ordinal) + "\t"
+        ordinal = str(ordinal) + "\t"
 
-    # Abrir el archivo para lectura
-    with open(archivo, 'r') as file:
-        # Iterar a través de cada línea en el archivo
-        for line in file:
-            # Verificar si la línea comienza con '4'
-            if line.startswith((ordinal)):
-                # Dividir la línea en columnas utilizando tabuladores como separadores
-                columns = line.split('\t')
-                
-                # Verificar si hay al menos tres columnas
-                if len(columns) >= columna:
-                    # Extraer el valor de la tercera columna (índice 2)
-                    log.log(u"Ordinal = u" + str(ordinal))
-                    log.log(u"Columna = u" + str(columna))
-                    distancia = int(columns[2].strip())  # strip() elimina espacios en blanco adicionales y saltos de línea
-                    log.log(u"distancia = u" + str(distancia))
+        # Abrir el archivo para lectura
+        with open(archivo, 'r') as file:
+            # Iterar a través de cada línea en el archivo
+            for line in file:
+                # Verificar si la línea comienza con el valor ordinal
+                if line.startswith((ordinal)):
+                    # Dividir la línea en columnas utilizando tabuladores como separadores
+                    columns = line.split('\t')
+                    
+                    # Verificar si hay al menos tres columnas
+                    if len(columns) >= columna:
+                        # Extraer el valor de la tercera columna (índice 2)
+                        log.log(u"Ordinal = " + str(ordinal))
+                        log.log(u"Columna = " + str(columna))
+                        distancia = int(columns[2].strip())  # strip() elimina espacios en blanco adicionales y saltos de línea
+                        log.log(u"distancia = " + str(distancia))
 
-                    escala = (distancia * 2) / 20 * 100
-                    z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
-                    log.log(u"escala = u" + str(escala))
-                    df.scale = escala
-                    arcpy.RefreshActiveView()
+                        escala = (distancia * 2) / 20 * 100
+                        z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
+                        log.log(u"escala = u" + str(escala))
+                        df.scale = escala
+        log.log(u"Se han extraido los datos de '{}' correctamente".format(archivo))
+
+    except Exception as e:
+        log.log(u">> ERROR. Se ha producido un error en el proceso de extracción de datos para el archivo '{}', ordinal '{}', columna '{}'".format(archivo, ordinal, columna))
+        log.log(str(e))
+
+    tiempo_extraedato_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'extraedato': {}".format(tiempo.tiempo([tiempo_extraedato_ini,tiempo_extraedato_fin])))
+    
     log.log(u"Proceso 'extraedato' finalizado!")

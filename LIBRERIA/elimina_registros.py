@@ -13,12 +13,15 @@
 import arcpy
 import importlib
 import sys
+import datetime
+
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
+tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"elimina_registros.py cargado con éxito")
+log.log(u"Librería 'elimina_registros.py' cargado con éxito")
 
 # Ruta a la capa de interés
 # capa = u"Cuerpoaguaintermitente"
@@ -27,7 +30,9 @@ log.log(u"elimina_registros.py cargado con éxito")
 
 def eliminaregistros(capa, campo, valor):
 
-    log.log(u"'elimina_registros.eliminaregistros' iniciando...")
+    tiempo_elireg_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
+    log.log(u"'elimina_registros.eliminaregistros' iniciando para {}...".format(capa))
 
     try:
 
@@ -52,4 +57,7 @@ def eliminaregistros(capa, campo, valor):
         log.log(u">> ERROR, el proceso elimina registros falló")
         log.log(str(e))
     
-    log.log(u"'elimina_registros.eliminaregistros' terminado")
+    tiempo_elireg_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(u"tiempo total de librería 'eliminaregistros': {}".format(tiempo.tiempo([tiempo_elireg_ini,tiempo_elireg_fin])))
+
+    log.log(u"'elimina_registros.eliminaregistros' finalizado!")
