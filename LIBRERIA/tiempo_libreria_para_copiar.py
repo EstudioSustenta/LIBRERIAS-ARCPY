@@ -8,5 +8,5 @@ import datetime
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 tiempoidenini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     tiempoidenfin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'identity_sistema': {}".format(tiempo.tiempo([tiempoidenini,tiempoidenfin])))
+    log.log(repet,u"tiempo total de librería 'identity_sistema': {}".format(tiempo.tiempo([tiempoidenini,tiempoidenfin])))
 

@@ -29,14 +29,19 @@ renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")       #carga el s
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'urbano_nacional' cargada con éxito...")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'urbano_nacional' cargada con éxito...")
 
 def purbano(nummapa):
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_purbano_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     layout_name = u"Layout"
-    log.log(u"'urbano_nacional' iniciando...")
+    log.log(repet,u"'urbano_nacional' iniciando...")
 
 
     # proceso para cargar y dar formato a capas comunes
@@ -65,10 +70,16 @@ def purbano(nummapa):
     ccapas.carga_capas(rutarednc, "red nacional de caminos")
     simbologia.aplica_simb2(u"red nacional de caminos","red nacional de caminos")
 
+    arcpy.env.repet = arcpy.env.repet - 1
+    repet = arcpy.env.repet
+
 
     def municipio(nummapa):
+        
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
 
-        log.log(u"Iniciando proceso para mapa municipal...")
+        log.log(repet,u"Iniciando proceso para mapa municipal...")
 
         # try:
             
@@ -78,13 +89,19 @@ def purbano(nummapa):
         nombarch = u"{} {} municipio".format(arcpy.env.proyecto,nummapa)
         formato.formato_layout(u"UBICACIÓN A NIVEL MUNICIPIO")
         exportma.exportar(r_dest,nombarch)
+
+        arcpy.env.repet = arcpy.env.repet - 1
+
         arcpy.env.nummapa = arcpy.env.nummapa + 1
 
     def ciudad(nummapa):
 
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
+
         # Proceso para generar mapa de la ciudad: 
         
-        log.log(u"Iniciando proceso para mapa de ciudad...")
+        log.log(repet,u"Iniciando proceso para mapa de ciudad...")
 
         try:   
             
@@ -98,20 +115,25 @@ def purbano(nummapa):
             nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" ciudad"
             formato.formato_layout(u"UBICACIÓN A NIVEL CIUDAD")
             exportma.exportar(r_dest,nombarch)
-            log.log(u"Proceso para mapa de ciudad realizado con éxito.\n")
+            log.log(repet,u"Proceso para mapa de ciudad realizado con éxito.\n")
             arcpy.env.nummapa = arcpy.env.nummapa + 1
 
         except Exception as e:
-            log.log(u">> ERROR, el proceso para generar mapa de ciudad falló")
-            log.log(str(e))
+            log.log(repet,u">> ERROR, el proceso para generar mapa de ciudad falló")
+            log.log(repet,str(e))
 
-        log.log(u"Terminando proceso para ciudad\n")
+        log.log(repet,u"Terminando proceso para ciudad\n")
+
+        arcpy.env.repet = arcpy.env.repet - 1
 
     def maparegion(nummapa):
 
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
+
         # Proceso para generar mapa de la región:
 
-        log.log(u"Iniciando proceso para región...")
+        log.log(repet,u"Iniciando proceso para región...")
 
         try:
 
@@ -122,18 +144,23 @@ def purbano(nummapa):
             nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" region"
             formato.formato_layout(u"UBICACIÓN A NIVEL REGIÓN")
             exportma.exportar(r_dest,nombarch)
-            log.log(u"Proceso Región finalizado!")
+            log.log(repet,u"Proceso Región finalizado!")
             arcpy.env.nummapa = arcpy.env.nummapa + 1
 
         except Exception as e:
-            log.log(u">> ERROR, el proceso para generar mapa de región falló")
-            log.log(str(e))
+            log.log(repet,u">> ERROR, el proceso para generar mapa de región falló")
+            log.log(repet,str(e))
 
-        log.log(u"Terminando proceso para región\n")
+        log.log(repet,u"Terminando proceso para región\n")
+
+        arcpy.env.repet = arcpy.env.repet - 1
 
     def zona(nummapa):
 
-        log.log(u"Iniciando proceso para zona...")
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
+
+        log.log(repet,u"Iniciando proceso para zona...")
 
         # Proceso para generar mapa de la zona:
 
@@ -148,19 +175,25 @@ def purbano(nummapa):
             formato.formato_layout(u"UBICACIÓN A NIVEL ZONA")
             exportma.exportar(r_dest,nombarch)
             arcpy.env.nummapa = arcpy.env.nummapa + 1
-            log.log(u"Proceso para zona finalizado!")
+            log.log(repet,u"Proceso para zona finalizado!")
 
         except Exception as e:
-            log.log(u">> ERROR, el proceso para generar mapa de zona falló")
-            log.log(str(e))
+            log.log(repet,u">> ERROR, el proceso para generar mapa de zona falló")
+            log.log(repet,str(e))
         
-        log.log(u"Terminando proceso para zona\n")
+        log.log(repet,u"Terminando proceso para zona\n")
+
+        arcpy.env.repet = arcpy.env.repet - 1
+
 
     def sitio(nummapa):
 
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
+
         # Proceso para generar mapa de la sitio:
 
-        log.log(u"Iniciando proceso para sitio...")
+        log.log(repet,u"Iniciando proceso para sitio...")
 
         try:
 
@@ -184,14 +217,16 @@ def purbano(nummapa):
             act_rot.activar_rotulos(u"red nacional de caminos", u"NOMBRE")
             exportma.exportar(r_dest,nombarch)
             renombra.renomb(arcpy.env.proyecto, "SISTEMA")
-            log.log(u"Proceso sitio finalizado!")
+            log.log(repet,u"Proceso sitio finalizado!")
             arcpy.env.nummapa = arcpy.env.nummapa + 1
             
         except Exception as e:
-            log.log(u">> ERROR, el proceso para generar mapa de sitio falló")
-            log.log(str(e))
+            log.log(repet,u">> ERROR, el proceso para generar mapa de sitio falló")
+            log.log(repet,str(e))
 
-        log.log(u"Terminando proceso para sitio\n")
+        log.log(repet,u"Terminando proceso para sitio\n")
+
+        arcpy.env.repet = arcpy.env.repet - 1
 
      # -------------------------------------------------------------------------------
 
@@ -207,6 +242,6 @@ def purbano(nummapa):
     ccapas.remover_capas(nnomb)
 
     tiempo_purbano_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'purbano': {}".format(tiempo.tiempo([tiempo_purbano_ini,tiempo_purbano_fin])))
+    log.log(repet,u"tiempo total de librería 'purbano': {}".format(tiempo.tiempo([tiempo_purbano_ini,tiempo_purbano_fin])))
 
-    log.log(u"'urbano_nacional' finalizado!")
+    log.log(repet,u"'urbano_nacional' finalizado!")

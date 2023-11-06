@@ -8,12 +8,17 @@ ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 
-log.log(u"'quitar_registros.py' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"'quitar_registros.py' cargado con éxito")
 
 def quitaregistros(capa, campoord):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     try:
-        log.log(u"'quitar_registros.quitaregistros' iniciando para " + capa + u"...")
+        log.log(repet,u"'quitar_registros.quitaregistros' iniciando para " + capa + u"...")
         # Ruta al shapefile o capa de interés
         capa = u"Cuerpoaguaintermitente"
 
@@ -34,11 +39,13 @@ def quitaregistros(capa, campoord):
 
         # Ahora, la lista 'cercanos' contiene los valores ordenados de mayor a menor
         for i in range(10):
-            log.log(cercanos[i])
-        log.log(u"'quitar_registros.quitaregistros' finalizado para " + capa)
+            log.log(repet,cercanos[i])
+        log.log(repet,u"'quitar_registros.quitaregistros' finalizado para " + capa)
 
     except Exception as e:
-        log.log(u">> ERROR, el proceso 'quitar_registros.quitaregistros' falló para " + capa)
-        log.log(str(e))
+        log.log(repet,u">> ERROR, el proceso 'quitar_registros.quitaregistros' falló para " + capa)
+        log.log(repet,str(e))
 
-    log.log(u"'quitar_registros.quitaregistros' finalizado!")
+    log.log(repet,u"'quitar_registros.quitaregistros' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1

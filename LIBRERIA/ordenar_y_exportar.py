@@ -8,18 +8,15 @@ import importlib
 import sys
 import datetime
 
-
-
-
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
+repet = arcpy.env.repet
 
-
-log.log(u"Librería 'ordenar_y_exportar.py' cargado con éxito")
+log.log(repet,u"Librería 'ordenar_y_exportar.py' cargado con éxito")
 
 # capa = u"Cuerpoaguaintermitente"
 # campo = u"NEAR_DIST"
@@ -29,9 +26,12 @@ log.log(u"Librería 'ordenar_y_exportar.py' cargado con éxito")
 
 def ordenayexporta(capa, campo, camporef, archivo, cantidad):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_ordenayexporta_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    log.log(u"'ordenar_y_exportar.ordenayexporta' iniciando para {}...".format(archivo))
+    log.log(repet,u"'ordenar_y_exportar.ordenayexporta' iniciando para {}...".format(archivo))
 
     try:
 
@@ -43,7 +43,7 @@ def ordenayexporta(capa, campo, camporef, archivo, cantidad):
         layer = arcpy.mapping.Layer(ruta_capa).name  # Utiliza el nombre de la capa sin extensión si es necesario en tu código
         archivo = "{}{} {}.txt".format(arcpy.env.carp_cliente, layer, arcpy.env.fechahora)
 
-        log.log(u"capa: '{}', archivo de texto '{}', layer en mapa '{}'".format(capa, archivo, layer))
+        log.log(repet,u"capa: '{}', archivo de texto '{}', layer en mapa '{}'".format(capa, archivo, layer))
 
         # Crear una lista para almacenar las relaciones entre 'campo' y 'camporef'
         valores = []
@@ -73,12 +73,14 @@ def ordenayexporta(capa, campo, camporef, archivo, cantidad):
                 linea = u"{n}{tab}{valor_camporef}{tab}{valor}{tab}metros".format(n=i+1, valor_camporef=valores[i][1], valor=int(valores[i][0]), tab=chr(9))
                 archivo.write(linea + '\n')
             archivo.close()
-            log.log(u"Archivo '{}' exportado satisfactoriamente".format(archivo))
+            log.log(repet,u"Archivo '{}' exportado satisfactoriamente".format(archivo))
     except Exception as e:
-        log.log(u">> ERROR, el proceso ordenar y exportar falló para '{}'".format(archivo))
-        log.log(str(e))
+        log.log(repet,u">> ERROR, el proceso ordenar y exportar falló para '{}'".format(archivo))
+        log.log(repet,str(e))
     
     tiempo_ordenayexporta_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'ordenayexporta': {}".format(tiempo.tiempo([tiempo_ordenayexporta_ini,tiempo_ordenayexporta_fin])))
+    log.log(repet,u"tiempo total de librería 'ordenayexporta': {}".format(tiempo.tiempo([tiempo_ordenayexporta_ini,tiempo_ordenayexporta_fin])))
 
-    log.log(u"'ordenar_y_exportar.ordenayexporta' finalizado!")
+    log.log(repet,u"'ordenar_y_exportar.ordenayexporta' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1

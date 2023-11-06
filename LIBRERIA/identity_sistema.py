@@ -21,20 +21,25 @@ mxd = arcpy.env.mxd
 df = arcpy.env.df
 arcpy.env.overwriteOutput = True
 
-log.log(u"Librería 'identity_sistema.py' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'identity_sistema.py' cargado con éxito")
 
 def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_iden_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
-    log.log(u"'idproy.idproy' iniciando...")
-    log.log(u"rutaCl: " + rutaCl)
-    log.log(u"capaCl: " + capaCl)
-    log.log(u"capa_salida: " + capa_salida)
+    log.log(repet,u"'idproy.idproy' iniciando...")
+    log.log(repet,u"rutaCl: " + rutaCl)
+    log.log(repet,u"capaCl: " + capaCl)
+    log.log(repet,u"capa_salida: " + capa_salida)
     for campo in camposCons:
-        log.log(u"campo: " + campo)
+        log.log(repet,u"campo: " + campo)
     for dato in dAlter:
-        log.log(u"dAlter: " + dato)
+        log.log(repet,u"dAlter: " + dato)
 
 
     # rutina para generar identidad
@@ -46,15 +51,15 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
         with codecs.open(archtxt, 'w', encoding='utf-8') as archivo:
             archivo.write('Archivo de datos identity.\n')
             archivo.write('Archivo fuente: ' + arch + "\n\n")
-            log.log(u"El archivo '{}' ha sido creado con datos de '{}'".format(archtxt, arch))
+            log.log(repet,u"El archivo '{}' ha sido creado con datos de '{}'".format(archtxt, arch))
 
         arcpy.env.overwriteOutput = True
 
         # #rutina para crear archivo de identidad
         
         capasalida = (u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capaidetidad))
-        log.log(u"archivo para identidad: {}".format(arch))
-        log.log(u"archivo de salida: {}".format(capasalida))
+        log.log(repet,u"archivo para identidad: {}".format(arch))
+        log.log(repet,u"archivo de salida: {}".format(capasalida))
 
         arcpy.Identity_analysis(in_features="SISTEMA",
             identity_features=arch,
@@ -76,34 +81,17 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
 
         archivo.close()
 
-        # i = 0
-
-        # for nombre in nombres_de_campos:
-        #     for cons in camposCons:
-        #         if cons == nombre:
-        #             capatr = arcpy.mapping.Layer(capa_salida) # Obtén una referencia a la capa "uso de suelo" en el mapa actual
-        #             with arcpy.da.SearchCursor(capatr, nombre) as cursor: # Lee el primer registro
-        #                 registro = next(cursor)
-        #             valor_del_campo = registro[0] # El valor del campo "DESCRIP" del primer registro se encuentra en registro[0]
-        #             if isinstance(valor_del_campo, int) or isinstance(valor_del_campo, float):
-        #                 valor_del_campo = str(valor_del_campo)
-        #                 if valor_del_campo is None or valor_del_campo == 0 or valor_del_campo == "0":
-        #                     valor_del_campo = u"Sistema fuera de área de " + capa_salida
-                    
-        #             with codecs.open(archtxt, 'a', encoding='utf-8') as archivo:
-        #                 archivo.write(nombre + chr(9) + dAlter[i] + chr(9) + valor_del_campo + "\n")
-        #                 i = i + 1
-        # # ccapas.remover_capas(capa_salida)
-
-        log.log(u"'idproy.idproy' Se ha ejecutado satisfactoriamente para {}.".format(arch))
+        log.log(repet,u"'idproy.idproy' Se ha ejecutado satisfactoriamente para {}.".format(arch))
 
     except Exception as e:
-        log.log(u">> ERROR, no se ha podido ejecutar identity_sistema.py adecuadamente para {}".format(arch))
-        log.log(str(e))
+        log.log(repet,u">> ERROR, no se ha podido ejecutar identity_sistema.py adecuadamente para {}".format(arch))
+        log.log(repet,str(e))
 
     
     tiempo_iden_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería identity_sistema.py: {}".format(tiempo.tiempo([tiempo_iden_ini,tiempo_iden_fin])))
+    log.log(repet,u"tiempo total de librería identity_sistema.py: {}".format(tiempo.tiempo([tiempo_iden_ini,tiempo_iden_fin])))
     
-    log.log(u"'idproy.idproy' finalizado!")
+    log.log(repet,u"'idproy.idproy' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1
     

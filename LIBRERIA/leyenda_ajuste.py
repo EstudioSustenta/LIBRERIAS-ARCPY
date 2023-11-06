@@ -12,15 +12,20 @@ sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'leyenda_ajuste' cargada con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'leyenda_ajuste' cargada con éxito")
 # mxd = arcpy.mapping.MapDocument(u"CURRENT")
 mxd = arcpy.env.mxd
 
 def leyenda():
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_leyenda_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
-    log.log(u"'leyenda' iniciando...")
+    log.log(repet,u"'leyenda' iniciando...")
     try:
             
         # Encuentra el cuadro de leyendas (legend) en el diseño
@@ -43,19 +48,19 @@ def leyenda():
 
             # Establece la nueva altura para el cuadro de leyendas
             cuadro_de_leyendas.elementHeight = nueva_altura
-            log.log(u"Se ha ajustado la leyenda a " + str(nueva_altura) + "cm")
+            log.log(repet,u"Se ha ajustado la leyenda a " + str(nueva_altura) + "cm")
         
         numero_de_elementos = len(cuadro_de_leyendas.items)
 
-        log.log(u"No se requiere ajuste de leyenda ")
+        log.log(repet,u"No se requiere ajuste de leyenda ")
 
     except Exception as e:
-        log.log(u">> ERROR, el proceso de ajuste de leyenda falló")
-        log.log(str(e))
+        log.log(repet,u">> ERROR, el proceso de ajuste de leyenda falló")
+        log.log(repet,str(e))
 
     tiempo_leyenda_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'leyenda': {}".format(tiempo.tiempo([tiempo_leyenda_ini,tiempo_leyenda_fin])))
+    log.log(repet,u"tiempo total de librería 'leyenda': {}".format(tiempo.tiempo([tiempo_leyenda_ini,tiempo_leyenda_fin])))
 
-    log.log(u"'leyenda' finalizado!")
+    log.log(repet,u"'leyenda' finalizado!")
 
-
+    arcpy.env.repet = arcpy.env.repet - 1

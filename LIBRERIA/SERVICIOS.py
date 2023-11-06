@@ -28,13 +28,18 @@ renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
+repet = arcpy.env.repet
 
-log.log(u"Librería 'servicios.py' cargado con éxito")
+
+log.log(repet,u"Librería 'servicios.py' cargado con éxito")
 
 def servicios(nummapa):
 
+        arcpy.env.repet = arcpy.env.repet + 1
+        repet = arcpy.env.repet
+
         tiempo_servicios_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-        log.log(u"'servicios' iniciando...")
+        log.log(repet,u"'servicios' iniciando...")
 
         # -------------------------------------------------------------------------------
         # Proceso para generar mapa del municipio:
@@ -52,37 +57,37 @@ def servicios(nummapa):
 
         # genera el clip a una distancia de cinco minutos caminando (417 metros de radio)
         distancia = u"417"
-        log.log(u"Distancia de análisis: {} metros".format(distancia))
+        log.log(repet,u"Distancia de análisis: {} metros".format(distancia))
         
         clipsalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/Clip manz " + distancia + ".shp"
 
         try:
-                log.log(u"Generando buffer de sistema a {} metros".format(distancia))
+                log.log(repet,u"Generando buffer de sistema a {} metros".format(distancia))
                 capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/Buffer " + distancia + ".shp"
-                log.log(u"Generando buffer de sistema a {} metros".format(distancia))
+                log.log(repet,u"Generando buffer de sistema a {} metros".format(distancia))
                 arcpy.Buffer_analysis(in_features="SISTEMA", 
                         out_feature_class=capasalida, 
                         buffer_distance_or_field= distancia + " Meters", 
                         line_side="FULL", line_end_type="ROUND", dissolve_option="NONE",
                         dissolve_field="", method="PLANAR")
-                log.log(u"Buffer de sistema '{}' metros generado con éxito".format(capasalida))
+                log.log(repet,u"Buffer de sistema '{}' metros generado con éxito".format(capasalida))
                 
         except Exception as e:
-                log.log(u">> ERROR, el proceso para generar el buffer de {} falló".format(distancia))
-                log.log(str(e))        
+                log.log(repet,u">> ERROR, el proceso para generar el buffer de {} falló".format(distancia))
+                log.log(repet,str(e))        
         
         try:
-                log.log(u"Generando clip de '{}' a {} metros".format(capaservicios,distancia))
+                log.log(repet,u"Generando clip de '{}' a {} metros".format(capaservicios,distancia))
                 clipsalida = (u"Y:/0_SIG_PROCESO/X TEMPORAL/Clip servicios {}".format(distancia))
                 arcpy.Clip_analysis(in_features=capaservicios,
                         clip_features=capasalida,
                         out_feature_class=clipsalida,
                         cluster_tolerance="")
-                log.log(u"Clip de sistema en '{}' generado con éxito".format(clipsalida))
+                log.log(repet,u"Clip de sistema en '{}' generado con éxito".format(clipsalida))
 
         except Exception as e:
-                log.log(u">> ERROR, el proceso para generar el Clip en {} falló".format(clipsalida))
-                log.log(str(e))
+                log.log(repet,u">> ERROR, el proceso para generar el Clip en {} falló".format(clipsalida))
+                log.log(repet,str(e))
 
         capaclip = "Clip servicios {}".format(distancia)
         ccapas.carga_capas("Y:/0_SIG_PROCESO/X TEMPORAL",capaclip)
@@ -95,16 +100,16 @@ def servicios(nummapa):
                 capamanz = ("{}/{}.shp".format(ruta_arch,manz))
                 clip2 = "Clip Manzanas urbanas {}".format(distancia)
                 clipsalida1 = (u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(clip2))
-                log.log(u"Generando clip de '{}' a {} metros".format(capamanz,distancia))
+                log.log(repet,u"Generando clip de '{}' a {} metros".format(capamanz,distancia))
                 arcpy.Clip_analysis(in_features=capamanz,
                         clip_features=capasalida,
                         out_feature_class=clipsalida1,
                         cluster_tolerance="")
-                log.log(u"Clip de sistema en '{}' generado con éxito".format(clipsalida1))
+                log.log(repet,u"Clip de sistema en '{}' generado con éxito".format(clipsalida1))
 
         except Exception as e:
-                log.log(u">> ERROR, el proceso para generar el Clip en {} falló".format(clipsalida1))
-                log.log(str(e))
+                log.log(repet,u">> ERROR, el proceso para generar el Clip en {} falló".format(clipsalida1))
+                log.log(repet,str(e))
         
         ccapas.carga_capas("Y:/0_SIG_PROCESO/X TEMPORAL",clip2)
         z_extent.zoom_extent(layout_name, clip2)
@@ -140,11 +145,11 @@ def servicios(nummapa):
         ccapas.remover_capas(nuevomanz)
         ccapas.remover_capas(nuevocalles)
         ccapas.remover_capas(nuevobuff)
-        log.log(u"'sercicios.servicios' finalizado!")
+        log.log(repet,u"'sercicios.servicios' finalizado!")
 
         arcpy.env.nummapa = arcpy.env.nummapa + 1
 
         tiempo_servicios_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-        log.log(u"tiempo total de librería 'servicios': {}".format(tiempo.tiempo([tiempo_servicios_ini,tiempo_servicios_fin])))
+        log.log(repet,u"tiempo total de librería 'servicios': {}".format(tiempo.tiempo([tiempo_servicios_ini,tiempo_servicios_fin])))
 
-        
+        arcpy.env.repet = arcpy.env.repet - 1        

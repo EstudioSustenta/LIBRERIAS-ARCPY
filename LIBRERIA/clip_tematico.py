@@ -35,25 +35,30 @@ renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
 
-reload(ccapas)
-reload(filtro)
-reload(z_extent)
-reload(formato)
-reload(exportma)
-reload(act_rot)
-reload(extraedato)
-reload(log)
-reload(leyenda)
-reload(tiempo)
+# reload(ccapas)
+# reload(filtro)
+# reload(z_extent)
+# reload(formato)
+# reload(exportma)
+# reload(act_rot)
+# reload(extraedato)
+# reload(log)
+# reload(leyenda)
+# reload(tiempo)
+
+repet = arcpy.env.repet
 
 
-
-log.log(u"Librería 'clip_tematico' cargada con éxito")
+log.log(repet,u"Librería 'clip_tematico' cargada con éxito")
 
 def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_clip_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
-    log.log(u"'clip_tematico' iniciando para {}...".format(tit))
+    log.log(repet,u"'clip_tematico' iniciando para {}...".format(tit))
 
     rbase = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     numero_de_elementos = None
@@ -73,7 +78,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         campoRotulo = u"NOM_MUN"
 
     # proceso de capa base
-    log.log(u"Cargando capa base y aplicando formato: " + cbase)
+    log.log(repet,u"Cargando capa base y aplicando formato: " + cbase)
     ccapas.carga_capas(rbase, cbase)
     filtro.fil_expr(cbase, filtr)
     act_rot.activar_rotulos(cbase, campoRotulo)
@@ -87,33 +92,33 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     for ruta in rutas:
         capa = capas[i]
 
-        log.log(u"Bucle para proceso de capa " + capa)
+        log.log(repet,u"Bucle para proceso de capa " + capa)
         
         arch = ruta + "/" + capa + ".shp"
         capasal = u"Clip " + capa
         capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capasal)
         
         if tipo == "nacional":
-            log.log(u"Proceso 'nacional', no se realiza clip del archivo para la capa " + capa)
+            log.log(repet,u"Proceso 'nacional', no se realiza clip del archivo para la capa " + capa)
             # aquí debo poner la carga de archivo capa y darle formato.
             ccapas.carga_capas(ruta,capa)
             simbologia.aplica_simb2(capa,capa)
 
             
         else:           # si la visualización no es nacional, hace un recorte (clip) del área de interés (estatal o municipal)
-            log.log(u"Proceso {}, no se realiza clip del archivo para la capa {}".format(tipo, capa))
+            log.log(repet,u"Proceso {}, no se realiza clip del archivo para la capa {}".format(tipo, capa))
             arcpy.Clip_analysis(in_features=arch,
                 clip_features=cbase,
                 out_feature_class=capasalida,
                 cluster_tolerance="")
 
             numero_de_elementos = int(arcpy.GetCount_management(capasalida).getOutput(0))
-            log.log(u"elementos en clip " + capasalida.upper() + ":" + str(numero_de_elementos))
+            log.log(repet,u"elementos en clip " + capasalida.upper() + ":" + str(numero_de_elementos))
 
             if numero_de_elementos == 0 and capasalida is None:     # Se evalúa si la capa producto del clip tiene algún contenido y si el archivo existe en la carpeta de temporales
-                log.log(u"La capa " + capasal + " no contiene elementos")
+                log.log(repet,u"La capa " + capasal + " no contiene elementos")
             else:
-                log.log(u"Capa de trabajo no nacional:\t" + capasalida)
+                log.log(repet,u"Capa de trabajo no nacional:\t" + capasalida)
                 desc = arcpy.Describe(capasalida)
                 tipo_geometria = desc.shapeType
 
@@ -130,12 +135,13 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                     ccapas.cargar(capasalida)
                     renombra.renomb(capasal, capa)
 
-                simbologia.aplica_simb(capa)
+                simbologia.aplica_simb2(capa,capa)
+                log.log(repet,u"SE APLICÓ ESTA SIMBOLOGIA")
                     
     #    evalúa si el tipo de geometría de la capa es tipo polígono, si es así, aplica una transparencia
         desc = arcpy.Describe(capa)
         tipo_geometria = desc.shapeType
-        log.log(u"geometría tipo " + tipo_geometria)
+        log.log(repet,u"geometría tipo " + tipo_geometria)
 
         if tipo_geometria == "Polygon":
                 transp.transp(capa, 50)
@@ -148,7 +154,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     # Proceso para hacer zoom apara que quepan un número (ordinal) de elementos en la vista del mapa
     if ordinal > 0 and tipo != "nacional":      #evalúa si ordinal es mayor que cero y la cobertura no es nacional.
         archivo = "{}{} near {}.txt".format(arcpy.env.carp_cliente, capa, arcpy.env.fechahora)
-        log.log(u"Ordinal mayor que cero, se visualizarán " + str(ordinal) + " elementos para " + archivo)
+        log.log(repet,u"Ordinal mayor que cero, se visualizarán " + str(ordinal) + " elementos para " + archivo)
         columna = 3
         extraedato.extraedato(archivo, ordinal, columna)
     
@@ -179,7 +185,10 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     arcpy.env.nummapa = nummapa 
 
     tiempo_clip_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'clipt': {}".format(tiempo.tiempo([tiempo_clip_ini,tiempo_clip_fin])))
+    log.log(repet,u"tiempo total de librería 'clipt': {}".format(tiempo.tiempo([tiempo_clip_ini,tiempo_clip_fin])))
 
-    log.log(u"'clip temático' finalizado!")
+    log.log(repet,u"'clip temático' finalizado!")
 
+    arcpy.env.repet = arcpy.env.repet - 1
+
+arcpy.env.repet = arcpy.env.repet - 1

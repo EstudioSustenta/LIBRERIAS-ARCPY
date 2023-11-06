@@ -27,7 +27,8 @@ arcpy.env.df = arcpy.mapping.ListDataFrames(mxd)[0]
 df = arcpy.env.df
 arcpy.env.layout = u"Layout"
 
-
+arcpy.env.repet = 0
+repet = arcpy.env.repet
 
 
 def rutacarp():
@@ -58,8 +59,8 @@ def rutacarp():
 # Preliminares
 def db():
 
-# try:
-    # log.log(u"'db' iniciando...")
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     # Importar el módulo desde el paquete LIBRERIA utilizando importlib
     global log
@@ -70,25 +71,22 @@ def db():
     reload(log)
     
     dbas.datosbasicos() # define los datos básicos del proyecto y crea el archivo txt correspondiente
-    log.log(u"\n\n\n")
-    log.log(u"--------------INICIO DE SECCIÓN LOG \--------------------------")
-    log.log(u"\n")
-    log.log(u"Proceso 'datos básicos' finalizado\n")
+    log.log(repet,u"\n\n\n")
+    log.log(repet,u"--------------INICIO DE SECCIÓN LOG \--------------------------")
+    log.log(repet,u"\n")
+    log.log(repet,u"Proceso 'datos básicos' finalizado\n")
 
-# except Exception as e:
-    # log.log(u"\n\n>> ERROR, no se pudo ejecutar 'db'")
-    # log.log(str(e) + u"\n\n\n\n")
-    # borrainn()
-    # log.log(u"'db' finalizado\n\n")
+    arcpy.env.repet = arcpy.env.repet - 1
 
 def cargalib():
 
-    # try:
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     log = importlib.import_module(u"LIBRERIA.archivo_log")
     reload(log)
 
-    log.log(u"'cargalib' iniciando...")
+    log.log(repet,u"'cargalib' iniciando...")
 
     global ccapas
     global ctrlcapa
@@ -135,11 +133,9 @@ def cargalib():
     leyenda = importlib.import_module(u"LIBRERIA.leyenda_ajuste")
     tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-    # log.log("\n\n")
-    
-    
     
     reload(ctrlcapa)
+    reload(ccapas)
     reload(ctrlgrup)
     reload(exportma)
     reload(filtro)
@@ -167,7 +163,9 @@ def cargalib():
     act_rot.activar_rotulos("SISTEMA","DESCRIP")
     z_extent.zoom_extent(arcpy.env.layout, u"SISTEMA")
 
-    log.log(u"'cargalib' finalizado\n\n")
+    log.log(repet,u"'cargalib' finalizado\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
     # nota, para poder cargar las librería y que se genere el archivo .pyc adecuadamente, cada librería debe iniciar con la línea: # -*- coding: utf-8 -*-
 
@@ -176,10 +174,13 @@ def cargalib():
 
 
 def borrainn():
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
         
     try:
 
-        log.log(u"iniciando proceso de borrado capas innecesarias...")
+        log.log(repet,u"iniciando proceso de borrado capas innecesarias...")
 
         # elimina todas las capas, excepto "SISTEMA"
 
@@ -195,27 +196,32 @@ def borrainn():
         for lyr in arcpy.mapping.ListLayers(mxd, u"", df):
             if lyr not in capas_a_mantener:
                 arcpy.mapping.RemoveLayer(df, lyr)
-                log.log(u"Removiendo capa " + str(lyr))
+                log.log(repet,u"Removiendo capa " + str(lyr))
 
         # Actualizar el contenido del DataFrame
         arcpy.RefreshTOC()
-        log.log(u"Proceso de borrado capas innecesarias finalizado! \n\n")
+        log.log(repet,u"Proceso de borrado capas innecesarias finalizado! \n\n")
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'borrainn'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'borrainn'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
 def mapaPais(nummapa):
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
     
 
     try:
 
-        log.log(u"Proceso 'mapaPais' iniciando...")
+        log.log(repet,u"Proceso 'mapaPais' iniciando...")
 
         # -------------------------------------------------------------------------------
         # Proceso para generar mapa a nivel pais
@@ -236,14 +242,17 @@ def mapaPais(nummapa):
         arcpy.env.nummapa = nummapa + 1
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaPais'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaPais'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
     
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(u"Mapa País",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Mapa País",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'mapaPais' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'mapaPais' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def mapaEstatal(nummapa):
@@ -251,12 +260,14 @@ def mapaEstatal(nummapa):
     # Proceso para generar mapa estatal
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet    
 
     try:
 
 
-        log.log(u"Proceso 'mapaEstatal' iniciando...")
+        log.log(repet,u"Proceso 'mapaEstatal' iniciando...")
 
         nombre_capa = u"MUNICIPAL CENSO 2020 DECRETO 185"
         ruta_arch = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
@@ -286,28 +297,32 @@ def mapaEstatal(nummapa):
         arcpy.env.nummapa = nummapa + 1
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaEstatal'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaEstatal'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(u"Ubicación a nivel estado",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Ubicación a nivel estado",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'mapaEstatal' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'mapaEstatal' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def mapaMunicipal(nummapa):
+
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa municipal
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    
-    reload(urbano)
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet    
 
     try:
 
-        log.log(u"Proceso 'mapaMunicipal' iniciando...")
-        log.log(u"Ámbito urbano: " + arcpy.env.ambito + u" para mapa municipal")
+        log.log(repet,u"Proceso 'mapaMunicipal' iniciando...")
+        log.log(repet,u"Ámbito urbano: " + arcpy.env.ambito + u" para mapa municipal")
 
         if arcpy.env.ambito != "Rural":
             # proceso si el sistema es urbano
@@ -319,67 +334,80 @@ def mapaMunicipal(nummapa):
             rural.prural(nummapa)
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'mapaMunicipal'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaMunicipal'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(u"Mapa municipal",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Mapa municipal",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    
+    log.log(repet,u"Proceso 'mapaMunicipal' finalizado!...\n\n")
 
-    log.log(u"Proceso 'mapaMunicipal' finalizado!...\n\n")
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def cuadrodeLocalizacion():
     # -------------------------------------------------------------------------------
     # Proceso para generar cuadros de construcción en formato dwg
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'cuadrodeLocalizacion' iniciando...")
+        log.log(repet,u"Proceso 'cuadrodeLocalizacion' iniciando...")
         
         dwgs.dxf()
-        log.log(u"Proceso 'cuadrodeLocalizacion' finalizado! \n\n")
+        log.log(repet,u"Proceso 'cuadrodeLocalizacion' finalizado! \n\n")
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cuadrodeLocalizacion'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'cuadrodeLocalizacion'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de proceso '{}': {}".format(u"Archivos dxf",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de proceso '{}': {}".format(u"Archivos dxf",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'cuadrodeLocalizacion' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'cuadrodeLocalizacion' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 def servicios_urbanos(nummapa):
     # -------------------------------------------------------------------------------
     # Proceso para analizar servicios cercanos al sistema (5 minutos caminando a 5 km/hr)
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'servicios' iniciando...")
+        log.log(repet,u"Proceso 'servicios' iniciando...")
 
         if  arcpy.env.ambito != "Rural":
             # proceso si el sistema es urbano
-            log.log(u"Iniciando proceso de servicios urbanos")
+            log.log(repet,u"Iniciando proceso de servicios urbanos")
             servicios.servicios(nummapa)
         else:
-            log.log(u"El proceso de servicios no se aplica al ámbito rural")
-        log.log(u"Proceso 'servicios' finalizado! \n\n")
+            log.log(repet,u"El proceso de servicios no se aplica al ámbito rural")
+        log.log(repet,u"Proceso 'servicios' finalizado! \n\n")
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'servicio_urbanos'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'servicio_urbanos'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(u"Servicios urbanos",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Servicios urbanos",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'servicios' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'servicios' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 # -------------------------------------------------------------------------------
 # -------------------------------------------------------------------------------
@@ -389,11 +417,14 @@ def servicios_urbanos(nummapa):
 def usodeSuelo(nummapa):
     #-----------------> USO DE SUELO<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'usodeSuelo' iniciando...")
+        log.log(repet,u"Proceso 'usodeSuelo' iniciando...")
 
             # IDENTITY
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"                  # ruta del archivo a identificar (sin el slash final)
@@ -413,29 +444,33 @@ def usodeSuelo(nummapa):
         tit = u"USO DE SUELO INEGI SERIE IV"
         ordinal = 0
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
-        log.log(u"Proceso 'usodeSuelo' finalizado! \n\n")
+        log.log(repet,u"Proceso 'usodeSuelo' finalizado! \n\n")
     
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'usodeSuelo'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'usodeSuelo'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa {}: {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa {}: {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'usodeSuelo' para {} finalizado! \n\n".format(capa_salida))
+    log.log(repet,u"'usodeSuelo' para {} finalizado! \n\n".format(capa_salida))
 
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def curvasdeNivel(nummapa):
     #----------------->CURVAS DE NIVEL<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'curvasdeNivel' iniciando...")
+        log.log(repet,u"Proceso 'curvasdeNivel' iniciando...")
 
             # mapa
         capas =  [u"Curvas de nivel"]
@@ -448,23 +483,30 @@ def curvasdeNivel(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'curvasdeNivel'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'curvasdeNivel'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'curvasdeNivel' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'curvasdeNivel' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet -1
+
+
 
 def hidrologia(nummapa):
     #----------------->HIDROLOGÍA<------------------------------------------
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'hidrología' iniciando...")
+        log.log(repet,u"Proceso 'hidrología' iniciando...")
 
             # mapa
         capas =  [u"Corrientes de agua", u"Cuerpos de agua"]
@@ -508,25 +550,31 @@ def hidrologia(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'hidrología'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'hidrología'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'hidrología' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'hidrología' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+    
 
 
 def lineasElectricas(nummapa):
     
     #----------------->LINEAS DE TRANSMISIÓN ELECTRICA<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
     
-        log.log(u"Proceso 'lineasElectricas' iniciando...")
+        log.log(repet,u"Proceso 'lineasElectricas' iniciando...")
 
             # mapa
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
@@ -586,24 +634,29 @@ def lineasElectricas(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'lineasElectricas'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'lineasElectricas'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'lineasElectricas' finalizado!...\n\n")
+    log.log(repet,u"Proceso 'lineasElectricas' finalizado!...\n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def malpais(nummapa):
     #-----------------> MALPAIS<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'malpais' iniciando...")
+        log.log(repet,u"Proceso 'malpais' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84"      # ruta del archivo a identificar (sin el slash final)
@@ -638,24 +691,30 @@ def malpais(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'malpais'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'malpais'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'malpais' finalizado! \n\n")
+    log.log(repet,u"Proceso 'malpais' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def pantano(nummapa):
     #-----------------> PANTANO<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
     try:
 
-        log.log(u"Proceso 'pantano' iniciando...")
+        log.log(repet,u"Proceso 'pantano' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
@@ -691,25 +750,31 @@ def pantano(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'pantano'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'pantano'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'pantano' finalizado! \n\n")
+    log.log(repet,u"Proceso 'pantano' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def pistadeAviacion(nummapa):
     #-----------------> PISTA DE AVIACIÓN<------------------------------------------
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
 
     try:
 
-        log.log(u"Proceso 'pistadeAviacion' iniciando...")
+        log.log(repet,u"Proceso 'pistadeAviacion' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84" # ruta del archivo a identificar (sin el slash final)
@@ -744,18 +809,23 @@ def pistadeAviacion(nummapa):
         
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'pistadeAviacion'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'pistadeAviacion'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'pistadeAviacion' finalizado! \n\n")
+    log.log(repet,u"Proceso 'pistadeAviacion' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
 def presa(nummapa):
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     #-----------------> PRESA<------------------------------------------
 
@@ -764,7 +834,7 @@ def presa(nummapa):
 
     try:
     
-        log.log(u"Proceso 'presa' iniciando...")
+        log.log(repet,u"Proceso 'presa' iniciando...")
 
             # tabla
 
@@ -807,26 +877,32 @@ def presa(nummapa):
         
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'presa'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'presa'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'presa' finalizado! \n\n")
+    log.log(repet,u"Proceso 'presa' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def rasgoArqueologico(nummapa):
 
     #-----------------> RASGO ARQUEOLOGICO<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'rasgoArqueologico' iniciando...")
+        log.log(repet,u"Proceso 'rasgoArqueologico' iniciando...")
 
             # tabla
 
@@ -868,26 +944,32 @@ def rasgoArqueologico(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'rasgoArqueologico'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'rasgoArqueologico'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'rasgoArqueologico' finalizado! \n\n")
+    log.log(repet,u"Proceso 'rasgoArqueologico' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def salina(nummapa):
 
     #-----------------> SALINA<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'salina' iniciando...")
+        log.log(repet,u"Proceso 'salina' iniciando...")
 
             # tabla
 
@@ -930,26 +1012,31 @@ def salina(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'salina'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'salina'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'salina' finalizado! \n\n")
+    log.log(repet,u"Proceso 'salina' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def viaferrea(nummapa):
 
     #-----------------> VIA FERREA<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Vía Ferrea' iniciando...")
+        log.log(repet,u"Proceso 'Vía Ferrea' iniciando...")
 
             # tabla
 
@@ -992,14 +1079,16 @@ def viaferrea(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'viaferrea'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'viaferrea'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'Via ferrea' finalizado! \n\n")
+    log.log(repet,u"Proceso 'Via ferrea' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
@@ -1007,12 +1096,15 @@ def zonaarenosa(nummapa):
 
     #-----------------> ZONA ARENOSA<------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Zona arenosa' iniciando...")
+        log.log(repet,u"Proceso 'Zona arenosa' iniciando...")
 
             # tabla
 
@@ -1055,14 +1147,16 @@ def zonaarenosa(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'zonaarenosa'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'zonaarenosa'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
     
-    log.log(u"Proceso 'Zona arenosa' finalizado! \n\n")
+    log.log(repet,u"Proceso 'Zona arenosa' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 #----------------------------------------------------------------------------------------------------------------------------------------
 #----------------------------------------------------------------------------------------------------------------------------------------
@@ -1077,12 +1171,15 @@ def area_nat_protegida(nummapa):
 
     #-----------------> AREA NATURAL PROTEGIDA <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Areas naturales protegidas' iniciando...")
+        log.log(repet,u"Proceso 'Areas naturales protegidas' iniciando...")
 
             # tabla
 
@@ -1125,14 +1222,16 @@ def area_nat_protegida(nummapa):
         
     
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'area_nat_protegida'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'area_nat_protegida'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"Proceso 'Areas naturales protegidas' finalizado! \n\n")
+    log.log(repet,u"Proceso 'Areas naturales protegidas' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
@@ -1140,12 +1239,15 @@ def clima_koppen(nummapa):
 
     #-----------------> CLIMA <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Climas' iniciando...")
+        log.log(repet,u"Proceso 'Climas' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84" # ruta del archivo a identificar (sin el slash final)
@@ -1180,26 +1282,32 @@ def clima_koppen(nummapa):
         cliptema.clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal)
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'clima_koppen'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'clima_koppen'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
     
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Clima' finalizado! \n\n")
+    log.log(repet,u"'Clima' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 
 def clima_olgyay(nummapa):
 
     #-----------------> CLIMA <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Clima Olgyay' iniciando...")
+        log.log(repet,u"Proceso 'Clima Olgyay' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/00 PROPIOS/CLIMA" # ruta del archivo a identificar (sin el slash final)
@@ -1236,25 +1344,31 @@ def clima_olgyay(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'clima_olgyay'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'clima_olgyay'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Clima Olgyay' finalizado! \n\n")
+    log.log(repet,u"'Clima Olgyay' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 def cuenca(nummapa):
 
     #-----------------> CUENCA HIDROLOGICA <------------------------------------------
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Cuenca hidrologica' iniciando...")
+        log.log(repet,u"Proceso 'Cuenca hidrologica' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                       # ruta del archivo a identificar (sin el slash final)
@@ -1291,19 +1405,24 @@ def cuenca(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'cuenca'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'cuenca'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
     
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Cuenca hidrologica' finalizado! \n\n")
+    log.log(repet,u"'Cuenca hidrologica' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def edafologia(nummapa):
 
     #-----------------> EDAFOLOGIA <------------------------------------------
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
 
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     capa_salida = u"Edafologia" 
@@ -1312,7 +1431,7 @@ def edafologia(nummapa):
 
     try:
 
-        log.log(u"Proceso 'Edafologia' iniciando...")
+        log.log(repet,u"Proceso 'Edafologia' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
@@ -1350,27 +1469,32 @@ def edafologia(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'edafologia'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'edafologia'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         print(u"\n\n>> ERROR, no se pudo ejecutar 'edafologia'")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Edafologia' finalizado! \n\n")
+    log.log(repet,u"'Edafologia' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def humedad(nummapa):
 
     #-----------------> HUMEDAD DEL SUELO <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Humedad del suelo' iniciando...")
+        log.log(repet,u"Proceso 'Humedad del suelo' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
@@ -1407,38 +1531,43 @@ def humedad(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'humedad'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'humedad'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Humedad del suelo' finalizado! \n\n")
+    log.log(repet,u"'Humedad del suelo' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def precip(nummapa):
 
     #-----------------> PRECIPITACION ISOYETAS <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Precipitacion isoyetas' iniciando...")
+        log.log(repet,u"Proceso 'Precipitacion' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
-        capaCl = u"Precipitacion isoyetas.shp"                                           # archivo a identificar
-        capa_salida = u"Precipitacion isoyetas"                                          # capa a crear en el mapa
+        capaCl = u"Precipitacion.shp"                                           # archivo a identificar
+        capa_salida = u"Precipitación"                                          # capa a crear en el mapa
         camposCons =  [u"PRECI_RANG"]                                                     # campos a escribir en el archivo identity
         dAlter =  [u"Rango de precipitacion (l/m2)"]                                      # descriptores para los campos en el archivo identity de salida
 
         idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
 
             
-        capas =  [u"Precipitacion isoyetas"]          #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
+        capas =  [u"Precipitacion"]          #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
         rutas = [rutaCl]
         ncampo = [camposCons[0]]                         # campo para el rótulo de los features en el mapa
         tit = capa_salida                           # título del mapa en el layout
@@ -1463,26 +1592,31 @@ def precip(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'precip'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'precip'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Precipitacion isoyetas' finalizado! \n\n")
+    log.log(repet,u"'Precipitacion' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def subcuenca(nummapa):
 
     #-----------------> SUBCUENCA HIDROLÓGICA <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Subcuencas hidrologicas' iniciando...")
+        log.log(repet,u"Proceso 'Subcuencas hidrologicas' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
@@ -1519,26 +1653,31 @@ def subcuenca(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'subcuenca'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'subcuenca'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Subcuencas hidrologicas' finalizado! \n\n") 
+    log.log(repet,u"'Subcuencas hidrologicas' finalizado! \n\n") 
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 def subregion(nummapa):
 
     #-----------------> SUBREGIÓN HIDROLÓGICA <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Subregiones hidrologicas' iniciando...")
+        log.log(repet,u"Proceso 'Subregiones hidrologicas' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"                                   # ruta del archivo a identificar (sin el slash final)
@@ -1575,14 +1714,16 @@ def subregion(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'subregion'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'subregion'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Subregiones hidrologicas' finalizado! \n\n")
+    log.log(repet,u"'Subregiones hidrologicas' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
@@ -1590,12 +1731,15 @@ def zonaecol(nummapa):
 
     #-----------------> ZONAS ECOLÓGICAS <------------------------------------------
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
 
     try:
 
-        log.log(u"Proceso 'Zonas ecologicas' iniciando...")
+        log.log(repet,u"Proceso 'Zonas ecologicas' iniciando...")
 
             # tabla
         rutaCl = u"Y:/GIS/MEXICO/VARIOS/conabio/WGS84"               # ruta del archivo a identificar (sin el slash final)
@@ -1632,14 +1776,16 @@ def zonaecol(nummapa):
         
 
     except Exception as e:
-        log.log(u"\n\n>> ERROR, no se pudo ejecutar 'zonaecol'")
-        log.log(str(e) + u"\n\n\n\n")
+        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'zonaecol'")
+        log.log(repet,str(e) + u"\n\n\n\n")
         borrainn()
 
     tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+    log.log(repet,u"tiempo total de mapa '{}': {}".format(tit,tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
 
-    log.log(u"'Zonas ecologicas' finalizado! \n\n")
+    log.log(repet,u"'Zonas ecologicas' finalizado! \n\n")
+
+    arcpy.env.repet = arcpy.env.repet - 1
 
 
 
@@ -1658,7 +1804,7 @@ cargalib()
 borrainn()
 arcpy.env.nummapa = 1
 nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
-mapaPais(arcpy.env.nummapa)
+# mapaPais(arcpy.env.nummapa)
 # mapaEstatal(arcpy.env.nummapa)
 # mapaMunicipal(arcpy.env.nummapa)
 
@@ -1688,14 +1834,14 @@ mapaPais(arcpy.env.nummapa)
 # cuenca(arcpy.env.nummapa)
 # edafologia(arcpy.env.nummapa)
 # humedad(arcpy.env.nummapa)
-# precip(arcpy.env.nummapa)
+precip(arcpy.env.nummapa)
 # subcuenca(arcpy.env.nummapa)
 # subregion(arcpy.env.nummapa)
 # zonaecol(arcpy.env.nummapa)
 
-log.log(u"FIN DE PROCESO")
+log.log(repet,u"FIN DE PROCESO")
 tiempoprocfin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-log.log(u"tiempo total de proceso de mapas: {}".format(tiempo.tiempo([tiempoprocini,tiempoprocfin])))
+log.log(repet,u"tiempo total de proceso de mapas: {}".format(tiempo.tiempo([tiempoprocini,tiempoprocfin])))
 
 print (u"\n\n\n\nPROCESO SIG finalizado! \nNo es necesario guardar el mapa.")
 print(u"Revisar archivo log para mayor informacion del proceso.")

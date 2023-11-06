@@ -7,9 +7,6 @@ import sys
 import datetime
 
 
-
-
-
 # Agrega la ruta del paquete al path de Python
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
@@ -29,21 +26,26 @@ tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 # archivo = capa + " near"                                          --->NOMBRE DEL ARCHIVO DE TEXTO, LA RUTA DEL ARCHIVO LA TOMA DE LA CARPETA DEL PROYECTO
 # cantidad = 20                                                     --->CANTIDAD DE REGISTROS QUE SE INCLUYEN EN EL ARCHIVO DE DISTANCIAS
 
-log.log(u"Librería 'near_a_sistema' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'near_a_sistema' cargado con éxito")
 
 def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_nearproceso_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    log.log(u"'nearproceso' iniciando...")
+    log.log(repet,u"'nearproceso' iniciando...")
     arcpy.env.overwriteOutput = True
 
     try:
         # verifica si distancia es una cadena de texto
         if not isinstance(distancia, str):
-            log.log(u"La variable '{}' no es de tipo string (cadena)".format(str(distancia)))
+            log.log(repet,u"La variable '{}' no es de tipo string (cadena)".format(str(distancia)))
             distancia = str(distancia) # si no es cadena, la convierte a cadena
-            log.log(u"La variable '{}' se ha convertido a cadena".format(str(distancia)))
+            log.log(repet,u"La variable '{}' se ha convertido a cadena".format(str(distancia)))
 
         origen = rutaorigen + capa + ".shp"
         capadest = capa + " near"
@@ -56,10 +58,10 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             spatial_grid_1="0",
             spatial_grid_2="0",
             spatial_grid_3="0")
-        log.log(u"Proceso Copy realizado correctamente para '{}' en '{}'".format(origen, destino))
+        log.log(repet,u"Proceso Copy realizado correctamente para '{}' en '{}'".format(origen, destino))
     except Exception as e:
-        log.log(u"Error en proceso copy")
-        log.log(str(e))
+        log.log(repet,u"Error en proceso copy")
+        log.log(repet,str(e))
 
     try:
         arcpy.Near_analysis(in_features=destino,
@@ -69,15 +71,16 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             angle="NO_ANGLE",
             method="PLANAR")
 
-        log.log(u"Proceso Near realizado correctamente para '{}' con un radio de '{}'".format(capadest, radio))
+        log.log(repet,u"Proceso Near realizado correctamente para '{}' con un radio de '{}'".format(capadest, radio))
     except Exception as e:
-        log.log(u">> ERROR, no se ha ejecutado near para '{}' con un radio de '{}'".format(capadest, radio))
-        log.log(str(e))
+        log.log(repet,u">> ERROR, no se ha ejecutado near para '{}' con un radio de '{}'".format(capadest, radio))
+        log.log(repet,str(e))
     
-    reload(ordexp)
     ordexp.ordenayexporta(destino, campo, camporef, archivo, cantidad)
     
     tiempo_nearproceso_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'nearproceso': {}".format(tiempo.tiempo([tiempo_nearproceso_ini,tiempo_nearproceso_fin])))
+    log.log(repet,u"tiempo total de librería 'nearproceso': {}".format(tiempo.tiempo([tiempo_nearproceso_ini,tiempo_nearproceso_fin])))
 
-    log.log(u"Proceso 'nearproceso' de " + capa + u" finalizado satisfactoriamente")
+    log.log(repet,u"Proceso 'nearproceso' de " + capa + u" finalizado satisfactoriamente")
+
+    arcpy.env.repet = arcpy.env.repet - 1

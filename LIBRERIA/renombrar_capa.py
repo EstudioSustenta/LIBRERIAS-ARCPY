@@ -14,15 +14,20 @@ sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'renombrar_capa.py' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'renombrar_capa.py' cargado con éxito")
 
 mxd = arcpy.env.mxd          # Obtener acceso al documento actual
 
 def renomb(caparen, nuevonomb):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_renomb_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    log.log(u"'renombrar_capa.renomb' iniciando...")
+    log.log(repet,u"'renombrar_capa.renomb' iniciando...")
     try:
         
         capas = arcpy.mapping.ListLayers(mxd)
@@ -30,13 +35,14 @@ def renomb(caparen, nuevonomb):
         for capa in capas:
             if capa.name == caparen:
                 capa.name = nuevonomb
-                log.log("'{}' renombrada correctamente como '{}'".format(capa.name, nuevonomb))
+                log.log(repet,"'{}' renombrada correctamente como '{}'".format(capa.name, nuevonomb))
 
     except Exception as e:
-        log.log(u">> ERROR, el proceso renombrar capa falló para '{}' con '{'}".format(capa.name, nuevonomb))
-        log.log(str(e))
+        log.log(repet,u">> ERROR, el proceso renombrar capa falló para '{}' con '{'}".format(capa.name, nuevonomb))
+        log.log(repet,str(e))
 
     tiempo_renomb_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'renombrar_capa': {}".format(tiempo.tiempo([tiempo_renomb_ini,tiempo_renomb_fin])))
+    log.log(repet,u"tiempo total de librería 'renombrar_capa': {}".format(tiempo.tiempo([tiempo_renomb_ini,tiempo_renomb_fin])))
 
-    log.log(u"'renombrar_capa.renomb' finalizado!")
+    log.log(repet,u"'renombrar_capa.renomb' finalizado!")
+    arcpy.env.repet = arcpy.env.repet - 1

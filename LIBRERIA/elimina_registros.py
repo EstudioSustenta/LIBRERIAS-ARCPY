@@ -21,7 +21,9 @@ sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'elimina_registros.py' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'elimina_registros.py' cargado con éxito")
 
 # Ruta a la capa de interés
 # capa = u"Cuerpoaguaintermitente"
@@ -30,13 +32,16 @@ log.log(u"Librería 'elimina_registros.py' cargado con éxito")
 
 def eliminaregistros(capa, campo, valor):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_elireg_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    log.log(u"'elimina_registros.eliminaregistros' iniciando para {}...".format(capa))
+    log.log(repet,u"'elimina_registros.eliminaregistros' iniciando para {}...".format(capa))
 
     try:
 
-        log.log(u"Eliminando registros con valor " + campo + u" de la capa " + capa + u" con valor = u" + str(valor))
+        log.log(repet,u"Eliminando registros con valor " + campo + u" de la capa " + capa + u" con valor = u" + str(valor))
 
         # Crear un objeto de tabla de atributos
         tabla_atributos = arcpy.da.TableToNumPyArray(capa, [campo])
@@ -54,10 +59,12 @@ def eliminaregistros(capa, campo, valor):
         arcpy.management.SelectLayerByAttribute(capa, "CLEAR_SELECTION")
 
     except Exception as e:
-        log.log(u">> ERROR, el proceso elimina registros falló")
-        log.log(str(e))
+        log.log(repet,u">> ERROR, el proceso elimina registros falló")
+        log.log(repet,str(e))
     
     tiempo_elireg_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'eliminaregistros': {}".format(tiempo.tiempo([tiempo_elireg_ini,tiempo_elireg_fin])))
+    log.log(repet,u"tiempo total de librería 'eliminaregistros': {}".format(tiempo.tiempo([tiempo_elireg_ini,tiempo_elireg_fin])))
 
-    log.log(u"'elimina_registros.eliminaregistros' finalizado!")
+    log.log(repet,u"'elimina_registros.eliminaregistros' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1

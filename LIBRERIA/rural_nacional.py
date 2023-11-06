@@ -28,18 +28,23 @@ renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'rural_nacional' se ha cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'rural_nacional' se ha cargado con éxito")
 
 def prural(nummapa):
 
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     tiempo_prural_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
-    log.log(u"Iniciando 'prural'...")
+    log.log(repet,u"Iniciando 'prural'...")
     
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa del municipio:    
     
-    log.log(u"Proceso de creación de mapa municipal iniciado")
+    log.log(repet,u"Proceso de creación de mapa municipal iniciado")
     
     ruta_arch = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     rutarednc = "Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/cartografia"
@@ -59,13 +64,13 @@ def prural(nummapa):
     exportma.exportar(r_dest,nombarch)
     ccapas.remover_capas(nnomb)
 
-    log.log(u"Proceso Municipio finalizado!")
+    log.log(repet,u"Proceso Municipio finalizado!")
     nummapa = nummapa + 1
 
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa de la región:
 
-    log.log(u"Proceso de creación de mapa de región iniciado")
+    log.log(repet,u"Proceso de creación de mapa de región iniciado")
 
     escala = 50000
     ruta2 = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.estado + "/cartografia"
@@ -81,12 +86,12 @@ def prural(nummapa):
     renombra.renomb(capa2, "Localidades rurales")
     exportma.exportar(r_dest,nombarch)
     nummapa = nummapa + 1
-    log.log(u"Proceso región finalizado!")
+    log.log(repet,u"Proceso región finalizado!")
 
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa de la zona:
 
-    log.log(u"Proceso de creación de mapa de zona iniciado")
+    log.log(repet,u"Proceso de creación de mapa de zona iniciado")
 
     escala = 25000
     z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
@@ -96,12 +101,12 @@ def prural(nummapa):
     act_rot.activar_rotulos(u"red nacional de caminos","NOMBRE")
     exportma.exportar(r_dest,nombarch)
     nummapa = nummapa + 1
-    log.log(u"Proceso zona finalizado!")
+    log.log(repet,u"Proceso zona finalizado!")
     
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa del sitio:
 
-    log.log(u"Proceso de creación de mapa de sitio iniciado")
+    log.log(repet,u"Proceso de creación de mapa de sitio iniciado")
 
     escala = 7500
     ccapas.remover_capas(u"Localidades rurales")
@@ -114,11 +119,13 @@ def prural(nummapa):
     ccapas.remover_capas(u"red nacional de caminos")
     ccapas.remover_capas(nnomb)
     ccapas.remover_capas(u"Manzanas urbanas")
-    log.log(u"Proceso Sitio finalizado!")
+    log.log(repet,u"Proceso Sitio finalizado!")
     nummapa = nummapa + 1
     arcpy.env.nummapa = nummapa
 
     tiempo_prural_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'prural': {}".format(tiempo.tiempo([tiempo_prural_ini,tiempo_prural_fin])))
+    log.log(repet,u"tiempo total de librería 'prural': {}".format(tiempo.tiempo([tiempo_prural_ini,tiempo_prural_fin])))
     
-    log.log(u"'prural' finalizado!")
+    log.log(repet,u"'prural' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1

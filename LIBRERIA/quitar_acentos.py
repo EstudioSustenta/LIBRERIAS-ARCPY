@@ -12,14 +12,15 @@ sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
+repet = arcpy.env.repet
 
-log.log(u"'Librería quitar acentos' cargado con éxito")
+log.log(repet,u"'Librería quitar acentos' cargado con éxito")
 
 def acentos(texto):
 
     tiempo_acentos_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     
-    log.log(u"'quitar acentos' iniciando para {}".format(texto))
+    log.log(repet,u"'quitar acentos' iniciando para {}".format(texto))
 
     # Definir un diccionario de reemplazo para las vocales acentuadas
     reemplazos = {
@@ -41,10 +42,12 @@ def acentos(texto):
     arcpy.env.sinacento = sinacento
     print(arcpy.env.sinacento)
 
-    log.log(u"se han quitado los acentos de '{}' quedando como '{}'".format(texto,sinacento))
-    log.log(u"'quitar acentos' finalizado para {}".format(texto))
+    log.log(repet,u"se han quitado los acentos de '{}' quedando como '{}'".format(texto,sinacento))
+    log.log(repet,u"'quitar acentos' finalizado para {}".format(texto))
 
     tiempo_acentos_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería 'identity_sistema': {}".format(tiempo.tiempo([tiempo_acentos_ini,tiempo_acentos_fin])))
+    log.log(repet,u"tiempo total de librería 'identity_sistema': {}".format(tiempo.tiempo([tiempo_acentos_ini,tiempo_acentos_fin])))
 
     return sinacento
+
+arcpy.env.repet = arcpy.env.repet - 1

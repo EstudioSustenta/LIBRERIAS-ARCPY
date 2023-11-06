@@ -11,14 +11,20 @@ sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 
-log.log(u"Librería 'buffer_clip.py' cargado con éxito")
+repet = arcpy.env.repet
+
+log.log(repet,u"Librería 'buffer_clip.py' cargado con éxito")
 
 #RUTINA PARA GENERAR BUFFER, CLIP Y DWG DEL SISTEMA
 
 def clipbuff(ruta, radios):
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
     try:
         tiempo_buf_clip_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-        log.log(u"'filtro.fil_expr' iniciando para " + ruta)
+        log.log(repet,u"'filtro.fil_expr' iniciando para " + ruta)
         es_sistema = u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA_SIMPLIFICADO.shp"
         
         mxd = arcpy.env.mxd
@@ -30,7 +36,7 @@ def clipbuff(ruta, radios):
             radio1 = radio.replace(u"'", u"")
             clipin = ruta + "Buffer" + radio + ".shp"
             clipout = ruta + "Clip" + radio + ".shp"
-            log.log(u"iniciando proceso de buffer y clips " + radio)
+            log.log(repet,u"iniciando proceso de buffer y clips " + radio)
             arcpy.Buffer_analysis(in_features=es_sistema, out_feature_class=ruta + "Buffer" + radio1 + ".shp",
                 buffer_distance_or_field=radio1 + " Meters", line_side="FULL", line_end_type="ROUND",
                 dissolve_option="NONE", dissolve_field="", method="PLANAR")
@@ -39,11 +45,12 @@ def clipbuff(ruta, radios):
             capa = arcpy.mapping.ListLayers(mxd, capa_nombre, df)[0]
             arcpy.mapping.RemoveLayer(df, capa)
     except Exception as e:
-        log.log(u">> ERROR. Se ha producido un error aplicando 'buffer_clip.clipbuff' para: " + ruta)
-        log.log(str(e))
+        log.log(repet,u">> ERROR. Se ha producido un error aplicando 'buffer_clip.clipbuff' para: " + ruta)
+        log.log(repet,str(e))
     
     tiempo_buf_clip_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(u"tiempo total de librería buffer_clip.py: {}".format(tiempo.tiempo([tiempo_buf_clip_ini,tiempo_buf_clip_fin])))
+    log.log(repet,u"tiempo total de librería buffer_clip.py: {}".format(tiempo.tiempo([tiempo_buf_clip_ini,tiempo_buf_clip_fin])))
     
-    log.log(u"'filtro.plicar_defq' finalizado para " + ruta)
+    log.log(repet,u"'filtro.plicar_defq' finalizado para " + ruta)
 
+    arcpy.env.repet = arcpy.env.repet - 1

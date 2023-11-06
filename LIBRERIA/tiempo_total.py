@@ -13,7 +13,7 @@ def tiempo(tiempos):
 
         # print("La diferencia de tiempo es: {}".format(diferencia_tiempo))
 
-        return(diferencia_tiempo)
-
     except Exception as e:
         print (str(e))
+        
+    return(diferencia_tiempo)
