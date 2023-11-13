@@ -33,6 +33,7 @@ acentos = importlib.import_module(u"LIBRERIA.quitar_acentos")
 simbologia = importlib.import_module(u"LIBRERIA.simbologia_lyr")
 renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
+capasleyenda = importlib.import_module(u"LIBRERIA.elimina_capa_de_leyenda")
 
 
 # reload(ccapas)
@@ -84,6 +85,17 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     act_rot.activar_rotulos(cbase, campoRotulo)
     simbologia.aplica_simb(cbase)
     z_extent.zoom_extent(layout_name, cbase)
+        # carga capa de localidades urbanas
+    ccapas.carga_capas(arcpy.env.scince,"loc_urb")
+    simbologia.aplica_simb("loc_urb")
+    transp.transp("loc_urb", 50)
+    renombra.renomb("loc_urb", "Localidades urbanas")
+        # carga capa de Carreteras
+    ccapas.carga_capas(arcpy.env.scince,"Carreteras")
+    simbologia.aplica_simb("Carreteras")
+    transp.transp("Carreteras", 50)
+    capasleyenda.capasleyenda(["Carreteras"])
+
     subtitulo1 = (tit + " A NIVEL " + tipo).upper()
     formato.formato_layout(subtitulo1)
 
@@ -106,24 +118,33 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
 
             
         else:           # si la visualización no es nacional, hace un recorte (clip) del área de interés (estatal o municipal)
-            log.log(repet,u"Proceso {}, no se realiza clip del archivo para la capa {}".format(tipo, capa))
+            log.log(repet,u"Capa de trabajo no nacional:\t'{}'".format(capasalida))
+            log.log(repet,u"Proceso '{}', se realiza clip del archivo para la capa '{}'".format(tipo, capa))
             arcpy.Clip_analysis(in_features=arch,
                 clip_features=cbase,
                 out_feature_class=capasalida,
                 cluster_tolerance="")
-
+            
+            # ccapas.carga_capas("Y:/0_SIG_PROCESO/X TEMPORAL",capasal)
+            
             numero_de_elementos = int(arcpy.GetCount_management(capasalida).getOutput(0))
-            log.log(repet,u"elementos en clip " + capasalida.upper() + ":" + str(numero_de_elementos))
+            log.log(repet,u"elementos en clip '{}'={}".format(capasalida.upper(),str(numero_de_elementos)))
 
-            if numero_de_elementos == 0 and capasalida is None:     # Se evalúa si la capa producto del clip tiene algún contenido y si el archivo existe en la carpeta de temporales
-                log.log(repet,u"La capa " + capasal + " no contiene elementos")
+            if numero_de_elementos == 0:     # Se evalúa si la capa producto del clip tiene algún contenido y si el archivo existe en la carpeta de temporales
+                log.log(repet,u"La capa '{}' no contiene elementos, se cargará la capa completa.".format(capasal))
+                capat = capa
+                ccapas.carga_capas(ruta,capat)
+                simbologia.aplica_simb(capat)
+                renombra.renomb(capat, capa)
             else:
-                log.log(repet,u"Capa de trabajo no nacional:\t" + capasalida)
+                log.log(repet,u"Capa de trabajo '{}' contiene {} elementos".format(capasalida,numero_de_elementos))
                 desc = arcpy.Describe(capasalida)
                 tipo_geometria = desc.shapeType
 
                 if not tipo_geometria == "Point": # evalúa si la capa es de puntos, si no lo es, aplica un 'dissolve' a la capa, esto puede reducir la simbología en el mapa
-                    capa_diss = u"Y:/0_SIG_PROCESO/X TEMPORAL/" + capa + ".shp"
+                    log.log(repet,u"El tipo de geometría es '{}' se hará el proceso 'DISSOLVE'".format(tipo_geometria))
+                    capat = "{} diss".format(capa)
+                    capa_diss = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capat)
                     arcpy.Dissolve_management(in_features=capasalida,
                         out_feature_class=capa_diss,
                         dissolve_field=ncampo[i],
@@ -131,20 +152,21 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                         multi_part="MULTI_PART", 
                         unsplit_lines="DISSOLVE_LINES")
                     ccapas.cargar(capa_diss)
+                    simbologia.aplica_simb2(capat,capa)
+                    renombra.renomb(capat, capa)
                 else:
-                    ccapas.cargar(capasalida)
-                    renombra.renomb(capasal, capa)
+                    ccapas.cargar(capat)
+                    renombra.renomb(capat, capa)
 
-                simbologia.aplica_simb2(capa,capa)
-                log.log(repet,u"SE APLICÓ ESTA SIMBOLOGIA")
+                # simbologia.aplica_simb2(capa,capa)
                     
     #    evalúa si el tipo de geometría de la capa es tipo polígono, si es así, aplica una transparencia
         desc = arcpy.Describe(capa)
         tipo_geometria = desc.shapeType
-        log.log(repet,u"geometría tipo " + tipo_geometria)
 
         if tipo_geometria == "Polygon":
-                transp.transp(capa, 50)
+            log.log(repet,u"geometría tipo {}, se aplicará transparencia".format(tipo_geometria))
+            transp.transp(capa, 30)
 
         act_rot.activar_rotulos(capa, ncampo[i])
 
@@ -154,13 +176,13 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     # Proceso para hacer zoom apara que quepan un número (ordinal) de elementos en la vista del mapa
     if ordinal > 0 and tipo != "nacional":      #evalúa si ordinal es mayor que cero y la cobertura no es nacional.
         archivo = "{}{} near {}.txt".format(arcpy.env.carp_cliente, capa, arcpy.env.fechahora)
-        log.log(repet,u"Ordinal mayor que cero, se visualizarán " + str(ordinal) + " elementos para " + archivo)
+        log.log(repet,u"Ordinal mayor que cero, se visualizarán {} elementos para {}".format(str(ordinal),archivo))
         columna = 3
         extraedato.extraedato(archivo, ordinal, columna)
     
     # Proceso para exportación de archivo
     r_dest = arcpy.env.carp_cliente
-    nombarch = arcpy.env.proyecto + " " + str(nummapa) + " " + tit
+    nombarch = u"{} {} {}".format(arcpy.env.proyecto,str(nummapa),tit)
     # reload (exportma)
     exportma.exportar(r_dest,nombarch)
 

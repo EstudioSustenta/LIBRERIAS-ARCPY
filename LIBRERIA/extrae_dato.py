@@ -53,11 +53,12 @@ def extraedato(archivo, ordinal, columna):
                         log.log(repet,u"Ordinal = " + str(ordinal))
                         log.log(repet,u"Columna = " + str(columna))
                         distancia = int(columns[2].strip())  # strip() elimina espacios en blanco adicionales y saltos de línea
-                        log.log(repet,u"distancia = " + str(distancia))
+                        log.log(repet,u"distancia = {}".format(str(distancia)))
 
-                        escala = (distancia * 2) / 20 * 100
+                        # escala = (distancia * 2) / 20 * 100
+                        escala = (distancia * 11.3)
                         z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
-                        log.log(repet,u"escala = u" + str(escala))
+                        log.log(repet,u"escala = {}".format(str(escala)))
                         df.scale = escala
         log.log(repet,u"Se han extraido los datos de '{}' correctamente".format(archivo))
 

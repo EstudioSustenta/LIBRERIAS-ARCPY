@@ -1564,7 +1564,7 @@ def precip(nummapa):
         camposCons =  [u"PRECI_RANG"]                                                     # campos a escribir en el archivo identity
         dAlter =  [u"Rango de precipitacion (l/m2)"]                                      # descriptores para los campos en el archivo identity de salida
 
-        idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
+        # idproy.idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter)
 
             
         capas =  [u"Precipitacion"]          #capas a incluir en el mapa. puede ser una o más, pero siempre del mismo tema.
@@ -1582,7 +1582,7 @@ def precip(nummapa):
         camporef = ncampo[n]                        # campo de referencia (para agregar a la descripción del archivo)
         archivo = capa + u" near"                    # nombre del archivo de texto a generar para proceso 'near'
         cantidad = 10                               # cantidad de registros más cercanos
-        nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
+        # nearexp.nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, cantidad)
 
         tipo = u"estatal"                            # código para el nivel de representación
         nummapa = arcpy.env.nummapa                 # consecutivo para el número de mapa en el nombre del archivo
@@ -1816,13 +1816,13 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # curvasdeNivel(arcpy.env.nummapa)
 # hidrologia(arcpy.env.nummapa)
 # lineasElectricas(arcpy.env.nummapa)
-# malpais(arcpy.env.nummapa)
+malpais(arcpy.env.nummapa)
 # pantano(arcpy.env.nummapa)
 # pistadeAviacion(arcpy.env.nummapa)
 # presa(arcpy.env.nummapa) 
 # rasgoArqueologico(arcpy.env.nummapa)
 # salina(arcpy.env.nummapa)
-# usodeSuelo(arcpy.env.nummapa)
+usodeSuelo(arcpy.env.nummapa)
 # viaferrea(arcpy.env.nummapa)
 # zonaarenosa(arcpy.env.nummapa)
 
@@ -1834,7 +1834,7 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # cuenca(arcpy.env.nummapa)
 # edafologia(arcpy.env.nummapa)
 # humedad(arcpy.env.nummapa)
-precip(arcpy.env.nummapa)
+# precip(arcpy.env.nummapa)
 # subcuenca(arcpy.env.nummapa)
 # subregion(arcpy.env.nummapa)
 # zonaecol(arcpy.env.nummapa)

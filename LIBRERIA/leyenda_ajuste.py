@@ -42,7 +42,7 @@ def leyenda():
 
         nueva_altura = y_leyenda
         # Verifica si el cuadro de leyendas se sale del layout
-        if y_leyenda + alto_leyenda > alto_layout:
+        if y_leyenda + alto_leyenda > alto_layout - 2.5:
             # Calcula la nueva altura para ajustar al alto del layout
             nueva_altura = alto_layout - 2.5 - y_leyenda
 

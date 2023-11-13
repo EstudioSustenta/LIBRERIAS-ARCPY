@@ -146,6 +146,8 @@ def datosbasicos():
     archivo1 = arcpy.env.carp_cliente + "0 datos_basicos " + fechahora + ".txt"
     archivo2 = arcpy.env.archivolog
 
+    arcpy.env.scince = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/cartografia".format(arcpy.env.estado)
+
     log.log(repet,archivo1)
     log.log(repet,archivo2)
     
