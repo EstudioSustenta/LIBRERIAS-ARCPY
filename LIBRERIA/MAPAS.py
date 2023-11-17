@@ -1804,7 +1804,7 @@ cargalib()
 borrainn()
 arcpy.env.nummapa = 1
 nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
-# mapaPais(arcpy.env.nummapa)
+mapaPais(arcpy.env.nummapa)
 # mapaEstatal(arcpy.env.nummapa)
 # mapaMunicipal(arcpy.env.nummapa)
 
@@ -1816,17 +1816,17 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # curvasdeNivel(arcpy.env.nummapa)
 # hidrologia(arcpy.env.nummapa)
 # lineasElectricas(arcpy.env.nummapa)
-malpais(arcpy.env.nummapa)
+# malpais(arcpy.env.nummapa)
 # pantano(arcpy.env.nummapa)
 # pistadeAviacion(arcpy.env.nummapa)
 # presa(arcpy.env.nummapa) 
 # rasgoArqueologico(arcpy.env.nummapa)
 # salina(arcpy.env.nummapa)
-usodeSuelo(arcpy.env.nummapa)
+# usodeSuelo(arcpy.env.nummapa)
 # viaferrea(arcpy.env.nummapa)
 # zonaarenosa(arcpy.env.nummapa)
 
-# #----------------------------CARTOGRAFÍA conabio (Y:\GIS\MEXICO\VARIOS\conabio\WGS84)
+# # ----------------------------CARTOGRAFÍA conabio (Y:\GIS\MEXICO\VARIOS\conabio\WGS84)
 
 # area_nat_protegida(arcpy.env.nummapa)
 # clima_koppen(arcpy.env.nummapa)

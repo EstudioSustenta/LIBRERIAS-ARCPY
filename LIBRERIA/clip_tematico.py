@@ -155,6 +155,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                     simbologia.aplica_simb2(capat,capa)
                     renombra.renomb(capat, capa)
                 else:
+                    capat = capa
                     ccapas.cargar(capat)
                     renombra.renomb(capat, capa)
 
@@ -183,7 +184,6 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     # Proceso para exportación de archivo
     r_dest = arcpy.env.carp_cliente
     nombarch = u"{} {} {}".format(arcpy.env.proyecto,str(nummapa),tit)
-    # reload (exportma)
     exportma.exportar(r_dest,nombarch)
 
     # elimina todas las capas, excepto "SISTEMA"
