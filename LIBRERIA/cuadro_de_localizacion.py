@@ -44,8 +44,8 @@ def dxf():
             for distancia in distancias:
                 log.log(repet,u"Iniciando bucle para buffer de '{}' metros".format(distancia))
                 log.log(repet,u"capa para clip '{}' ".format(origmanzanas))
-                capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/buffer " + distancia + ".shp"
-                clipsalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/clip manz " + distancia + ".shp"
+                capasalida = u"{}buffer {}.shp".format(arcpy.env.carp_temp,distancia)
+                clipsalida = u"{}clip manz {}.shp".format(arcpy.env.carp_temp,distancia)
 
                 try:
                     log.log(repet,u"Generando buffer de '{}' metros".format(distancia))
@@ -108,37 +108,54 @@ def dxf():
             ccapas.carga_capas(ruta_arch, "red nacional de caminos")
             capaentrada = u"SISTEMA"
         
-            distancias = ([u"2000"])    #colocar aquí la lista de distancia (en formato texto) a las que se desea generar los buffers y clips para los archivos dwg
+            distancias = ([2000])    #colocar aquí la lista de distancia (en formato numérico) a las que se desea generar los buffers y clips para los archivos dwg
             manz = []
-            listamanz = u""
+            listamanz = ""
         
             # bucle para generar buffers y clips de caminos
             for distancia in distancias:
-                log.log(repet,u"Iniciando bucle para buffer " + distancia)
-                capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/buffer " + distancia + ".shp"
-                clipsalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/clip vial " + distancia + ".shp"
-                arcpy.Buffer_analysis(in_features=capaentrada, 
-                                    out_feature_class=capasalida, 
-                                    buffer_distance_or_field= distancia + " Meters", 
-                                    line_side="FULL", line_end_type="ROUND", dissolve_option="NONE", 
-                                    dissolve_field="", method="PLANAR")
-                arcpy.Clip_analysis(in_features="red nacional de caminos", 
-                                    clip_features=capasalida, 
-                                    out_feature_class=clipsalida, 
-                                    cluster_tolerance="")
+                distancia = str(distancia)
+                log.log(repet,u"Iniciando bucle para buffer {} metros".format(distancia))
+                capasalida = u"{}buffer {}.shp".format(arcpy.env.carp_temp,distancia)
+                clipsalida = u"{}clip vial {}.shp".format(arcpy.env.carp_temp,distancia)
+                dist = u"{} Meters".format(distancia)
+
+                try:
+                    log.log(repet,u"capasalida: {}".format(capasalida))
+                    log.log(repet,u"clipsalida: {}".format(clipsalida))
+                    log.log(repet,u"dist: {}".format(dist))
+                    log.log(repet,u"Iniciando buffer...")
+
+                    arcpy.Buffer_analysis(in_features=capaentrada,
+                                        out_feature_class=capasalida,
+                                        buffer_distance_or_field= dist,
+                                        line_side="FULL", line_end_type="ROUND", dissolve_option="NONE",
+                                        dissolve_field="", method="PLANAR")
+                    
+                    log.log(repet,u"Finalizando buffer")
+                    log.log(repet,u"Iniciando clip...")
+
+                    arcpy.Clip_analysis(in_features="red nacional de caminos",
+                                        clip_features=capasalida,
+                                        out_feature_class=clipsalida,
+                                        cluster_tolerance="")
+                    log.log(repet,u"Finalizando clip")
+                    log.log(repet,"Se ha generado el buffer y el clip rural con éxito")
+
+                except Exception as e:
+                    log.log(repet,u">> ERROR, creando buffer y clip rural archivos para '{}'".format(dwgout))
+                    log.log(repet,str(e))
                 
-                ccapas.remover_capas(u"buffer " + distancia)
-                listamanz = u"Y:/0_SIG_PROCESO/X TEMPORAL/clip vial " + distancia + ".shp"
+                listamanz = u"{}clip vial {}.shp".format(arcpy.env.carp_temp,distancia)
+                
                 manz.append(listamanz)
-        
+
             manz.append(u"SISTEMA")
             listaarch = u""
             listaarch = u"';'".join(manz)
             listaarch = u"\"'" + listaarch + "'\""
         
-            for archivolist in listaarch:
-                log.log(repet,u"archivos a convertir a dwg: {} ".format({[archivolist]}))
-            log.log(repet,u"carpeta de cliente: " + listaarch)
+            log.log(repet,u"capas en archivo 'dwg': " + listaarch)
         
             arcpy.ExportCAD_conversion(in_features=listaarch,
                 Output_Type="DWG_R2013",
@@ -147,12 +164,10 @@ def dxf():
                 Append_To_Existing="Overwrite_Existing_Files",
                 Seed_File="")
             
-            ccapas.remover_capas(u"cuadro_de_localizacion")
-            
-            for arch in manz:
-                if arch != "SISTEMA":
-                    ccapas.remover_capas(arch)
             ccapas.remover_capas(u"red nacional de caminos")
+
+            arcpy.Delete_management(capasalida)
+            arcpy.Delete_management(clipsalida)
             
             log.log(repet,u"'cuadro_de_localizacion.dxf' finalizado!")
 

@@ -36,28 +36,29 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
     log.log(repet,u"rutaCl: " + rutaCl)
     log.log(repet,u"capaCl: " + capaCl)
     log.log(repet,u"capa_salida: " + capa_salida)
+    i=0
+
     for campo in camposCons:
         log.log(repet,u"campo: " + campo)
-    for dato in dAlter:
-        log.log(repet,u"dAlter: " + dato)
-
+        log.log(repet,u"dAlter: " + dAlter[i])
+        i+=1
 
     # rutina para generar identidad
     try:
-        arch = ("{}/{}".format(rutaCl,capaCl))
-        capaidetidad = ("{} identity".format(capa_salida))
-        archtxt = ("{}{} {}.txt".format(arcpy.env.carp_cliente, capaidetidad, arcpy.env.fechahora))
+        arch = (u"{}/{}".format(rutaCl,capaCl))
+        capaidetidad = (u"{} identity".format(capa_salida))
+        archtxt = (u"{}{} {}.txt".format(arcpy.env.carp_cliente, capaidetidad, arcpy.env.fechahora))
 
         with codecs.open(archtxt, 'w', encoding='utf-8') as archivo:
-            archivo.write('Archivo de datos identity.\n')
-            archivo.write('Archivo fuente: ' + arch + "\n\n")
+            archivo.write(u"Archivo de datos identity.\n")
+            archivo.write(u"Archivo fuente: \n\n".format(arch))
             log.log(repet,u"El archivo '{}' ha sido creado con datos de '{}'".format(archtxt, arch))
 
         arcpy.env.overwriteOutput = True
 
         # #rutina para crear archivo de identidad
         
-        capasalida = (u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capaidetidad))
+        capasalida = (u"{}{}.shp".format(arcpy.env.carp_temp,capaidetidad))
         log.log(repet,u"archivo para identidad: {}".format(arch))
         log.log(repet,u"archivo de salida: {}".format(capasalida))
 
@@ -67,19 +68,35 @@ def idproy(rutaCl, capaCl, capa_salida, camposCons, dAlter):
             join_attributes="ALL",
             cluster_tolerance="",
             relationship="NO_RELATIONSHIPS")
+        
+        log.log(repet,u"Identidad creada con éxito: {}".format(capasalida))
 
         archivo = open(archtxt, 'a')
+        log.log(repet,u"se abre el archivo")
 
         # Escribir los campos y sus valores si coinciden con la lista 'campos'
         for campo in camposCons:
-            archivo.write(campo + ":\n")
+            archivo.write(u"{}:\n".format(campo))
             cursor = arcpy.SearchCursor(capasalida, [campo])
             for row in cursor:
-                archivo.write(str(row.getValue(campo)) + "\n")  # Escribir el contenido del campo en el archivo .txt
+                campo_valor = row.getValue(campo)
+                tipo_variable = type(campo_valor).__name__
+                log.log(repet,u"'campo' es variable de tipo {}".format(tipo_variable))
+
+                if isinstance(tipo_variable, unicode) or isinstance(tipo_variable, str):
+                    log.log(repet,u"{}".format(campo_valor))
+                    try:
+                        archivo.write("{}\n".format(campo_valor))  # Escribe el campo con formato numérico en el archivo .txt
+                    except Exception as e:
+                        archivo.write("{}\n".format(campo_valor.encode('utf-8')))  # Escribir el contenido del campo de texto en el archivo .txt
+                
+                log.log(repet,u"se escribe el contenido del campo en archivo")
             del cursor
-            archivo.write("\n")
+            archivo.write(u"\n")
+            
 
         archivo.close()
+        log.log(repet,u"se cierra el archivo")
 
         log.log(repet,u"'idproy.idproy' Se ha ejecutado satisfactoriamente para {}.".format(arch))
 

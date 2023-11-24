@@ -28,6 +28,7 @@ def carga_capas(ruta_arch, nombre_capa):
     repet = arcpy.env.repet
 
     tiempo_ccapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+
     log.log(repet,u"'carga_capas' iniciando ...")
     log.log(repet,u"Ruta de archivo: " + ruta_arch)
     log.log(repet,u"Capa: " + nombre_capa)
@@ -54,10 +55,8 @@ def carga_capas(ruta_arch, nombre_capa):
         log.log(repet,u">> ERROR, proceso de agregado de capa con inconsistencias")
         log.log(repet,u">> ERROR, capa: " + nombre_capa)
         log.log(repet,str(e))
-    
     tiempo_ccapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    # log.log(repet,(u"tiempo total de librería 'carga_capas': {}".format(tiempo.tiempo([tiempo_ccapa_ini,tiempo_ccapa_fin]))))
-    log.log(repet,u"Hola")
+    log.log(repet,u"tiempo total de librería 'carga_capas': {}".format(tiempo.tiempo([tiempo_ccapa_ini,tiempo_ccapa_fin])))
 
     log.log(repet,u"'carga_capas' finalizado!")
 

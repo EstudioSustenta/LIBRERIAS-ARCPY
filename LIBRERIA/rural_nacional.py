@@ -50,21 +50,21 @@ def prural(nummapa):
     rutarednc = "Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/cartografia"
     nombre_capa = u"MUNICIPAL CENSO 2020 DECRETO 185"
     ccapas.carga_capas(ruta_arch , nombre_capa)
-    ccapas.carga_capas(rutarednc, "red nacional de caminos")
-    simbologia.aplica_simb2(u"red nacional de caminos","red nacional de caminos1")
-    filtr = "\"NOM_ENT\" = '{}' AND \"NOM_MUN\" = '{}'".format(arcpy.env.estado, arcpy.env.municipio)
-    filtro.fil_expr(nombre_capa, filtr)
-    z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
     simbologia.aplica_simb(nombre_capa)
     transp.transp(nombre_capa,50)
-    r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " municipio"
+    ccapas.carga_capas(rutarednc, "red nacional de caminos")
+    simbologia.aplica_simb2(u"red nacional de caminos","red nacional de caminos")
+    filtr = u"\"NOM_ENT\" = '{}' AND \"NOM_MUN\" = '{}'".format(arcpy.env.estado, arcpy.env.municipio)
+    filtro.fil_expr(nombre_capa, filtr)
+    z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
+    nombarch = u"{} {} municipio".format(arcpy.env.proyecto,str(nummapa))
     formato.formato_layout(u"UBICACIÓN A NIVEL MUNICIPIO")
     nnomb = u"Municipios " + arcpy.env.estado
     renombra.renomb(nombre_capa, nnomb)
-    exportma.exportar(r_dest,nombarch)
+    exportma.exportar(arcpy.env.carp_cliente,nombarch)
     ccapas.remover_capas(nnomb)
 
-    log.log(repet,u"Proceso Municipio finalizado!")
+    log.log(repet,u"Proceso mapa Municipio finalizado!")
     nummapa = nummapa + 1
 
     # -------------------------------------------------------------------------------
@@ -75,16 +75,16 @@ def prural(nummapa):
     escala = 50000
     ruta2 = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.estado + "/cartografia"
     capa2 = u"loc_rur"
-    z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
+    z_extent.zoom_extent(arcpy.env.layout, u"SISTEMA")
     df.scale = escala
     ccapas.carga_capas(ruta2 , capa2)
     filtro.fil_expr(capa2, filtr)
     simbologia.aplica_simb(capa2)
     act_rot.activar_rotulos(u"loc_rur", u"NOMGEO")
-    r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " region"
     formato.formato_layout(u"UBICACIÓN A NIVEL REGIÓN")
-    renombra.renomb(capa2, "Localidades rurales")
-    exportma.exportar(r_dest,nombarch)
+    renombra.renomb(capa2, u"Localidades rurales")
+    nombarch = u"{} {} región".format(arcpy.env.proyecto,str(nummapa))
+    exportma.exportar(arcpy.env.carp_cliente,nombarch)
     nummapa = nummapa + 1
     log.log(repet,u"Proceso región finalizado!")
 
@@ -96,10 +96,10 @@ def prural(nummapa):
     escala = 25000
     z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
     df.scale = escala
-    r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " zona"
     formato.formato_layout(u"UBICACIÓN A NIVEL ZONA")
     act_rot.activar_rotulos(u"red nacional de caminos","NOMBRE")
-    exportma.exportar(r_dest,nombarch)
+    nombarch = u"{} {} zona".format(arcpy.env.proyecto,str(nummapa))
+    exportma.exportar(arcpy.env.carp_cliente,nombarch)
     nummapa = nummapa + 1
     log.log(repet,u"Proceso zona finalizado!")
     
@@ -112,9 +112,9 @@ def prural(nummapa):
     ccapas.remover_capas(u"Localidades rurales")
     z_extent.zoom_extent(arcpy.env.layout, "SISTEMA")
     df.scale = escala
-    r_dest = arcpy.env.carp_cliente + arcpy.env.proyecto + " " + str(nummapa) + " sitio"
     formato.formato_layout(u"UBICACIÓN A NIVEL SITIO")
-    exportma.exportar(r_dest,nombarch)
+    nombarch = u"{} {} sitio".format(arcpy.env.proyecto,str(nummapa))
+    exportma.exportar(arcpy.env.carp_cliente,nombarch)
     renombra.renomb(arcpy.env.proyecto, "SISTEMA")
     ccapas.remover_capas(u"red nacional de caminos")
     ccapas.remover_capas(nnomb)

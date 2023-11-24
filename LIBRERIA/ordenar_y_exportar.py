@@ -36,7 +36,6 @@ def ordenayexporta(capa, campo, camporef, archivo, cantidad):
     try:
 
         import os
-        # capa = "Y:/0_SIG_PROCESO/X TEMPORAL/near Cuerpos de agua.shp"
         ruta_capa = capa
         nombre_archivo = os.path.basename(ruta_capa)  # Obtener el nombre del archivo de la ruta
         layer = os.path.splitext(nombre_archivo)[0]  # Obtener el nombre sin la extensión

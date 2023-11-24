@@ -52,8 +52,6 @@ def datosbasicos():
         arcpy.env.coordtipo = u"Sin tipo de sistema de coordenadas"
         arcpy.env.coordWKID = u"Sin codigo WKID (ID de proyeccion)"
     
-
-    
     # Leer el valor 'DESCRIP' del primer registro en el shapefile
     with arcpy.da.SearchCursor(capa, (u"DESCRIP")) as cursor:
         for row in cursor:
@@ -147,8 +145,9 @@ def datosbasicos():
     archivo2 = arcpy.env.archivolog
 
     arcpy.env.scince = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/cartografia".format(arcpy.env.estado)
+    arcpy.env.carp_temp = "Y:/0_SIG_PROCESO/X TEMPORAL/"
 
-    log.log(repet,archivo1)
+    log.log(repet,archivo1) 
     log.log(repet,archivo2)
     
 

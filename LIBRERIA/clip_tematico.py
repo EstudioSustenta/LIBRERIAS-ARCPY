@@ -5,7 +5,6 @@
 import arcpy
 import importlib
 import sys
-import time
 import datetime
 
 
@@ -35,25 +34,13 @@ renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")
 tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
 capasleyenda = importlib.import_module(u"LIBRERIA.elimina_capa_de_leyenda")
 
-
-# reload(ccapas)
-# reload(filtro)
-# reload(z_extent)
-# reload(formato)
-# reload(exportma)
-# reload(act_rot)
-# reload(extraedato)
-# reload(log)
-# reload(leyenda)
-# reload(tiempo)
-
 repet = arcpy.env.repet
 
 
 log.log(repet,u"Librería 'clip_tematico' cargada con éxito")
 
 def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
-
+    
     arcpy.env.repet = arcpy.env.repet + 1
     repet = arcpy.env.repet
 
@@ -63,6 +50,8 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
 
     rbase = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
     numero_de_elementos = None
+
+    
 
     if tipo == "nacional":          # decisión: asigna valores para la capa base del marco geográfico y el campo para los rótulos
         cbase = u"ESTATAL decr185"
@@ -74,8 +63,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         campoRotulo = u"NOM_MUN"
     else:
         cbase = u"MUNICIPAL CENSO 2020 DECRETO 185"
-        filtr = "\"NOM_ENT\" = '{}' AND \"NOM_MUN\" = '{}'".format(arcpy.env.estado, arcpy.env.municipio)
-
+        filtr = u"\"NOM_ENT\" = '{}' AND \"NOM_MUN\" = '{}'".format(arcpy.env.estado, arcpy.env.municipio)
         campoRotulo = u"NOM_MUN"
 
     # proceso de capa base
@@ -95,7 +83,7 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     simbologia.aplica_simb("Carreteras")
     transp.transp("Carreteras", 50)
     capasleyenda.capasleyenda(["Carreteras"])
-
+        # da formato al título del mapa
     subtitulo1 = (tit + " A NIVEL " + tipo).upper()
     formato.formato_layout(subtitulo1)
 
@@ -108,14 +96,14 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
         
         arch = ruta + "/" + capa + ".shp"
         capasal = u"Clip " + capa
-        capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capasal)
+        capasalida = u"{}{}.shp".format(arcpy.env.carp_temp,capasal)
+        capa_diss = None
         
         if tipo == "nacional":
             log.log(repet,u"Proceso 'nacional', no se realiza clip del archivo para la capa " + capa)
             # aquí debo poner la carga de archivo capa y darle formato.
             ccapas.carga_capas(ruta,capa)
             simbologia.aplica_simb2(capa,capa)
-
             
         else:           # si la visualización no es nacional, hace un recorte (clip) del área de interés (estatal o municipal)
             log.log(repet,u"Capa de trabajo no nacional:\t'{}'".format(capasalida))
@@ -124,8 +112,6 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                 clip_features=cbase,
                 out_feature_class=capasalida,
                 cluster_tolerance="")
-            
-            # ccapas.carga_capas("Y:/0_SIG_PROCESO/X TEMPORAL",capasal)
             
             numero_de_elementos = int(arcpy.GetCount_management(capasalida).getOutput(0))
             log.log(repet,u"elementos en clip '{}'={}".format(capasalida.upper(),str(numero_de_elementos)))
@@ -136,15 +122,17 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                 ccapas.carga_capas(ruta,capat)
                 simbologia.aplica_simb(capat)
                 renombra.renomb(capat, capa)
+
             else:
                 log.log(repet,u"Capa de trabajo '{}' contiene {} elementos".format(capasalida,numero_de_elementos))
                 desc = arcpy.Describe(capasalida)
                 tipo_geometria = desc.shapeType
 
-                if not tipo_geometria == "Point": # evalúa si la capa es de puntos, si no lo es, aplica un 'dissolve' a la capa, esto puede reducir la simbología en el mapa
+
+                if tipo_geometria != "Point": # evalúa si la capa es de puntos, si no lo es, aplica un 'dissolve' a la capa, esto puede reducir la simbología en el mapa
                     log.log(repet,u"El tipo de geometría es '{}' se hará el proceso 'DISSOLVE'".format(tipo_geometria))
                     capat = "{} diss".format(capa)
-                    capa_diss = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capat)
+                    capa_diss = u"{}{}.shp".format(arcpy.env.carp_temp,capat)
                     arcpy.Dissolve_management(in_features=capasalida,
                         out_feature_class=capa_diss,
                         dissolve_field=ncampo[i],
@@ -155,11 +143,10 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
                     simbologia.aplica_simb2(capat,capa)
                     renombra.renomb(capat, capa)
                 else:
-                    capat = capa
+                    capat = u"{}/{}.shp".format(ruta,capa)
                     ccapas.cargar(capat)
                     renombra.renomb(capat, capa)
-
-                # simbologia.aplica_simb2(capa,capa)
+                    simbologia.aplica_simb(capa)
                     
     #    evalúa si el tipo de geometría de la capa es tipo polígono, si es así, aplica una transparencia
         desc = arcpy.Describe(capa)
@@ -186,25 +173,53 @@ def clipt(rutas, capas, tipo, ncampo, nummapa, tit, ordinal):
     nombarch = u"{} {} {}".format(arcpy.env.proyecto,str(nummapa),tit)
     exportma.exportar(r_dest,nombarch)
 
-    # elimina todas las capas, excepto "SISTEMA"
-    capas_a_mantener = []
+    try:
+        log.log(repet,u"Eliminando capas distintas a 'SISTEMA' en 'clip_tematico'")
+        # elimina todas las capas, excepto "SISTEMA"
+        capas_a_mantener = []
 
-        # Iterar a través de todas las capas en el DataFrame
-    for lyr in arcpy.mapping.ListLayers(mxd, "", df):
-        # Verificar si el nombre de la capa es "SISTEMA"
-        if lyr.name == "SISTEMA":
-            capas_a_mantener.append(lyr)  # Agregar la capa a la lista de capas a mantener
+            # Iterar a través de todas las capas en el DataFrame
+        for lyr in arcpy.mapping.ListLayers(mxd, "", df):
+            # Verificar si el nombre de la capa es "SISTEMA"
+            if lyr.name == "SISTEMA":
+                capas_a_mantener.append(lyr)  # Agregar la capa a la lista de capas a mantener
 
-        # Eliminar todas las capas del DataFrame
-    for lyr in arcpy.mapping.ListLayers(mxd, "", df):
-        if lyr not in capas_a_mantener:
-            arcpy.mapping.RemoveLayer(df, lyr)
+            # Eliminar todas las capas del DataFrame
+        for lyr in arcpy.mapping.ListLayers(mxd, "", df):
+            if lyr not in capas_a_mantener:
+                arcpy.mapping.RemoveLayer(df, lyr)
 
-        # Actualizar el contenido del DataFrame
-    arcpy.RefreshTOC()
+            # Actualizar el contenido del DataFrame
+        arcpy.RefreshTOC()
+        log.log(repet,u"capas distintas a 'SISTEMA' eliminadas con éxito")
+
+    except Exception as e:
+        log.log(repet,u"\n\n>> ERROR, eliminando capas distintas a 'SISTEMA' en 'clip_tematico'")
+        log.log(repet,str(e) + u"\n")
     
     nummapa = nummapa + 1
-    arcpy.env.nummapa = nummapa 
+    arcpy.env.nummapa = nummapa
+
+    try:
+        log.log(repet, u"Eliminando físicamente capas creadas en carpeta temporal")
+        capasborr = [capasalida, capa_diss]
+        
+        for capaborr in capasborr:
+            log.log(repet, u"Verificando existencia de: {}".format(capaborr))
+            
+            if capaborr != None and arcpy.Exists(capaborr):
+                arcpy.Delete_management(capaborr)
+                log.log(repet, u"Borrando archivo físico: {}".format(capaborr))
+            else:
+                log.log(repet, u"{} no existe en disco".format(capaborr))
+        
+        log.log(repet, u"Capas de proceso 'clip_tematico' en carpeta temporal eliminadas con éxito")
+
+    except Exception as e:
+        log.log(repet, u"\n\n>> ERROR, eliminando capas distintas a 'SISTEMA' en 'clip_tematico'")
+        log.log(repet, str(e) + u"\n")
+
+
 
     tiempo_clip_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
     log.log(repet,u"tiempo total de librería 'clipt': {}".format(tiempo.tiempo([tiempo_clip_ini,tiempo_clip_fin])))

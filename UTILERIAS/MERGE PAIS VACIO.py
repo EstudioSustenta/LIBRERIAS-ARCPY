@@ -18,6 +18,7 @@
 # campo = "NOMBRE"
 
 import arcpy
+arcpy.env.carp_temp = "Y:/0_SIG_PROCESO/X TEMPORAL/"
 
 def paislleno(base, salida, campo, valor):
 
@@ -64,7 +65,7 @@ def paislleno(base, salida, campo, valor):
         expression_type="VB",
         code_block="")
     # RESTA LA CAPA A INTEGRAR EN LA CAPA DEL PAIS
-    salidatmp = "Y:/0_SIG_PROCESO/X TEMPORAL/proceso merge.shp"
+    salidatmp = "{}proceso merge.shp".format(arcpy.env.carp_temp)
     arcpy.Erase_analysis(in_features=mexico, 
         erase_features=base, 
         out_feature_class=salidatmp, 

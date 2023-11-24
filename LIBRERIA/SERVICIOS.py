@@ -59,11 +59,11 @@ def servicios(nummapa):
         distancia = u"417"
         log.log(repet,u"Distancia de análisis: {} metros".format(distancia))
         
-        clipsalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/Clip manz " + distancia + ".shp"
+        clipsalida = u"{}Clip manz {}.shp".format(arcpy.env.carp_temp,distancia)
 
         try:
                 log.log(repet,u"Generando buffer de sistema a {} metros".format(distancia))
-                capasalida = u"Y:/0_SIG_PROCESO/X TEMPORAL/Buffer " + distancia + ".shp"
+                capasalida = u"{}Buffer {}.shp".format(arcpy.env.carp_temp,distancia)
                 log.log(repet,u"Generando buffer de sistema a {} metros".format(distancia))
                 arcpy.Buffer_analysis(in_features="SISTEMA", 
                         out_feature_class=capasalida, 
@@ -78,7 +78,7 @@ def servicios(nummapa):
         
         try:
                 log.log(repet,u"Generando clip de '{}' a {} metros".format(capaservicios,distancia))
-                clipsalida = (u"Y:/0_SIG_PROCESO/X TEMPORAL/Clip servicios {}".format(distancia))
+                clipsalida = (u"{}Clip servicios {}".format(arcpy.env.carp_temp,distancia))
                 arcpy.Clip_analysis(in_features=capaservicios,
                         clip_features=capasalida,
                         out_feature_class=clipsalida,
@@ -99,7 +99,7 @@ def servicios(nummapa):
         try:
                 capamanz = ("{}/{}.shp".format(ruta_arch,manz))
                 clip2 = "Clip Manzanas urbanas {}".format(distancia)
-                clipsalida1 = (u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(clip2))
+                clipsalida1 = (u"{}{}.shp".format(arcpy.env.carp_temp,clip2))
                 log.log(repet,u"Generando clip de '{}' a {} metros".format(capamanz,distancia))
                 arcpy.Clip_analysis(in_features=capamanz,
                         clip_features=capasalida,

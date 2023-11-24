@@ -47,10 +47,10 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
             distancia = str(distancia) # si no es cadena, la convierte a cadena
             log.log(repet,u"La variable '{}' se ha convertido a cadena".format(str(distancia)))
 
-        origen = rutaorigen + capa + ".shp"
-        capadest = capa + " near"
-        destino = u"Y:/0_SIG_PROCESO/X TEMPORAL/{}.shp".format(capadest)
-        radio = distancia + " Kilometers"
+        origen = rutaorigen + capa + u".shp"
+        capadest = capa + u" near"
+        destino = u"{}{}.shp".format(arcpy.env.carp_temp,capadest)
+        radio = distancia + u" Kilometers"
 
         arcpy.CopyFeatures_management(in_features=origen,
             out_feature_class=destino,
@@ -65,11 +65,11 @@ def nearproceso(rutaorigen, capa, distancia, campo, valor, camporef, archivo, ca
 
     try:
         arcpy.Near_analysis(in_features=destino,
-            near_features="SISTEMA",
-            search_radius="",
-            location="NO_LOCATION",
-            angle="NO_ANGLE",
-            method="PLANAR")
+            near_features=u"SISTEMA",
+            search_radius=u"",
+            location=u"NO_LOCATION",
+            angle=u"NO_ANGLE",
+            method=u"PLANAR")
 
         log.log(repet,u"Proceso Near realizado correctamente para '{}' con un radio de '{}'".format(capadest, radio))
     except Exception as e:
