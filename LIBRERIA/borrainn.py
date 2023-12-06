@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# ----RUTINA PARA GENERAR MAPAS CON DATOS DE LA CONABIO
-# RUTA DE LOS MAPAS:    Y:/GIS/MEXICO/VARIOS/conabio/WGS84
+# ----RUTINA PARA BORRAR MAPAS INNECESARIOS DEL LAYOUT
 
 import arcpy
 import importlib

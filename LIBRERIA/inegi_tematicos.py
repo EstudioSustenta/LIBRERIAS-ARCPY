@@ -90,7 +90,6 @@ def usodeSuelo(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
-
 def curvasdeNivel(nummapa):
     #----------------->CURVAS DE NIVEL<------------------------------------------
 
@@ -126,7 +125,6 @@ def curvasdeNivel(nummapa):
     log.log(repet,u"Proceso 'curvasdeNivel' finalizado!...\n\n")
 
     arcpy.env.repet = arcpy.env.repet -1
-
 
 def hidrologia(nummapa):
     #----------------->HIDROLOGÍA<------------------------------------------
@@ -193,7 +191,6 @@ def hidrologia(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
     
-
 def lineasElectricas(nummapa):
     
     #----------------->LINEAS DE TRANSMISIÓN ELECTRICA<------------------------------------------
@@ -276,7 +273,6 @@ def lineasElectricas(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
-
 def malpais(nummapa):
     #-----------------> MALPAIS<------------------------------------------
 
@@ -332,7 +328,6 @@ def malpais(nummapa):
     log.log(repet,u"Proceso 'malpais' finalizado! \n\n")
 
     arcpy.env.repet = arcpy.env.repet - 1
-
 
 def pantano(nummapa):
     #-----------------> PANTANO<------------------------------------------
@@ -391,7 +386,6 @@ def pantano(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
-
 def pistadeAviacion(nummapa):
     #-----------------> PISTA DE AVIACIÓN<------------------------------------------
 
@@ -448,7 +442,6 @@ def pistadeAviacion(nummapa):
     log.log(repet,u"Proceso 'pistadeAviacion' finalizado! \n\n")
 
     arcpy.env.repet = arcpy.env.repet - 1
-
 
 def presa(nummapa):
 
@@ -516,7 +509,6 @@ def presa(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
-
 def rasgoArqueologico(nummapa):
 
     #-----------------> RASGO ARQUEOLOGICO<------------------------------------------
@@ -581,7 +573,6 @@ def rasgoArqueologico(nummapa):
     log.log(repet,u"Proceso 'rasgoArqueologico' finalizado! \n\n")
 
     arcpy.env.repet = arcpy.env.repet - 1
-
 
 def salina(nummapa):
 
@@ -649,7 +640,6 @@ def salina(nummapa):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
-
 def viaferrea(nummapa):
 
     #-----------------> VIA FERREA<------------------------------------------
@@ -715,7 +705,6 @@ def viaferrea(nummapa):
     log.log(repet,u"Proceso 'Via ferrea' finalizado! \n\n")
 
     arcpy.env.repet = arcpy.env.repet - 1
-
 
 def zonaarenosa(nummapa):
 

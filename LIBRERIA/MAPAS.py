@@ -92,6 +92,7 @@ def cargalib():
     global exportma
     global filtro
     global formato
+    global inegi_comp
     global inegi_tematicos
     global renombra
     global rural
@@ -110,6 +111,7 @@ def cargalib():
     exportma = importlib.import_module(u"LIBRERIA.exportar_mapas")           #carga el script para exportar mapas a pdf y jpg
     filtro = importlib.import_module(u"LIBRERIA.filtro")                     #carga el script para aplicar filtros a una capa
     formato = importlib.import_module(u"LIBRERIA.formato")                   #carga el script para aplicar formato a layout
+    inegi_comp = importlib.import_module(u"LIBRERIA.inegi_comp")
     inegi_tematicos = importlib.import_module(u"LIBRERIA.inegi_tematicos")
     renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")           #carga el script para cambiar el nombre a capas
     rural = importlib.import_module(u"LIBRERIA.rural_nacional")              # ejecuta rutina de zonas rurales
@@ -145,6 +147,7 @@ def cargalib():
     # reload(conabio)
     # reload(borrainn)
     # reload(inegi_tematicos)
+    reload (inegi_comp)
 
     ccapas.cargar(u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp")
     simbologia.aplica_simb(u"SISTEMA")
@@ -402,6 +405,10 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # conabio.subcuenca(arcpy.env.nummapa)
 # conabio.subregion(arcpy.env.nummapa)
 # conabio.zonaecol(arcpy.env.nummapa)
+
+# ----------------------------CARTOGRAFÍA INEGI COMPLEMENTOS
+
+inegi_comp.denue(arcpy.env.nummapa,100) # el segundo parámetro de la función es para definir la distancia de análisis
 
 
 log.log(repet,u"FIN DE PROCESO")

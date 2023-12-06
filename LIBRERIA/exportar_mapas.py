@@ -40,7 +40,7 @@ def quitar_acentos(texto):
         cadena_sin_acentos = u"".join([c for c in nfkd_form if not unicodedata.combining(c)])
         # return cadena_sin_acentos
 
-        arcpy.env.sinacentos = cadena_sin_acentos
+        return cadena_sin_acentos
 
         if texto == cadena_sin_acentos:
             log.log(repet,u"{} no contiene acentos, no se han hecho cambios".format(texto))
@@ -67,11 +67,10 @@ def exportar(r_dest, nombarch):
     ruta = ""  # Inicializar ruta con una cadena vacía
     try:
         log.log(repet,u"'exportar_mapas' iniciando para {}, donde 'nombarch' es tipo {}...".format(r_dest + nombarch,"type(nombarch)"))
-        
 
-        quitar_acentos(nombarch)
+        nombarch = quitar_acentos(nombarch)
 
-        ruta = r_dest + arcpy.env.sinacentos
+        ruta = r_dest + nombarch
 
         # Proceso de ajuste de leyenda
         for elemento in arcpy.mapping.ListLayoutElements(mxd, u"LEGEND_ELEMENT"):
