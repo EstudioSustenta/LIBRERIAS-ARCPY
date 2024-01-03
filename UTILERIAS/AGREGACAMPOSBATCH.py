@@ -123,7 +123,7 @@ def calcula():
             print (estado)
             print (u"\nEjecutando proceso, espere...\n\n")
 
-            escribearch("\n'{}' INICIANDO PROCESO PARA...".format(estado),'a')
+            escribearch(" INICIANDO PROCESO PARA...\n'{}\n'".format(estado),'a')
 
             if os.path.exists(archivo):
 
