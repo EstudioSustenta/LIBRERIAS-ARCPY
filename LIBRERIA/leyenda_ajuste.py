@@ -17,6 +17,8 @@ repet = arcpy.env.repet
 log.log(repet,u"Librería 'leyenda_ajuste' cargada con éxito")
 # mxd = arcpy.mapping.MapDocument(u"CURRENT")
 mxd = arcpy.env.mxd
+global cuadro_de_leyendas
+cuadro_de_leyendas = None
 
 def leyenda():
 
@@ -50,9 +52,10 @@ def leyenda():
             cuadro_de_leyendas.elementHeight = nueva_altura
             log.log(repet,u"Se ha ajustado la leyenda a " + str(nueva_altura) + "cm")
         
-        numero_de_elementos = len(cuadro_de_leyendas.items)
+            # numero_de_elementos = len(cuadro_de_leyendas.items)
 
-        log.log(repet,u"No se requiere ajuste de leyenda ")
+        else:
+            log.log(repet,u"No se requiere ajuste de leyenda ")
 
     except Exception as e:
         log.log(repet,u">> ERROR, el proceso de ajuste de leyenda falló")
@@ -64,3 +67,18 @@ def leyenda():
     log.log(repet,u"'leyenda' finalizado!")
 
     arcpy.env.repet = arcpy.env.repet - 1
+
+def quita_elem_leyenda(posicion):      #ESTA FUNCIÓN NO FUNCIONA ;O
+
+    # Conectarse al documento actual de ArcMap
+    mxd = arcpy.env.mxd
+
+    # Obtener el marco activo (data frame) del diseño
+    data_frame = arcpy.env.df
+
+    # Obtener la leyenda por su nombre
+    leyenda = arcpy.mapping.ListLayoutElements(mxd, "LEGEND_ELEMENT", "Legend")[0]
+
+    # Ocultar la leyenda
+    leyenda.elementPositionX = posicion  # Mueve la leyenda a la posición indicada
+    arcpy.RefreshActiveView()
