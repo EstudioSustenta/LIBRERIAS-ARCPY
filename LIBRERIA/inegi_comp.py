@@ -273,9 +273,9 @@ def analisis_manz(nummapa):
     # SE DEFINE UN DICCIONARIO CON LOS CAMPOS Y VALORES A TRABAJAR
     
     lista = {
-    "poblacion total": {"Campo": "POB1", "diametro": 501, "expresionsql": "sub-titulo 1111", "layerfile": "Manz_Aguascalientes_POB1"},
-    "poblacion total": {"Campo": "POB2", "diametro": 502, "expresionsql": "sub-titulo 1222", "layerfile": "Manz_Aguascalientes_POB2"},
-    # "poblacion total": {"Campo": "POB3", "diametro": 503, "expresionsql": "sub-titulo 1333", "layerfile": "archivo5003"},
+    "poblacion total": {"Campo": "POB1", "diametro": 1000, "expresionsql": "sub-titulo 1111", "layerfile": "manzana_localidad POB1", "quitasimb" : "no"},
+    "densidad de poblacion": {"Campo": "dens_ha", "diametro": 1000, "expresionsql": "sub-titulo 1222", "layerfile": "manzana_localidad densidad", "quitasimb" : "no"},
+    "poblacion dominante": {"Campo": "pobdom", "diametro": 600, "expresionsql": "sub-titulo 1333", "layerfile": "manzana_localidad dominante", "quitasimb" : "si"},
     # "poblacion total": {"Campo": "POB4", "diametro": 504, "expresionsql": "sub-titulo 1444", "layerfile": "archivo5004"},
     # "poblacion total": {"Campo": "POB5", "diametro": 505, "expresionsql": "sub-titulo 1555", "layerfile": "archivo5005"},
     # "poblacion total": {"Campo": "POB6", "diametro": 506, "expresionsql": "sub-titulo 1666", "layerfile": "archivo5006"},
@@ -302,7 +302,7 @@ def analisis_manz(nummapa):
     z_extent.zoom_extent(layout_name, "SISTEMA")
     df.scale = 2000
 
-    leyenda.quita_elem_leyenda(-50)
+    
 
     for clave, valor in lista.items():
         elemento = clave
@@ -310,18 +310,22 @@ def analisis_manz(nummapa):
         diametro = valor['diametro']
         expresionsql = valor['expresionsql']
         archivolayer = valor['layerfile']
-        
+        quitarsimbol = valor['quitasimb']
+
+        if quitarsimbol == "si":
+            leyenda.quita_elem_leyenda(-50)
+
         log.log(nummapa,"elemento: '{}', campo: '{}',diametro (metros): '{}', expresión SQL; '{}', archivo layer para formato: '{}'".format(elemento, campo, diametro, expresionsql,archivolayer))
 
-        capalayer = u"{}Manz_{}_{}.lyr".format(arcpy.env.carp_simb,arcpy.env.estado,campo)
-        
+        capalayer = u"{}{}.lyr".format(arcpy.env.carp_simb,archivolayer)
+
         if not os.path.exists(capalayer):
             
             pythonaddins.MessageBox('No se ha encontrado la capa de layer {}. \nCrearla manualmente en ArcMap. \nPara crear el mapa se debe repetir el proceso.'.format(capalayer),
                                      'Capa', 0)
         else:
             z_extent.zoom_extent(layout_name, "SISTEMA")
-            anchodf = 23.5
+            anchodf = 23.5  # Ancho del data frame (en centímetros)
             # para definir el valor de la escala se deben unificar las unidades de la impresión y del mapa y dividir las segundas entre las primeras.
             escala = (diametro * 100)/anchodf
             df.scale = escala
@@ -336,8 +340,10 @@ def analisis_manz(nummapa):
             exportma.exportar(arcpy.env.carp_cliente,nombarch)
             formato.formato_layout(u"título")
 
+        if quitarsimbol == "si":
+            leyenda.quita_elem_leyenda(1)
+
     ccapas.remover_capas(manz)
-    leyenda.quita_elem_leyenda(1)
     
     tiempo_analisismanz_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
 
