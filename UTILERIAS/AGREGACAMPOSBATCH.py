@@ -49,7 +49,7 @@ def creacampo(archivo, camp, tipo, precision, longit, archlog):
     escribearch(u"'creacampo' iniciando..",'a',archlog)
 
     if os.path.exists(archivo):
-        escribearch(u"El archivo \n'{}' \nexiste\n".format(archivo),'a',archlog)
+        escribearch(u"El archivo \n'{}' \nexiste".format(archivo),'a',archlog)
         
 
     camposs = [campo.name for campo in arcpy.ListFields(archivo)]
@@ -119,10 +119,9 @@ def calcula():
         for estado in estados:
 
             archtr = "manzana_localidad"
-            print (estado)
             archivo = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/cartografia/{}.shp".format(estado,archtr)
 
-            escribearch(u"'{}' \nIniciando proceso...".format(estado.upper()),'a',archlog)
+            escribearch(u"\n\n'{}' \nIniciando proceso...".format(estado.upper()),'a',archlog)
 
             if os.path.exists(archivo):
 
