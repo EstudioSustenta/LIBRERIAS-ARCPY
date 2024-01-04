@@ -45,6 +45,33 @@ def activar_rotulos(capa, campo_rotulo):
 
     arcpy.env.repet = arcpy.env.repet - 1
 
+def activar_rot_exp(capa, expresion):
+
+    arcpy.env.repet = arcpy.env.repet + 1
+    repet = arcpy.env.repet
+
+    tiempo_act_rot_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(repet,u"Iniciando 'activar_rotulos' para '{}' con el campo '{}'...".format(capa, expresion))
+
+    try:
+        capa = arcpy.mapping.Layer(capa)
+        # Habilita los rótulos para la capa
+        capa.showLabels = True
+        # Configura la expresión de rótulo
+        labelClass = capa.labelClasses[0]
+        labelClass.expression = u"{}".format(expresion)
+        log.log(repet,u"Rótulos activados satisfactoriamente para capa " + capa.name)
+    except Exception as e:
+        log.log(repet,u">> ERROR, los rótulos no se han activado para capa " + capa.name)
+        log.log(repet,str(e))
+
+    tiempo_act_rot_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    log.log(repet,u"tiempo total de librería identity_sistema.py: {}".format(tiempo.tiempo([tiempo_act_rot_ini,tiempo_act_rot_fin])))
+
+    log.log(repet,u"'activar_rotulos' finalizado!")
+
+    arcpy.env.repet = arcpy.env.repet - 1
+
 
 def desactivar_rotulos(capa):
 
