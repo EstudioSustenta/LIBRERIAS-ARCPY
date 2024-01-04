@@ -38,7 +38,7 @@ def rutacarp():
     try:
         print("Eligiendo carpeta")
         # Abre un cuadro de diálogo para seleccionar una carpeta
-        carp_mapas = u"Y:/02 CLIENTES (EEX-CLI)"
+        carp_mapas = u"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/"
         carpeta_cliente = tkFileDialog.askdirectory(initialdir=carp_mapas, title=u"Selecciona la carpeta destino de los mapas") + u"/"
         arcpy.env.carp_cliente = carpeta_cliente
         arcpy.env.archivolog = carpeta_cliente + u"00 archivo_log " + fechahora + u".txt"          # define una variable de entorno con el nombre del archivo log.
@@ -130,7 +130,7 @@ def cargalib():
     # reload(formato)
     # reload(simbologia)
     # reload(z_extent)
-    # reload(act_rot)
+    # reload (act_rot)
     # reload(buff_cl)
     # reload(transp)
     # reload(renombra)
@@ -142,7 +142,7 @@ def cargalib():
     # reload(idproy)
     # reload(nearexp)
     # reload(log)
-    # reload(leyenda)
+    # reload (leyenda)
     # reload(tiempo)
     # reload(conabio)
     # reload(borrainn)
@@ -407,9 +407,13 @@ nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
 # conabio.zonaecol(arcpy.env.nummapa)
 
 # ----------------------------CARTOGRAFÍA INEGI COMPLEMENTOS
+# if arcpy.env.ambito == "Urbano":
+#     # inegi_comp.denue(arcpy.env.nummapa,100) # el segundo parámetro de la función es para definir la distancia de análisis
+#     None
+# else:
+#     log.log(repet, u"El ambito es rural, no se ejecutó el análisis DENUE")
 
-inegi_comp.denue(arcpy.env.nummapa,100) # el segundo parámetro de la función es para definir la distancia de análisis
-
+inegi_comp.analisis_manz(arcpy.env.nummapa) # el segundo parámetro de la función es para definir la distancia de análisis
 
 log.log(repet,u"FIN DE PROCESO")
 tiempoprocfin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
