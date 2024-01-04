@@ -63,7 +63,7 @@ def aplica_simb2(capa,lyr):
     try:
         log.log(repet,u"'simbologia_lyr.aplica_simb2' iniciando para '{}'...".format(capa))
 
-        simbologia = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/{}.lyr".format(lyr)
+        simbologia = "{}{}.lyr".format(arcpy.env.carp_simb,lyr)
         lyr_capa = arcpy.mapping.ListLayers(mxd,capa,df)[0]
         lyr_capa = lyr_capa.datasetName
         arcpy.ApplySymbologyFromLayer_management(lyr_capa,simbologia)
