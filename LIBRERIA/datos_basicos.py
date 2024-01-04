@@ -13,7 +13,7 @@ ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
 log = importlib.import_module(u"LIBRERIA.archivo_log")
 
-reload (log)
+# reload (log)
 
 # from datetime import datetime
 now = datetime.datetime.now()
@@ -146,6 +146,7 @@ def datosbasicos():
 
     arcpy.env.scince = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/cartografia".format(arcpy.env.estado)
     arcpy.env.carp_temp = "Y:/0_SIG_PROCESO/X TEMPORAL/"
+    arcpy.env.carp_simb = "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/"
 
     log.log(repet,archivo1) 
     log.log(repet,archivo2)
