@@ -12,8 +12,12 @@ import tkFileDialog  # En Python 2.7, se utiliza tkFileDialog en lugar de filedi
 import sys
 import importlib
 
+
+
+# ruta_libreria = u"C:/SCINCE 2020"
 ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
 sys.path.append(ruta_libreria)
+
 ajuste_denue = importlib.import_module(u"UTILERIAS.AJUSTE_DENUE")
 
 
@@ -52,8 +56,10 @@ def buscar_archivos_shp(carpeta_seleccionada):
 
     # Ruta de la carpeta principal
     # carpeta_seleccionada = "Y:/GIS/MEXICO/VARIOS/INEGI/DENUE/2023"
-    cadena = "denue_inegi_"
+    # cadena = "denue_inegi_"
+    cadena = "manzana"
     extension = ".shp"
+    archsal = "manzana_localidad"
     print("Se seleccionó la carpeta '{}'".format(carpeta_seleccionada.encode('utf-8')))
     print("Se proyectarán los archivos '{}' que contienen la cadena '{}'\n".format(extension, cadena))
     
@@ -69,7 +75,7 @@ def buscar_archivos_shp(carpeta_seleccionada):
                 print ("\nArchivo de entrada: '{}'".format(archivo_entrada.encode('utf-8')))
 
                 # archivo_salida = os.path.join(ruta_actual, "wgs84z13 {}".format(archivo))
-                archivo_salida = (os.path.join(ruta_actual, "{}wgs84z13.shp".format("denue_")))
+                archivo_salida = (os.path.join(ruta_actual, "{}.shp".format(archsal)))
                 archivo_salida = archivo_salida.replace("\\","/")
                 print ("Archivo de salida: '{}'".format(archivo_salida.encode('utf-8')))
 
@@ -91,12 +97,12 @@ def buscar_archivos_shp(carpeta_seleccionada):
                         proyeccion_destino = 32613      # Código EPSG para WGS_1984_UTM_Zone_13N
                         proyectar_shapefile(archivo_entrada, archivo_salida, proyeccion_destino)                # Llamar a la función para proyectar el shapefile
 
-                        # rutina para borrar el archivo original si se proyectó correctamente el archivo
-                        borrar_archivo_si_existe(archivo_salida,archivo_entrada)                                # Llamar a la función para borrar el shapefile
+                        # # rutina para borrar el archivo original si se proyectó correctamente el archivo
+                        # borrar_archivo_si_existe(archivo_salida,archivo_entrada)                                # Llamar a la función para borrar el shapefile
 
-                        # hace el ajuste de claves en archivo mediante librería externa
-                        reload (ajuste_denue)
-                        ajuste_denue.comp_denue(archivo_salida)                                                 # Llamar a la función externa de ajuste
+                        # # hace el ajuste de claves en archivo mediante librería externa
+                        # reload (ajuste_denue)
+                        # ajuste_denue.comp_denue(archivo_salida)                                                 # Llamar a la función externa de ajuste
 
                     else:
                         print("\n'{}' no se puede proyectar '{}'\n\n".format(entrada,codigo))
