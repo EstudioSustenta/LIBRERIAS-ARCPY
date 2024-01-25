@@ -150,6 +150,49 @@ def eliminar_tabla(database_path, tabla_elim):
         # Cerrar la conexión
         connection.close()
 
+def agregar_campo_y_calcular_valor(valores2):
+
+    database_path = valores2['database_path']
+    tabla = valores2['tabla']
+    campocalc = valores2['campocalc']
+    nuevoedu = '{}i'.format(campocalc)
+
+    print('\n\ndb: {}\ntabla: {}\ncampo a invertir: {}\ncampo invertido: {}'.format(database_path, tabla, campocalc, nuevoedu))
+
+    # Conectar a la base de datos
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+    try:
+
+        # Verificar si la columna ya existe
+        cursor.execute("PRAGMA table_info({})".format(tabla))
+        columnas_existentes = [columna[1] for columna in cursor.fetchall()]
+
+        if nuevoedu not in columnas_existentes:
+            # Si la columna no existe, intentar agregarla
+            cursor.execute("ALTER TABLE {} ADD COLUMN {};".format(tabla, nuevoedu))
+
+            # Actualizar los valores en la nueva columna
+            cursor.execute("""
+                UPDATE {} 
+                SET {} = CASE WHEN {} >= 0 THEN 100 - {} ELSE -6 END;
+            """.format(tabla, nuevoedu, campocalc, campocalc))
+
+            # Confirmar los cambios
+            connection.commit()
+            print("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {} y se han calculado sus valores.\n".format(nuevoedu, tabla))
+
+        else:
+            print("\nLa columna {} ya existe en la tabla {}.\n".format(nuevoedu, tabla))
+
+    except sqlite3.Error as e:
+        print("Error en proceso: {}".format(e))
+
+    finally:
+        # Cerrar la conexión
+        connection.close()
+    
 def sumar_columnas(database_path, tabla, columnas_a_sumar, nueva_columna):
     """
     Suma los valores de las columnas 'columnas_a_sumar' de la tabla 'tabla'
@@ -485,6 +528,36 @@ def asignar_valor_nulo(marg_param):
         # Cerrar la conexión
         connection.close()
 
+def calcula_inversos(valores2):
+    for campo in valores2['campocalc']:
+        valores2['campocalc'] = campo
+        agregar_campo_y_calcular_valor(valores2)
+
+
+def contar_registros(database_path, tabla):
+    """
+    Esta función cuenta los registros de una tabla en una base de datos SQLite.
+    """
+    # Conectar a la base de datos
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+    try:
+        # Ejecutar la consulta para contar los registros
+        cursor.execute("SELECT COUNT(*) FROM {}".format(tabla))
+        count = cursor.fetchone()[0]
+
+        print("\nLa tabla '{}' tiene {} registros.\n".format(tabla, count))
+
+    except sqlite3.Error as e:
+        print("Error en proceso: {}".format(e))
+
+    finally:
+        # Cerrar la conexión
+        connection.close()
+
+
+
 
 
 def ejecuta(valores):
@@ -500,9 +573,11 @@ def ejecuta(valores):
     columnas_a_sumar = ['VIV0', 'VIV1', 'VIV2', 'POB1', 'POB32', 'POB84']
     cvegeo = '0100600010051005'
 
-    campos_marg_edu = ['EDU43_R', 'EDU46_R']
-
     marg_param = {'tabla' : tabla}
+
+    valores2 = {'campocalc' : ['EDU43_R', 'EDU46_R'],
+                'tabla' : tabla
+                }
     
     for estado in estados:
         # Ruta de la base de datos SQLite
@@ -511,10 +586,12 @@ def ejecuta(valores):
         marg_param['nueva_columna_deciles'] = 'marg_decil'
         marg_param['columna_deciles'] = 'marg_tot'
         
+        valores2['database_path'] = database_path
 
         # sumacols(database_path, tabla, nvocampo)
-        eliminar_tabla(database_path, tabla_elim)
+        # eliminar_tabla(database_path, tabla_elim)
         new_db_table(database_path, sql_query)
+        calcula_inversos(valores2)
         # eliminar_columnas(database_path, tabla_a_actualizar, columnas_a_eliminar)
         # sumar_columnas(database_path, tabla, columnas_a_sumar, nueva_columna)
         # print (obtener_campos_por_cvegeo(database_path, tabla, cvegeo))
@@ -524,14 +601,16 @@ def ejecuta(valores):
         margtot(marg_param)     # calcula la marginación económica
         crear_columna_deciles(marg_param)    # Llamar a la función para crear la columna de deciles
         asignar_valor_nulo(marg_param)
-        # eliminar_columnas(database_path, tabla_a_actualizar, valores['cols_temp'])
+        eliminar_columnas(database_path, tabla_a_actualizar, valores['cols_temp'])
+
+        # contar_registros(database_path, 'cpv2020_manzana_servicios_de_salud')
 
         
 
 if __name__ == "__main__":
 
     estados = [
-            u"Aguascalientes",
+            # u"Aguascalientes",
             # u"Baja California",
             # u"Baja California Sur",
             # u"Campeche",
@@ -545,7 +624,7 @@ if __name__ == "__main__":
             # u"Guerrero",
             # u"Hidalgo",
             # u"Jalisco",
-            # u"Mexico",
+            u"Mexico",
             # u"Michoacan de Ocampo",
             # u"Morelos",
             # u"Nayarit",
