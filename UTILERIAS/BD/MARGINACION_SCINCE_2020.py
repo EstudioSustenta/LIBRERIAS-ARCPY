@@ -8,6 +8,7 @@ Para la documentación de este proceso, ver el proyecto OBSIDIAN 'programacion'
 import sqlite3
 import pandas as pd
 import numpy as np
+from dbfpy import dbf
 
 def new_db_table(database_path, sql_query):
 
@@ -533,7 +534,6 @@ def calcula_inversos(valores2):
         valores2['campocalc'] = campo
         agregar_campo_y_calcular_valor(valores2)
 
-
 def contar_registros(database_path, tabla):
     """
     Esta función cuenta los registros de una tabla en una base de datos SQLite.
@@ -556,7 +556,53 @@ def contar_registros(database_path, tabla):
         # Cerrar la conexión
         connection.close()
 
+def exportar_a_dbf(database_path, tabla, archivo_dbf):
+    """
+    Exporta la tabla especificada de la base de datos SQLite a un archivo DBF.
 
+    Parameters:
+    - database_path (str): Ruta de la base de datos SQLite.
+    - tabla (str): Nombre de la tabla que se exportará.
+    - archivo_dbf (str): Ruta del archivo DBF de destino.
+    """
+    # Conectar a la base de datos SQLite
+    connection = sqlite3.connect(database_path)
+    cursor = connection.cursor()
+
+    try:
+        # Obtener los datos de la tabla
+        cursor.execute("SELECT * FROM {}".format(tabla))
+        datos = cursor.fetchall()
+
+        # Obtener los nombres de las columnas
+        cursor.execute("PRAGMA table_info({})".format(tabla))
+        columnas = [columna[1] for columna in cursor.fetchall()]
+
+        # Crear un nuevo archivo DBF
+        dbf_file = dbf.Dbf(archivo_dbf, new=True)
+
+        # Agregar las columnas al archivo DBF
+        for columna in columnas:
+            dbf_file.addField((columna, "C", 50))
+
+        # Agregar los datos al archivo DBF
+        for fila in datos:
+            nueva_fila = dbf_file.newRecord()
+
+            for i, valor in enumerate(fila):
+                nueva_fila[columnas[i]] = str(valor)
+
+            nueva_fila.store()
+
+        print("Exportación a DBF completada con éxito.")
+
+    except sqlite3.Error as e:
+        print("Error en proceso: {}".format(e))
+
+    finally:
+        # Cerrar la conexión y el archivo DBF
+        connection.close()
+        dbf_file.close()
 
 
 
@@ -581,29 +627,41 @@ def ejecuta(valores):
     
     for estado in estados:
         # Ruta de la base de datos SQLite
-        database_path = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/{}_compendio - copia.db'.format(estado,estado)
+        
+        database_path = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/{}_compendio.db'.format(estado,estado)
         marg_param['database_path'] = database_path
         marg_param['nueva_columna_deciles'] = 'marg_decil'
         marg_param['columna_deciles'] = 'marg_tot'
+
+        archivo_dbf = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/tablas/cpv2020_manzana_{}.dbf'.format(estado,tabla)
         
         valores2['database_path'] = database_path
 
+        print ('\n\n')
+        print (estado)
+        print (database_path)
+        print ('\n')
+
+        # DESCOMENTAR LAS INSTRUCCIONES SIGUIENTES PARA EJECUTAR LAS FUNCIONES CORRESPONDIENTES
+
         # sumacols(database_path, tabla, nvocampo)
         # eliminar_tabla(database_path, tabla_elim)
-        new_db_table(database_path, sql_query)
-        calcula_inversos(valores2)
+        # new_db_table(database_path, sql_query)
+        # calcula_inversos(valores2)
         # eliminar_columnas(database_path, tabla_a_actualizar, columnas_a_eliminar)
         # sumar_columnas(database_path, tabla, columnas_a_sumar, nueva_columna)
         # print (obtener_campos_por_cvegeo(database_path, tabla, cvegeo))
-        margedu(marg_param)    # calcula la marginación educativa
-        margviv(marg_param)    # calcula la marginación en vivienda
-        margeco(marg_param)     # calcula la marginación económica
-        margtot(marg_param)     # calcula la marginación económica
-        crear_columna_deciles(marg_param)    # Llamar a la función para crear la columna de deciles
-        asignar_valor_nulo(marg_param)
-        eliminar_columnas(database_path, tabla_a_actualizar, valores['cols_temp'])
+        # margedu(marg_param)    # calcula la marginación educativa
+        # margviv(marg_param)    # calcula la marginación en vivienda
+        # margeco(marg_param)     # calcula la marginación económica
+        # margtot(marg_param)     # calcula la marginación económica
+        # crear_columna_deciles(marg_param)    # Llamar a la función para crear la columna de deciles
+        # asignar_valor_nulo(marg_param)
+        # eliminar_columnas(database_path, tabla_a_actualizar, valores['cols_temp'])
+        # exportar_a_dbf(database_path, tabla, archivo_dbf)
 
-        # contar_registros(database_path, 'cpv2020_manzana_servicios_de_salud')
+        # contar_registros(database_path, 'marginacion')
+
 
         
 
@@ -611,37 +669,37 @@ if __name__ == "__main__":
 
     estados = [
             # u"Aguascalientes",
-            # u"Baja California",
-            # u"Baja California Sur",
-            # u"Campeche",
-            # u"Chiapas",
-            # u"Chihuahua",
-            # u"Ciudad de Mexico",
-            # u"Coahuila",  
-            # u"Colima",          
-            # u"Durango",
-            # u"Guanajuato",
-            # u"Guerrero",
-            # u"Hidalgo",
-            # u"Jalisco",
+            u"Baja California",
+            u"Baja California Sur",
+            u"Campeche",
+            u"Chiapas",
+            u"Chihuahua",
+            u"Ciudad de Mexico",
+            u"Coahuila",  
+            u"Colima",          
+            u"Durango",
+            u"Guanajuato",
+            u"Guerrero",
+            u"Hidalgo",
+            u"Jalisco",
             u"Mexico",
-            # u"Michoacan de Ocampo",
-            # u"Morelos",
-            # u"Nayarit",
-            # u"Nuevo Leon",
-            # u"Oaxaca",
-            # u"Puebla",
-            # u"Queretaro",
-            # u"Quintana Roo",
-            # u"San Luis Potosi",
-            # u"Sinaloa",
-            # u"Sonora",
-            # u"Tabasco",
-            # u"Tamaulipas",
-            # u"Tlaxcala",
-            # u"Veracruz de Ignacio de la Llave",
-            # u"Yucatan",
-            # u"Zacatecas"
+            u"Michoacan de Ocampo",
+            u"Morelos",
+            u"Nayarit",
+            u"Nuevo Leon",
+            u"Oaxaca",
+            u"Puebla",
+            u"Queretaro",
+            u"Quintana Roo",
+            u"San Luis Potosi",
+            u"Sinaloa",
+            u"Sonora",
+            u"Tabasco",
+            u"Tamaulipas",
+            u"Tlaxcala",
+            u"Veracruz de Ignacio de la Llave",
+            u"Yucatan",
+            u"Zacatecas"
         ]
 
     sql_query = """
