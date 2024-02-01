@@ -54,14 +54,18 @@ def creacmpo():
     # Muestra el tiempo transcurrido
     print("Tiempo transcurrido:", time.time() - inicio)
         
-def combinatablas(valores):
+def crea_db(valores):
+    """
+    Rutina para crear una base de datos (ruta_db) uniendo las tablas (tablas)
+    del diccionario de valores para los estados (estados)
+    """
     try:
         print("\n\n\n\n\n\nINICIANDO!!!!")
         ruta = valores['ruta']
         basededatos = valores['basededatos']
         estados = valores['estados']
 
-        print archivos_dbf
+        print (archivos_dbf)
 
         def compacta(valores, ruta_db, estado):
             tablas = valores['tablas']
@@ -163,7 +167,7 @@ def combinatablascampos(valores):
         basededatos = valores['basededatos']
         ruta_destinodb = valores['ruta_destinodb']
 
-        print archivos_dbf
+        print (archivos_dbf)
 
         # DataFrame inicial
         df_inicial = pd.DataFrame()
@@ -316,7 +320,7 @@ def verificadb(valores):
     tablas = valores['tablas']
 
     for estado in estados:
-        ruta_db = u'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/{}_compendio.db'.format(estado,estado)
+        ruta_db = u'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/{}_manzanas.db'.format(estado,estado)
         
         escr('\n{}'.format(estado), 'a', archlog)
         for tabla in tablas:
@@ -389,51 +393,51 @@ if __name__ == '__main__':
 
     estados = [ 
                 u"Aguascalientes",
-                u"Baja California",
-                u"Baja California Sur",
-                u"Campeche",
-                u"Chiapas",
-                u"Chihuahua",
-                u"Ciudad de Mexico",
-                u"Coahuila",  
-                u"Colima",          
-                u"Durango",
-                u"Guanajuato",
-                u"Guerrero",
-                u"Hidalgo",
-                u"Jalisco",
-                u"Mexico",
-                u"Michoacan de Ocampo",
-                u"Morelos",
-                u"Nayarit",
-                u"Nuevo Leon",
-                u"Oaxaca",
-                u"Puebla",
-                u"Queretaro",
-                u"Quintana Roo",
-                u"San Luis Potosi",
-                u"Sinaloa",
-                u"Sonora",
-                u"Tabasco",
-                u"Tamaulipas",
-                u"Tlaxcala",
-                u"Veracruz de Ignacio de la Llave",
-                u"Yucatan",
-                u"Zacatecas"
+                # u"Baja California",
+                # u"Baja California Sur",
+                # u"Campeche",
+                # u"Chiapas",
+                # u"Chihuahua",
+                # u"Ciudad de Mexico",
+                # u"Coahuila",  
+                # u"Colima",          
+                # u"Durango",
+                # u"Guanajuato",
+                # u"Guerrero",
+                # u"Hidalgo",
+                # u"Jalisco",
+                # u"Mexico",
+                # u"Michoacan de Ocampo",
+                # u"Morelos",
+                # u"Nayarit",
+                # u"Nuevo Leon",
+                # u"Oaxaca",
+                # u"Puebla",
+                # u"Queretaro",
+                # u"Quintana Roo",
+                # u"San Luis Potosi",
+                # u"Sinaloa",
+                # u"Sonora",
+                # u"Tabasco",
+                # u"Tamaulipas",
+                # u"Tlaxcala",
+                # u"Veracruz de Ignacio de la Llave",
+                # u"Yucatan",
+                # u"Zacatecas"
                 ]
 
     valores = {
         'ruta': u'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/',
         'tablas': archivos_dbf,
         'tabladest': 'marginacion',
-        'basededatos': 'Aguascalientes_compendio - copia.db',
+        'basededatos': 'manzanas.db',
         'ruta_destinodb': u'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/',
         'estados' : estados
     }
 
     # Llamar a la función
-    # combinatablas(valores)
-    combinatablascampos(valores)
+    crea_db(valores)
+    # combinatablascampos(valores)
     # borraarchivo(estados)
     # combinatablas1(valores)
     # verificadb(valores)

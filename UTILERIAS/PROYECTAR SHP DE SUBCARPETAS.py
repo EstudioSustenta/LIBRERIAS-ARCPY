@@ -89,7 +89,7 @@ def buscar_archivos_shp(carpeta_seleccionada):
                     print ("el archivo '{}' ya existe en '{}'".format(archivo.encode('utf-8'), os.path.dirname(archivo_salida.encode('utf-8'))))
                 else:
                     print ("el archivo '{}' NO existe en '{}'".format(archivo.encode('utf-8'), os.path.dirname(archivo_salida.encode('utf-8'))))
-                    
+                    print (codigo)
                     if codigo != 32613: # and codigo == None:
                         print ("'{}' a proyectar como '{}' en {}".format(entrada.encode('utf-8'),salida.encode('utf-8'),(ruta_actual.encode('utf-8'))))
 
