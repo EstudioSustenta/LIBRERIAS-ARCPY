@@ -1,9 +1,13 @@
 # -*- coding: utf-8 -*-
 
 '''
-Esta función regresa las entidades federativas activas para trabajar con otras librerías
+Esta función regresa listas de valores para trabajar con datos INEGI
+estadosact = entidades federativas
+estorigdest = diccionario de entidades federativas con nombre de carpeta inegi
+shapes = shapefiles SCINCE 2020
+tablasdbf = tablas dbf asociadas a cada shapefile
 '''
-def estadosact():
+def estados():
     estados = [
         'Aguascalientes',
         # 'Baja California',
@@ -77,3 +81,38 @@ def estorigdest():
             'Zacatecas'                         : '32_ZAC',
             }
     return estOrigDest
+
+def shapes():
+    shapes = [
+        'ageb_urb',
+        'eje_vial',
+        'estatal',
+        'loc_rur',
+        'loc_urb',
+        'manzana',
+        'municipal',
+        'servicios_a',
+        'servicios_l',
+        'servicios_p',
+            ]
+    return shapes
+
+def tablasdbf():
+    
+    tablasdbf = [
+    'caracteristicas_economicas.dbf',
+    'discapacidad.dbf',
+    'educacion.dbf',
+    'etnicidad.dbf',
+    'fecundidad.dbf',
+    'hogares_censales.dbf',
+    'migracion.dbf',
+    'mortalidad.dbf',
+    'poblacion.dbf',
+    'religion.dbf',
+    'servicios_de_salud.dbf',
+    'situacion_conyugal.dbf',
+    'vivienda.dbf'
+               ]
+    return tablasdbf
+

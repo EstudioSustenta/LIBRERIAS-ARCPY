@@ -3,8 +3,8 @@
 from dbfread import DBF
 from ESUSTENTA_UTILERIAS import escribearch as escr
 from dbf import Table, DbfError
-import os
-import shutil
+# import os
+# import shutil
 
 fichero = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/campos_estados.txt'
 
@@ -53,20 +53,21 @@ def contar_campos_dbf(tabla):
         return None
 
 def verificar_existencia_campo(nombre_tabla_dbf, nombre_campo):
+    print ('verificando campo')
     try:
         # Leer la tabla DBF y obtener información sobre los campos
         with Table(filename=nombre_tabla_dbf) as tabla:
             campos_existentes = tabla.field_names
-
             if nombre_campo in campos_existentes:
                 return True
             else:
                 return False
-
-    except Exception as e:
+    except FileNotFoundError:
+        print("El archivo DBF no se encontró.")
         return False
-
-from dbfread import DBF
+    except Exception as e:
+        print("Error inesperado: {}".format(e))
+        return False
 
 def obtener_valor_celda(nombre_tabla_dbf, campo, numero_registro):
     try:
@@ -85,49 +86,4 @@ def obtener_valor_celda(nombre_tabla_dbf, campo, numero_registro):
 
     except Exception as e:
         print("Error al obtener el valor de la celda: {0}".format(e))
-
-
-
-
-
-
-
-
-
-
-
-if __name__ == '__main__':
-    import caracteres_inegi
-    caracteres = caracteres_inegi.car_esp()
-    # print(caracteres.encode())
-    carmals = [ 
-        # u'',
-        u'├®',
-        u'├¡',
-        u'├║',
-        u'├│',
-        # u'',
-        # u'',
-        # u'',
-        # u'',
-        # u'',
-        ]
-    for car_incorr in carmals:
-        ruta = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/cartografia/municipal - copia.dbf'
-        car_corr = caracteres[car_incorr]
-        # print (car_incorr + ">>" + car_corr)
-        sustituir_caracteres_en_dbf(ruta, caracteres)
-        
-
-        # Ejemplo de uso
-    nombre_tabla_dbf = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/cartografia/municipal - copia.dbf'
-    campo_deseado = 'NOMGEO'
-    numero_registro_deseado = 3
-
-    valor_celda = obtener_valor_celda(nombre_tabla_dbf, campo_deseado, numero_registro_deseado)
-
-    if valor_celda is not None:
-        print("El valor en la celda '{0}' del campo '{1}' en el registro {2} es: \n{3}".format(campo_deseado, nombre_tabla_dbf, numero_registro_deseado, valor_celda).encode('utf-8'))
-
-
 

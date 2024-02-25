@@ -12,7 +12,7 @@ import pandas as pd
 import geopandas as gpd
 # import numpy as np
 # from dbfpy import dbf
-# import arcpy
+import os
 from dbfread import DBF
 from simpledbf import Dbf5
 
@@ -20,11 +20,77 @@ from simpledbf import Dbf5
 # import dbfread
 # import dbf
 
+sql_query = """
+    CREATE TABLE marginacion AS
+    SELECT
+        CAST(poblacion.CVEGEO AS TEXT) AS CVEGEO,
+        poblacion.POB1,
+        poblacion.POB42,
+        poblacion.POB84,
+        economia.ECO1_R,
+        economia.ECO2_R,
+        economia.ECO3_R,
+        economia.ECO25_R,
+        economia.ECO26_R,
+        economia.ECO27_R,
+        salud.SALUD2_R,
+        vivienda.VIV0,
+        vivienda.VIV7_R,
+        vivienda.VIV10_R,
+        vivienda.VIV14_R,
+        vivienda.VIV16_R,
+        vivienda.VIV18_R,
+        vivienda.VIV21_R,
+        vivienda.VIV24_R,
+        vivienda.VIV26_R,
+        vivienda.VIV30_R,
+        vivienda.VIV31_R,
+        vivienda.VIV39_R,
+        vivienda.VIV40_R,
+        vivienda.VIV41_R,
+        vivienda.VIV42_R,
+        educacion.EDU28_R,
+        educacion.EDU43_R,
+        educacion.EDU46_R
+    FROM
+        poblacion poblacion
+    JOIN
+        economia economia ON poblacion.CVEGEO = economia.CVEGEO
+    JOIN
+        educacion educacion ON poblacion.CVEGEO = educacion.CVEGEO
+    JOIN
+        salud salud ON poblacion.CVEGEO = salud.CVEGEO
+    JOIN
+        vivienda vivienda ON poblacion.CVEGEO = vivienda.CVEGEO;
+    """
+
+
+
 def new_db(nueva_db):
     connection = sqlite3.connect(nueva_db)
     connection.close()
     return u'Nueva base de datos creada en {}'.format(nueva_db)
 
+def existe_tabla(db, tabla):
+    try:
+        # Conectar a la base de datos
+        conexion = sqlite3.connect(db)
+        cursor = conexion.cursor()
+
+        # Consultar si la tabla existe
+        cursor.execute(f"SELECT name FROM sqlite_master WHERE type='table' AND name='{tabla}'")
+        tabla_existente = cursor.fetchone()
+
+        # Cerrar la conexión
+        conexion.close()
+
+        # Devolver True si la tabla existe, False si no existe
+        return tabla_existente is not None
+
+    except sqlite3.Error as e:
+        # print(u"Error al verificar la existencia de la tabla: {}".format(e))
+        conexion.close()
+        return False
 
 def marg_base_table(database_path, sql_query):
 
@@ -32,46 +98,54 @@ def marg_base_table(database_path, sql_query):
     Esta función crea una nueva tabla en la base de datos especificada con los parámetros definidos
     en la variable 'sql_query'
     """
+    print(database_path)
+    try:
+        # Verifica que la base de datos exista
+        if os.path.exists(database_path) and existe_tabla(database_path,'poblacion'):
+            # Conectarse a la base de datos
+            connection = sqlite3.connect(database_path)
+            cursor = connection.cursor()
 
-    # Ruta de la base de datos SQLite
+            # Ejecutar la sentencia SQL
+            cursor.execute(sql_query)
 
-    # Conectarse a la base de datos
-    connection = sqlite3.connect(database_path)
-    cursor = connection.cursor()
+            # Confirmar los cambios y cerrar la conexión
+            connection.commit()
+            connection.close()
 
-    # Ejecutar la sentencia SQL
-    cursor.execute(sql_query)
-
-    # Confirmar los cambios y cerrar la conexión
-    connection.commit()
-    connection.close()
-
-    print("La nueva tabla ha sido creada con exito.")
+            return(f'Se ha completado la consulta en la tabla "poblacion" de la base de datos "{database_path}"')
+        else:
+            return(f'>>>>>>>>>>ERROR: No existe la tabla "poblacion" y/o la base de datos "{database_path}"')
+    except Exception as e:
+        return(f'>>>>>>>>>>ERROR: {e}')
 
 def sumacols(database_path, tabla, nvocampo):
     # FUNCIÓN PARA SUMAR COLUMNAS EN UNA TABLA DE UNA BASE DE DATOS
-    # Conectar a la base de datos
-    connection = sqlite3.connect(database_path)
+    try:
+        # Conectar a la base de datos
+        connection = sqlite3.connect(database_path)
 
-    # Consulta SQL para obtener los datos de la tabla 'marginacion'
-    sql_query = "SELECT * FROM {};".format(tabla)
+        # Consulta SQL para obtener los datos de la tabla 'marginacion'
+        sql_query = "SELECT * FROM {};".format(tabla)
 
-    # Cargar los datos en un DataFrame de pandas
-    df = pd.read_sql_query(sql_query, connection)
+        # Cargar los datos en un DataFrame de pandas
+        df = pd.read_sql_query(sql_query, connection)
 
-    # Lista de columnas a sumar
-    columnas_a_sumar = ['VIV0', 'VIV1', 'VIV2']  # Agrega más columnas según sea necesario
+        # Lista de columnas a sumar
+        columnas_a_sumar = ['VIV0', 'VIV1', 'VIV2']  # Agrega más columnas según sea necesario
 
-    # Crear una nueva columna con la suma de las columnas seleccionadas
-    df['{}'.format(nvocampo)] = df[columnas_a_sumar].sum(axis=1)
+        # Crear una nueva columna con la suma de las columnas seleccionadas
+        df['{}'.format(nvocampo)] = df[columnas_a_sumar].sum(axis=1)
 
-    # Actualizar la tabla en la base de datos con la nueva columna
-    df.to_sql('{}'.format(tabla), connection, index=False, if_exists='replace')
+        # Actualizar la tabla en la base de datos con la nueva columna
+        df.to_sql('{}'.format(tabla), connection, index=False, if_exists='replace')
 
-    # Cerrar la conexión
-    connection.close()
+        # Cerrar la conexión
+        connection.close()
 
-    print("Operación completada con éxito. Se ha agregado la columna 'SUMA_TOTAL' a la tabla 'marginacion' en la base de datos.")
+        return("Operación completada con éxito. Se ha agregado la columna 'SUMA_TOTAL' a la tabla 'marginacion' en la base de datos.")
+    except Exception as e:
+        return(f'>>>>>>>>>>ERROR: {e}')
 
 def eliminar_columnas(database_path, tabla, columnas_a_eliminar):
     """
@@ -156,25 +230,28 @@ def eliminar_tabla(database_path, tabla_elim):
             # Confirmar los cambios
             connection.commit()
 
-            print("La tabla de respaldo '{}' ha sido eliminada con éxito.".format(tabla_elim))
+            return("La tabla de respaldo '{}' ha sido eliminada con éxito.".format(tabla_elim))
         else:
-            print("La tabla de respaldo '{}' no existe en la base de datos.".format(tabla_elim))
+            return("La tabla de respaldo '{}' no existe en la base de datos.".format(tabla_elim))
 
     except sqlite3.Error as e:
-        print("Error: {}".format(e))
+        return("Error: {}".format(e))
 
     finally:
         # Cerrar la conexión
         connection.close()
 
 def agregar_campo_y_calcular_valor(valores2):
+    """
+    
+    """
 
     database_path = valores2['database_path']
     tabla = valores2['tabla']
-    campocalc = valores2['campocalc']
+    campocalc = valores2['campo']
     nuevoedu = '{}i'.format(campocalc)
 
-    print('\n\ndb: {}\ntabla: {}\ncampo a invertir: {}\ncampo invertido: {}'.format(database_path, tabla, campocalc, nuevoedu))
+    print('\n\n>>>>>>>>>>>>>>>>db: {}\ntabla: {}\ncampo a invertir: {}\ncampo invertido: {}'.format(database_path, tabla, campocalc, nuevoedu))
 
     # Conectar a la base de datos
     connection = sqlite3.connect(database_path)
@@ -198,13 +275,13 @@ def agregar_campo_y_calcular_valor(valores2):
 
             # Confirmar los cambios
             connection.commit()
-            print("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {} y se han calculado sus valores.\n".format(nuevoedu, tabla))
+            return("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {} y se han calculado sus valores.\n".format(nuevoedu, tabla))
 
         else:
-            print("\nLa columna {} ya existe en la tabla {}.\n".format(nuevoedu, tabla))
+            return("\nLa columna {} ya existe en la tabla {}.\n".format(nuevoedu, tabla))
 
     except sqlite3.Error as e:
-        print("Error en proceso: {}".format(e))
+        return("Error en proceso: {}".format(e))
 
     finally:
         # Cerrar la conexión
@@ -237,11 +314,15 @@ def sumar_columnas(database_path, tabla, columnas_a_sumar, nueva_columna):
         # Cargar los datos en un DataFrame de pandas
         df = pd.read_sql_query(sql_query, connection)
 
+        df = convertir_columnas_numericas(df)
+
+
         # Crear una nueva columna con la suma de las columnas seleccionadas
         df[nueva_columna] = df[columnas_a_sumar].sum(axis=1)
 
         # Aplicar la condición de que si algún valor es negativo, el resultado sea '-6'
-        df[nueva_columna] = df[nueva_columna].apply(lambda x: -6 if x < 0 else x)
+        # df[nueva_columna] = df[nueva_columna].apply(lambda x: -6 if x < 0 else x)
+        df[nueva_columna] = df[nueva_columna].apply(lambda x: -6 if float(x) < 0 else x)
 
         # Actualizar la tabla en la base de datos con la nueva columna
         df.to_sql(tabla, connection, index=False, if_exists='replace')
@@ -355,7 +436,7 @@ def crear_columna_vacia(database_path, tabla, nueva_columna, valor_predeterminad
 
         # Confirmar los cambios
         connection.commit()
-        print("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {}.\n".format(nueva_columna, tabla))
+        # print("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {}.\n".format(nueva_columna, tabla))
 
     except sqlite3.Error as e:
         print("Error en proceso: {}".format(e))
@@ -394,10 +475,10 @@ def calc_promedio(marg_param):
 
         # Confirmar los cambios
         connection.commit()
-        print("\nOperación completada con éxito. Se ha actualizado la columna {} en la tabla {}.\n".format(nueva_columna, tabla))
+        return("\nOperación completada con éxito. Se ha actualizado la columna {} en la tabla {}.\n".format(nueva_columna, tabla))
 
     except sqlite3.Error as e:
-        print("Error en proceso: {}".format(e))
+        return("Error en proceso: {}".format(e))
 
     finally:
         # Cerrar la conexión
@@ -414,7 +495,7 @@ def margedu(marg_param):        # calcula la marginación educativa
     
     marg_param['nvocampo'] = 'marg_edu'
 
-    calc_promedio(marg_param)    
+    return(calc_promedio(marg_param))
 
 def margviv(marg_param):        # calcula la marginación en vivienda
     """
@@ -437,7 +518,7 @@ def margviv(marg_param):        # calcula la marginación en vivienda
     
     marg_param['nvocampo'] = 'marg_viv'
 
-    calc_promedio(marg_param)    # calcula la marginación educativa
+    return(calc_promedio(marg_param))    # calcula la marginación educativa
 
 def margeco(marg_param):        # calcula la marginación económica
     """
@@ -454,7 +535,7 @@ def margeco(marg_param):        # calcula la marginación económica
     
     marg_param['nvocampo'] = 'marg_eco'
 
-    calc_promedio(marg_param)    # calcula la marginación educativa
+    return(calc_promedio(marg_param))    # calcula la marginación educativa
 
 def margtot(marg_param):        # calcula la marginación total
     """
@@ -469,7 +550,7 @@ def margtot(marg_param):        # calcula la marginación total
     
     marg_param['nvocampo'] = 'marg_tot'
 
-    calc_promedio(marg_param)    # calcula la marginación educativa
+    return(calc_promedio(marg_param))    # calcula la marginación educativa
 
 def marg_deciles(marg_param):  # 
     database_path = marg_param['database_path']
@@ -503,10 +584,10 @@ def marg_deciles(marg_param):  #
 
             # Confirmar los cambios
             connection.commit()
-            print("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {}.\n".format(nueva_columna_decil, tabla))
+            return("\nOperación completada con éxito. Se ha creado la columna {} en la tabla {}.\n".format(nueva_columna_decil, tabla))
 
         else:
-            print("\nLa columna {} ya existe en la tabla {}.\n".format(nueva_columna_decil, tabla))
+            return("\nLa columna {} ya existe en la tabla {}.\n".format(nueva_columna_decil, tabla))
 
     except sqlite3.Error as e:
         print("Error en proceso: {}".format(e))
@@ -566,9 +647,14 @@ def calcula_inversos(valores2):
     sumen los valores de este cálculo con los valores de los otros
     tipos de carencias socioeconómocas, podremos calcular adecuadamente
     la marginación total"""
+
+    print(f">>>>>> Valores a invertir: {valores2['campocalc']}")
+
     for campo in valores2['campocalc']:
-        valores2['campocalc'] = campo
-        agregar_campo_y_calcular_valor(valores2)
+        print(f'>>>>>>>>>>>>  Calculando inverso para {campo}')
+        valores2['campo'] = campo
+        resultado = agregar_campo_y_calcular_valor(valores2)
+    # return(resultado)
 
 def contar_registros(database_path, tabla):
     """
@@ -592,7 +678,7 @@ def contar_registros(database_path, tabla):
         # Cerrar la conexión
         connection.close()
 
-def exportar_a_dbf(database_path, tabla, archivo_dbf):      # exporta los registros de una tabla de una base de datos a un archivo dbf
+def exportar_a_dbf1(database_path, tabla, archivo_dbf):      # exporta los registros de una tabla de una base de datos a un archivo dbf
     """
     Exporta la tabla especificada de la base de datos SQLite a un archivo DBF.
 
@@ -640,6 +726,54 @@ def exportar_a_dbf(database_path, tabla, archivo_dbf):      # exporta los regist
         connection.close()
         dbf_file.close()
 
+import sqlite3
+import geopandas as gpd
+
+def append_to_shapefile(db, table, shapefile):
+    """
+    Append data from a SQLite table to an existing shapefile.
+
+    Parameters:
+    - db (str): Path to the SQLite database file.
+    - table (str): Name of the table to export.
+    - shapefile (str): Path to the existing shapefile to append data to.
+    """
+    try:
+        # Connect to the SQLite database
+        connection = sqlite3.connect(db)
+        cursor = connection.cursor()
+
+        # Retrieve data from the specified table
+        cursor.execute(f"SELECT * FROM {table}")
+        data = cursor.fetchall()
+
+        # Retrieve column names
+        cursor.execute(f"PRAGMA table_info({table})")
+        columns = [column[1] for column in cursor.fetchall()]
+
+        # Convert data to a GeoDataFrame
+        gdf = gpd.GeoDataFrame(data, columns=columns)
+
+        # Convert 'CVEGEO' column to string type
+        gdf['CVEGEO'] = gdf['CVEGEO'].astype(str)
+
+        # Append data to the existing shapefile
+        existing_gdf = gpd.read_file(shapefile)
+        combined_gdf = gpd.GeoDataFrame(pd.concat([existing_gdf, gdf], ignore_index=True))
+
+        # Save the combined GeoDataFrame back to the shapefile
+        combined_gdf.to_file(shapefile)
+
+        print("Data appended to shapefile successfully.")
+
+    except sqlite3.Error as e:
+        print("Error during process:", e)
+
+    finally:
+        # Close the connection to the SQLite database
+        if connection:
+            connection.close()
+
 def rangos_edad(database_path, tabla):
 
     """
@@ -668,6 +802,27 @@ def rangos_edad(database_path, tabla):
         print ('nueva columna: {}, columnas: {}'.format(nueva_columna, columnas_a_sumar))
 
         sumar_columnas(database_path, tabla, columnas_a_sumar, nueva_columna)
+    return(f'Se han creado rangos de edad para la tabla "{tabla}" en la base de datos "{database_path}"')
+
+def convertir_columnas_numericas(df):
+    """
+    Convierte las columnas de un DataFrame a tipo numérico,
+    excepto la columna 'CVEGEO'.
+
+    Parámetros:
+    - df (DataFrame): DataFrame de pandas.
+
+    Retorna:
+    - DataFrame: DataFrame con las columnas convertidas.
+    """
+    # Obtener una lista de todas las columnas excepto 'CVEGEO'
+    columnas_a_convertir = [col for col in df.columns if col != 'CVEGEO']
+
+    # Convertir las columnas a tipo numérico
+    df[columnas_a_convertir] = df[columnas_a_convertir].apply(pd.to_numeric, errors='coerce')
+
+    return df
+
 
 
 def ejecuta(valores):
@@ -732,6 +887,7 @@ def ejecuta(valores):
 
 
 
+
 if __name__ == "__main__":
 
     estados = [
@@ -769,51 +925,6 @@ if __name__ == "__main__":
             # u"Zacatecas"
         ]
 
-    # sentencia SQL para generar la tabla 'marginacion' con información de las otras tablas existentes en la base de datos
-    sql_query = """
-        CREATE TABLE marginacion AS
-        SELECT
-            poblacion.CVEGEO,
-            poblacion.POB1,
-            poblacion.POB42,
-            poblacion.POB84,
-            economia.ECO1_R,
-            economia.ECO2_R,
-            economia.ECO3_R,
-            economia.ECO25_R,
-            economia.ECO26_R,
-            economia.ECO27_R,
-            salud.SALUD2_R,
-            vivienda.VIV0,
-            vivienda.VIV7_R,
-            vivienda.VIV10_R,
-            vivienda.VIV14_R,
-            vivienda.VIV16_R,
-            vivienda.VIV18_R,
-            vivienda.VIV21_R,
-            vivienda.VIV24_R,
-            vivienda.VIV26_R,
-            vivienda.VIV30_R,
-            vivienda.VIV31_R,
-            vivienda.VIV39_R,
-            vivienda.VIV40_R,
-            vivienda.VIV41_R,
-            vivienda.VIV42_R,
-            educacion.EDU28_R,
-            educacion.EDU43_R,
-            educacion.EDU46_R
-        FROM
-            cpv2020_manzana_poblacion poblacion
-        JOIN
-            cpv2020_manzana_caracteristicas_economicas economia ON poblacion.CVEGEO = economia.CVEGEO
-        JOIN
-            cpv2020_manzana_educacion educacion ON poblacion.CVEGEO = educacion.CVEGEO
-        JOIN
-            cpv2020_manzana_servicios_de_salud salud ON poblacion.CVEGEO = salud.CVEGEO
-        JOIN
-            cpv2020_manzana_vivienda vivienda ON poblacion.CVEGEO = vivienda.CVEGEO;
-        """
-
     cols_temp = [
                 'POB1',
                 'POB42',
@@ -850,4 +961,20 @@ if __name__ == "__main__":
                'cols_temp' : cols_temp}
 
     # new_db_table(valores)
-    ejecuta(valores)
+    # ejecuta(valores)
+    db = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/tablas/manzana.db'
+    tabla1 = 'poblacion'
+    dbff = 'Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/Aguascalientes/cartografia/municipal.shp'
+    camposborr = [
+        'POB130_es',
+        'POB131_es',
+        'POB132_es',
+        'POB133_es',
+        'POB134_es',
+        'POB135_es',
+        'POB136_es',
+    ]
+
+    # Example usage:
+    # append_to_shapefile(db, tabla1, dbff)
+    eliminar_columnas(db, tabla1, camposborr)
