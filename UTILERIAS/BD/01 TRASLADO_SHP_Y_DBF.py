@@ -34,6 +34,7 @@ import ESUSTENTA_DBF as esDBF
 import ESUSTENTA_DB_2 as esDB2
 import campos_pob
 from Utilerias_shp import borra_campos as BC
+import ESUSTENTA_UTILERIAS as ESU
 
 # VARIABLES
 estados = edos.estados()
@@ -168,7 +169,6 @@ def procesocopiashp():
             if not os.path.exists(dbdir):
                 os.makedirs(dbdir)
                 escr(archlog, u'La carpeta de la base de datos no existe, se ha creado')
-            # return
             if not os.path.exists(db): # crea la base de datos si no existe
                 new_db(db)
                 escr(archlog, u'Se ha creado la base de datos\n{}'.format(db))
@@ -258,12 +258,10 @@ def procesocopiashp():
                 shaped = shape_nick[shapeo]
                 shpfile_orig = u'{}/{}'.format(shp_orig,shapeo)
                 shpfile_dest = u'{}/{}'.format(shp_dest,shaped)
-                # escr(archlog,u'iniciando proyección de {}'.format(shpfile_dest))
                 if not os.path.exists(shp_dest):
                     os.makedirs(shp_dest)
                     escr(archlog,u'la carpeta "{}" no existe, se ha creado'.format(shp_dest))
                 escr(archlog, u'Proyectando "{}" >>> "{}"'.format(shpfile_orig,shpfile_dest)) 
-                # continue
                 escr(archlog, Utilerias_shp.proyectar(shpfile_orig, shpfile_dest, sobreescribir=True))
                 if os.path.exists(shpfile_dest):
                     escr(archlog,u'El archivo "{}" existe en disco'.format(shpfile_dest))
@@ -289,17 +287,16 @@ def procesocopiashp():
 
             for shape in shapes:
                 print(shape)
-                shape_dbf = shape_nick[shape + '.shp'] + '.dbf'
+                
+                shape_dbf = shape_nick[shape + '.shp']
+                shape_dbf = shape_dbf.split('.')[0] + '.dbf'
                 print(shape_dbf)
-                # shape_dbf = shape_dbf.split(".")[0]
                 if shape_dbf in tablasaborr:
                     escr(archlog, u'Eliminando campos de "{}"'.format(shape_dbf))
                     arch_dbf = u'{}/{}'.format(shp_dest, shape_dbf)
-                    # escr(archlog, u'{} >>> {} campos'.format(shape_dbf, esDBF.contar_campos_dbf(arch_dbf)))
                     import campos_pob
                     campos = campos_pob.campospob()
                     escr(archlog, shape_dbf)
-                    # campos = ['POB1','POB2']
                     resultado = (Utilerias_shp.elimina_campos(arch_dbf, campos))
                     if resultado:
                         escr(archlog, u'Se han eliminado los campos de la tabla "{}"'.format(arch_dbf))
@@ -378,13 +375,6 @@ def procesocopiashp():
                 escr(archlog, BC(shpde, camposaborrar))
                 tablaexist = shpde.split(".")[0] + ".dbf"
                 print (tablaexist)
-
-                """
-                AQUÍ VOY
-                FALTA BORRAR LOS CAMPOS DE POBLACIÓN DEL ARCHIVO SHP PARA QUE NO
-                INCREMENTE INNECESARIAMENTE EL TAMAÑO DE LA BASE DE DATOS
-                """
-
             escr(archlog, u'\n\nProceso de creación de base de datos iniciando para {}'.format(db.upper()))
             dbdir = os.path.dirname(db)
             if not os.path.exists(dbdir): # Verifica si existe el directorio de la db, si no, lo crea
@@ -444,7 +434,7 @@ def procesocopiashp():
         def densidad(grupos):
             """
             Calcula la densidad poblacional en la tabla geometria de cada base de datos
-            OJO!!! definir los grupos
+            
             """
             tabla_pob = 'poblacion'
             campo_pob = 'POB1'
@@ -459,7 +449,16 @@ def procesocopiashp():
                     escr(archlog, edb2.calcular_densidad_poblacional(db, tabla_pob, campo_pob, tabla_geom, campo_area, campo_comun, campo_destino))
                 else:
                     escr(archlog, u'No se puede procesar "{0}"'.format(grupo))
-            
+
+        def borracopias(shp_dest):
+            for archivo in ESU.listar_archivos(shp_dest):
+                if '_copia' in archivo:
+                    escr(archlog, u'archivo a borrar: "{}"'.format(archivo))
+                    os.remove(shp_dest + '/' + archivo)
+                    if not os.path.exists(archivo):
+                        escr(archlog, u'Archivo eliminado satisfactoriamente de disco')
+                    else:
+                        escr(archlog, u'>>>>> ERROR: El archivo no ha podido ser eliminado de disco')
 
         #-------------------------------------------------------------------------------------------------------------
         # LAS SIGUIENTE FUNCIONES NO SON PARTE DEL PROCESO DE MIGRADO DE ARCHIVOS
@@ -475,8 +474,9 @@ def procesocopiashp():
         crea_dbs(shapes, tablasdbf)    # Crea las bases de datos en el NAS
         borracampos(shapes) # borra los campos de población en los shapefiles del NAS
         geom(shapes) # crea tablas de geometria en las bases de datos correspondientes
+        borracopias(shp_dest)
 
-        escr(archlog, u'\n\n\nproceso de traslado y creación de bases de datos terminado en archivo "{}"\n\n\n'.format(archlog))
+        escr(archlog, u'\n\n\nproceso de traslado y creación de bases de datos terminado en archivo: \n"{}"\n\n\n'.format(archlog))
 
 if __name__ == '__main__':
     # impresiones()
