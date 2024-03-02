@@ -166,11 +166,11 @@ def procesocopiashp():
                 'loc_urb',
                 'municipal'
             ]
-            if not os.path.exists(dbdir):
+            if not os.path.exists(dbdir):   # si no existe, crea la carpeta de la base de datos
                 os.makedirs(dbdir)
                 escr(archlog, u'La carpeta de la base de datos no existe, se ha creado')
             if not os.path.exists(db): # crea la base de datos si no existe
-                new_db(db)
+                escr(archlog, new_db(db))
                 escr(archlog, u'Se ha creado la base de datos\n{}'.format(db))
             for tabla in tablasdbf:
                 if tabla == 'poblacion.dbf' and grupo not in gposel:
@@ -220,14 +220,15 @@ def procesocopiashp():
             grupo_selecto = {
                 'estatal',
                 'municipal',
-                'loc_rur',
                 'loc_urb',
+                'loc_rur',
             }
             archshape = {
+                'estatal': 'NOMGEO',
                 'municipal': 'NOM_ENT;NOMGEO',
-                'estatal': 'NOM_GEO',
-                'loc_rur': 'NOM_ENT;NOM_MUN;NOMGEO',
                 'loc_urb': 'NOM_ENT;NOM_MUN;NOMGEO',
+                'loc_rur': 'NOM_ENT;NOM_MUN;NOMGEO',
+                
             }
 
             escr(archlog, u'\n\n\n----------->>>Proceso de creación de bases de datos iniciando para el estado de "{}"'.format(estado.upper()))
@@ -237,8 +238,8 @@ def procesocopiashp():
                 if grupo in grupodbs:
                     if grupo in grupo_selecto: # para esta condición los shapefiles pasarán por un proceso de borrado de campos con acentos
                         escr(archlog, u'\n---------->>> Proceso CON copia de archivo fuente para creación de base de datos "{}"'.format(grupo))
-                        shapeorig = u'{}{}/cartografia/{}.shp'.format(carp_orig, Eods[estado], grupo)
-                        campos = archshape[grupo]
+                        shapeorig = u'{}{}/cartografia/{}.shp'.format(carp_orig, Eods[estado], grupo)   # shapefile origen (con acentos)
+                        campos = archshape[grupo]   
                         dirbase = os.path.dirname(shapeorig)
                         nombre = os.path.basename(shapeorig).split(".")[0]
                         destino = (dirbase + '/' + nombre + '_copia.shp')
@@ -318,6 +319,9 @@ def procesocopiashp():
             from Utilerias_shp import calcula_campo_shp
             expresion = "!shape.area@hectares!"
 
+            shapes=edos.shapes()
+            escr(archlog, u"Se calculará el área para los archivos: '{}'".format(shapes))
+
             archivos=[
                 'ageb_urb',
                 'estatal',
@@ -325,14 +329,14 @@ def procesocopiashp():
                 'loc_urb',
                 'manzana_localidad',
                 ]
-            
-            for archivo in archivos:
-                shapefile= u'{}{}/cartografia/{}.shp'.format(carp_dest,estado,archivo)
-                if os.path.exists(shapefile):
-                    escr(archlog, u'"{}" sí existe en disco'.format(shapefile))
-                    escr(archlog, calcula_campo_shp(shapefile,'area_has',expresion,'PYTHON'))
-                else:
-                    escr(archlog, u'El archivo {} no existe en disco'.format(shapefile))
+            for shape in shapes:
+                if shape in archivos:
+                    shapefile= u'{}{}/cartografia/{}.shp'.format(carp_dest,estado,shape)
+                    if os.path.exists(shapefile):
+                        escr(archlog, u'"{}" sí existe en disco'.format(shapefile))
+                        escr(archlog, calcula_campo_shp(shapefile,'area_has',expresion,'PYTHON'))
+                    else:
+                        escr(archlog, u'El archivo {} no existe en disco'.format(shapefile))
                     
         def crea_tabla_en_db(db, tablaexist, tablanva): 
             """
@@ -350,8 +354,8 @@ def procesocopiashp():
             )
 
             archshape = {
+                'estatal': 'NOMGEO',
                 'municipal': 'NOM_ENT;NOMGEO',
-                'estatal': 'NOM_GEO',
                 'loc_rur': 'NOM_ENT;NOM_MUN;NOMGEO',
                 'loc_urb': 'NOM_ENT;NOM_MUN;NOMGEO',
             }
@@ -451,6 +455,7 @@ def procesocopiashp():
                     escr(archlog, u'No se puede procesar "{0}"'.format(grupo))
 
         def borracopias(shp_dest):
+
             for archivo in ESU.listar_archivos(shp_dest):
                 if '_copia' in archivo:
                     escr(archlog, u'archivo a borrar: "{}"'.format(archivo))
@@ -478,6 +483,47 @@ def procesocopiashp():
 
         escr(archlog, u'\n\n\nproceso de traslado y creación de bases de datos terminado en archivo: \n"{}"\n\n\n'.format(archlog))
 
+def borraarch(estados, carp_dest):
+    """
+    Función temporal para eliminar archivos shp y bases de datos específicas en carpetas
+    """
+    from Utilerias_shp import borrashp
+    arch="estatal"
+    for estado in estados:
+        try:
+            archivo = '{}{}/tablas/{}.db'.format(carp_dest,estado,arch)
+            shp= '{}{}/cartografia/{}.shp'.format(carp_dest,estado,arch)
+            print("\n\n\n" + archivo)
+            
+            if os.path.exists(archivo):
+                os.remove(archivo)
+                if os.path.exists(archivo):
+                    print(">>>>> ERROR, no se ha eliminado el archivo db")
+                else:
+                    print("Se ha eliminado el archivo db")
+            else:
+                print("El archivo db no existe")
+            arch_borr=ESU.listar_archivos_con_extension(os.path.dirname(shp))
+            for archivo1 in arch_borr:
+                # print(archivo1)
+                if arch in archivo1:
+                    archb='{}/{}'.format(os.path.dirname(shp),archivo1)
+                    print(archb)
+                    if os.path.exists(archb):
+                        os.remove(archb)
+                        if os.path.exists(archb):
+                            print(">>>>> ERROR, no se ha eliminado el archivo")
+                        else:
+                            print("Se ha eliminado el archivo")
+                    else:
+                        print("El archivo no existe")
+        except Exception as e:
+            print(">>>>>ERROR, {}".format(e))
+
+
+
 if __name__ == '__main__':
     # impresiones()
+    # borraarch(estados, carp_dest)
     procesocopiashp()
+    
