@@ -26,6 +26,7 @@ from ESUSTENTA_DB import marg_deciles
 from ESUSTENTA_DB import rangos_edad
 from INTEGRADOR_EN_SHAPEFILE import shp
 from estados import estados as estados_activos
+from estados import shapes
 from ESUSTENTA_UTILERIAS import escribearch1 as ESU
 
 # Agrega la ruta del paquete al path de Python
@@ -87,7 +88,8 @@ valores2 = {'campocalc' : ['EDU43_R', 'EDU46_R'],
                 'tabla' : tabla
                 }
 tabla = 'marginacion'
-grupos = [
+shapes = shapes()
+grupos_geom = [
           'estatal',
           'municipal',
           'loc_urb',
@@ -109,35 +111,37 @@ def inicio_proc():
     
     for estado in estados:
         ESU(archlog, f'\n>>>>>>>>>>>>  Iniciando proceso para {estado}\n')
-        for grupo in grupos:
-            if grupo == 'manzana':
-                shape = 'manzana_localidad'
-            else:
-                shape = grupo
-            database_path = f'{rutabase}{estado}/tablas/{grupo}.db'
-            ruta_shapefile = f"{rutabase}{estado}/cartografia/{shape}.shp"
-            marg_param['database_path'] = database_path
-            marg_param['nueva_columna_deciles'] = 'marg_decil'
-            marg_param['columna_deciles'] = 'marg_tot'
-            valores2['database_path'] = database_path
+        for grupo in shapes:
+            if grupo in grupos_geom:
+                if grupo == 'manzana':
+                    shape = 'manzana_localidad'
+                else:
+                    shape = grupo
+                database_path = f'{rutabase}{estado}/tablas/{grupo}.db'
+                ruta_shapefile = f"{rutabase}{estado}/cartografia/{shape}.shp"
+                marg_param['database_path'] = database_path
+                marg_param['nueva_columna_deciles'] = 'marg_decil'
+                marg_param['columna_deciles'] = 'marg_tot'
+                valores2['database_path'] = database_path
 
 
-            # Calcula la marginación
-            ESU(archlog, eliminar_tabla(database_path, tabla_elim))   # Elimina la tabla marginación si existe en la base de datos, para contar con información reciente
-            ESU(archlog, marg_base_table(database_path, sql_query))   # Crea una tabla llamada 'marginacion' importado datos de otras tablas usando una consulta sql
-            ESU(archlog, calcula_inversos(valores2))  # Calcula los inversos de los parámetros de educación
-            ESU(archlog, margedu(marg_param))     # Calcula la marginación de educación
-            ESU(archlog, margviv(marg_param))     # Calcula la marginación de vivienda
-            ESU(archlog, margeco(marg_param))     # Calcula la marginación de características económicas
-            ESU(archlog, margtot(marg_param))     # Calcula la marginación total
-            ESU(archlog, marg_deciles(marg_param))    # Calcula los deciles para la marginación
+                # Calcula la marginación
+                ESU(archlog, eliminar_tabla(database_path, tabla_elim))   # Elimina la tabla marginación si existe en la base de datos, para contar con información reciente
+                ESU(archlog, marg_base_table(database_path, sql_query))   # Crea una tabla llamada 'marginacion' importado datos de otras tablas usando una consulta sql
+                ESU(archlog, calcula_inversos(valores2))  # Calcula los inversos de los parámetros de educación
+                ESU(archlog, margedu(marg_param))     # Calcula la marginación de educación
+                ESU(archlog, margviv(marg_param))     # Calcula la marginación de vivienda
+                ESU(archlog, margeco(marg_param))     # Calcula la marginación de características económicas
+                ESU(archlog, margtot(marg_param))     # Calcula la marginación total
+                ESU(archlog, marg_deciles(marg_param))    # Calcula los deciles para la marginación
 
-            # Crea rangos de edad
-            ESU(archlog, rangos_edad(database_path, 'poblacion'))
+                # Crea rangos de edad
+                ESU(archlog, rangos_edad(database_path, 'poblacion'))
 
-            # Actualiza el archivo shapefile con los datos de la base de datos
-            ESU(archlog, shp(database_path, ruta_shapefile))
-            ESU(archlog, f'Proceso terminado para -{grupo}-')
+                # Actualiza el archivo shapefile con los datos de la base de datos
+                ESU(archlog, ruta_shapefile)
+                ESU(archlog, shp(database_path, ruta_shapefile))
+                ESU(archlog, f'Proceso terminado para -{grupo}-')
         ESU(archlog, f'\nproceso terminado para -{estado}-   >>>>>>>>>>>>\n')
 
     ESU(archlog, '\n\nproceso terminado exitosamente   >>>>>>>>>>>>>>>>>>>>>>>\n\n')
