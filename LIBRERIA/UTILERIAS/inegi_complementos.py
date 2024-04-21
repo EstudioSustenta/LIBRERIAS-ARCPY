@@ -122,7 +122,7 @@ def denue(dbasicos,creajson=True):
     ]
 
     try:
-        resultado = proc_integra(diccionariosnear,diccionariosidenti,valprocesofin,capas_a_cargar,creajson)
+        # resultado = proc_integra(diccionariosnear,diccionariosidenti,valprocesofin,capas_a_cargar,creajson)
         valores={
             "capabase"      :   dbasicos['archsistema'],
             "capanear"      :   valoresbasicos['archivobase'],
@@ -132,22 +132,21 @@ def denue(dbasicos,creajson=True):
             "codificacion"  :   "latin-1",
             "campo"         :   "NEAR_DIST",
         }
+        print("HOLAGUUUUUUUS")
         lista_cercanos=USHP.listacercanos(valores)
-        
+        print("HOLAGUUUUUUUS")
+        print(type(lista_cercanos))
+        print(lista_cercanos)
         if type(lista_cercanos) is list:
             for elemento in lista_cercanos:
                 print(elemento)
         
-        return resultado
+        # return resultado
     except Exception as e:
         return e
 
 
-
-    print(valores)
-    print(distancia)
-
-    USHP.clipparamapa()
+    # USHP.clipparamapa()
 
 
 

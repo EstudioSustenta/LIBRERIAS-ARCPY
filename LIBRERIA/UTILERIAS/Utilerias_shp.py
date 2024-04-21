@@ -1135,55 +1135,49 @@ def listacercanos(valores):
     returns:    Lista de elementos o mensaje de error.
     """
 
-    print(valores)
+    # print(valores)
+    try:
+        capabase=valores['capabase']
+        capanear=valores['capanear']
+        radio=valores['radio']
+        arch_tmp=valores['arch_tmp']
+        campo=valores['campo']
+        codificacion=valores['codificacion']
+        # log("Iniciando 'listacercanos'...")
+        carp_tmp=os.path.dirname(arch_tmp)
+        if not os.path.exists(carp_tmp):
+            os.makedirs(carp_tmp)
 
-    capabase=valores['capabase']
-    capanear=valores['capanear']
-    radio=valores['radio']
-    arch_tmp=valores['arch_tmp']
-    campo=valores['campo']
-    codificacion=valores['codificacion']
-    # log("Iniciando 'listacercanos'...")
-    carp_tmp=os.path.dirname
-    if not os.path.exists(carp_tmp):
-        os.makedirs(carp_tmp)
-
-    arcpy.GenerateNearTable_analysis(
-        in_features=capanear,
-        near_features=capabase,
-        out_table=arch_tmp,
-        search_radius="{} Meters".format(str(radio)),
-        location="LOCATION",
-        angle="ANGLE",
-        closest="CLOSEST",
-        closest_count="0",
-        method="PLANAR"
-        )
-    from Utilerias_DBF import obtener_distancias
-    reload(obtener_distancias)
-    resultados=obtener_distancias(arch_tmp,campo, codificacion)
-    return resultados
+        if not os.path.exists(arch_tmp):
+            arcpy.GenerateNearTable_analysis(
+                in_features=capanear,
+                near_features=capabase,
+                out_table=arch_tmp,
+                search_radius="{} Meters".format(str(radio)),
+                location="LOCATION",
+                angle="ANGLE",
+                closest="CLOSEST",
+                closest_count="0",
+                method="PLANAR"
+                )
+            
+        from Utilerias_DBF import obtener_distancias
+        # reload(obtener_distancias)
+        resultados=obtener_distancias(arch_tmp,campo, codificacion)
+        return resultados
+    except Exception as e:
+        return e
     
-
-    
-
-
-
-
-
-
-if __name__=='__main__': # 
-
-    # shapefile="Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/temp/USO DE SUELO INEGI SERIE IV_temp.shp"
-    # objeto_id=62361
-    # dist_lejana(shapefile,objeto_id)
+if __name__ == "__main__":
     valores={
-        "capabase"  :"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp",
-        "capanear"  :"Y:/GIS/MEXICO/VARIOS/INEGI/DENUE/2023/Aguascalientes/conjunto_de_datos/denue_wgs84z13.shp",
-        "radio"     :1000,
-        "carp_tmp"  :"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/temp/",
-        "arch_tmp"  :"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/temp/denue_near_tmp.dbf",
+        'capabase'  :"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp",
+        'capanear'  :"Y:/GIS/MEXICO/VARIOS/INEGI/DENUE/2023/Aguascalientes/conjunto_de_datos/denue_wgs84z13.shp",
+        'radio'     :500,
+        'arch_tmp'  :"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/temp/denue_near_tmp.dbf",
+        'campo'     :"NEAR_DIST",
+        'codificacion' : "latin-1"
     }
+    resultados=listacercanos(valores)
+    print(type(resultados))
+    print(resultados)
 
-    listacercanos(valores)
-    pass
