@@ -2,13 +2,24 @@
 
 # ----RUTINA PARA IMPRIMIR MAPAS DE UBICACIÓN A NIVEL PAIS, ESTADO, MUNICIPIO, REGIÓN, ZONA Y SITIO
 
+
+# import sys
+# ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS/LIBRERIA/UTILERIAS"
+# sys.path.append(ruta_libreria)
 import arcpy
-import sys
-import importlib
-# import codecs
-import datetime  # Importar módulo para obtener fecha y hora
-fechahora = (str(datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S"))).replace(":", "-")
-arcpy.env.fechahora = fechahora # Define variable global para usar en los nombres de los archivos generados en el proceso de generación de mapas y datos complementarios.
+import UTILERIAS.UTIL_JSON as UJ
+import UTILERIAS.Utilerias_shp as USH
+import UTILERIAS.ESUSTENTA_UTILERIAS as ESU
+from estados import sustedo as rnc
+import UTILERIAS.UTILERIAS_PDF as PDF
+import UTILERIAS.inegi_tematicos
+reload(UTILERIAS.inegi_tematicos)
+import UTILERIAS.inegi_tematicos as tematicos
+reload(tematicos)
+import UTILERIAS.conabio_tematicos as conabio
+reload(conabio)
+import UTILERIAS.inegi_complementos as compl
+reload (compl)
 
 # Proceso para inicializar cuadros de diálogo
 import Tkinter as tk
@@ -16,408 +27,368 @@ import tkFileDialog
 root = tk.Tk()
 root.withdraw()
 
-# Agrega la ruta del paquete al path de Python
+if __name__=="__main__":
+    mxd = arcpy.mapping.MapDocument('CURRENT')                   # Obtener acceso al documento actual
+else:
+    mxd = arcpy.mapping.MapDocument('Y:/0_SIG_PROCESO/PLANTILLA.mxd')
+df = arcpy.mapping.ListDataFrames(mxd)[0]
+autor = "Gustavo Martinez Velasco"
+sistema="Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp"
+rutasimbologia="Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/"
+arcpy.env.numeromapa = 1
 
-ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS"
-sys.path.append(ruta_libreria)
-
-arcpy.env.mxd = arcpy.mapping.MapDocument("CURRENT")                   # Obtener acceso al documento actual
-mxd = arcpy.env.mxd
-arcpy.env.df = arcpy.mapping.ListDataFrames(mxd)[0]
-df = arcpy.env.df
-arcpy.env.layout = u"Layout"
-
-arcpy.env.repet = 0
-repet = arcpy.env.repet
-
+sustitucion = rnc()
 
 def rutacarp():
-
-    print("Eligiendo carpeta iniciando...")
+    """
+    Define, mediante un cuadro de diálogo, la ruta de la carpeta donde se guardarán
+    los archivos y mapas de este proceso.
+    guarda la ruta en un archivo json en la misma carpeta definida.
+    """
+    # print("Eligiendo carpeta iniciando...")
+    lista=[]
 
     try:
-        print("Eligiendo carpeta")
+        import os
+        
         # Abre un cuadro de diálogo para seleccionar una carpeta
         carp_mapas = u"Y:/02 CLIENTES (EEX-CLI)/00 prueba impresion/02/"
-        carpeta_cliente = tkFileDialog.askdirectory(initialdir=carp_mapas, title=u"Selecciona la carpeta destino de los mapas") + u"/"
-        arcpy.env.carp_cliente = carpeta_cliente
-        arcpy.env.archivolog = carpeta_cliente + u"00 archivo_log " + fechahora + u".txt"          # define una variable de entorno con el nombre del archivo log.
-        print("arcpy.env.archivolog: " + arcpy.env.archivolog)
-
-        # Verifica si el usuario seleccionó una carpeta
-        if carpeta_cliente:
-            print(u"Ruta de la carpeta seleccionada: " + carpeta_cliente)
-            
+        carpeta_cliente = tkFileDialog.askdirectory(initialdir=carp_mapas, title=u"Selecciona la carpeta destino de los mapas") + "/"
+        arch_log = carpeta_cliente + u"00 archivo_log.txt"
+        if carpeta_cliente:         # Verifica si el usuario seleccionó una carpeta
+            adbas = "{}datos_basicos.json".format(carpeta_cliente)
+            if os.path.exists(adbas):
+                os.remove(adbas)
+            (UJ.agdicson(adbas,"carpeta_proy", carpeta_cliente))
+            (UJ.agdicson(adbas,"archivo_log",arch_log))
+            (UJ.agdicson(adbas,"autor",autor))
+            lista.extend([arch_log,adbas])
         else:
             print(u"No se seleccionó ninguna carpeta.")
     except Exception as e:
-        print(u">> Error en 'rutacarp'")
-    print("Elección de carpeta terminada")
-
+        print(u">> Error en 'rutacarp' {}".format(e))
+    # print("Elección de carpeta terminada")
+    return lista
     
-
-# Preliminares
-def db():
-
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet
-
+def dbasi(arch_log,adbas):
+    import sys
+    ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS/LIBRERIA/UTILERIAS"
+    sys.path.append(ruta_libreria)
+    import datos_basicos
+    reload(datos_basicos)
+    from datos_basicos import datosbasicos
     # Importar el módulo desde el paquete LIBRERIA utilizando importlib
-    global log
-    dbas = importlib.import_module(u"LIBRERIA.datos_basicos")
-    log = importlib.import_module(u"LIBRERIA.archivo_log")
-    
-    dbas.datosbasicos() # define los datos básicos del proyecto y crea el archivo txt correspondiente
-    log.log(repet,u"\n\n\n")
-    log.log(repet,u"--------------INICIO DE SECCIÓN LOG \--------------------------")
-    log.log(repet,u"\n")
-    log.log(repet,u"Proceso 'datos básicos' finalizado\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
+    # dbas = importlib.import_module(u"LIBRERIA.datos_basicos")
+    # from datos_basicos import datosbasicos
+    # global log
+    # log = importlib.import_module(u"LIBRERIA.archivo_log")
+    ESU.log("iniciando proceso 'datos básicos'",arch_log,presalto=2)
+    datosbasicos(arch_log,adbas) # define los datos básicos del proyecto y crea el archivo txt correspondiente
+    ESU.log("Proceso 'datos básicos' finalizado",arch_log)
+    ESU.log("--------------INICIO DE SECCIÓN LOG--------------------------",arch_log, presalto=2)
 
 def cargalib():
+    """
+    Carga las librerías necesarias para la ejecución del script
+    y carga la capa 'SISTEMA' y le da formato si no existe.
+    """
 
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet
+    ESU.log("'cargalib' iniciando...",arch_log)
 
-    log = importlib.import_module(u"LIBRERIA.archivo_log")
+    # carga la capa principal para el sistema a analizar
+    valores = {
+        'mxd':              mxd,
+        'df':               df,
+        'shapefile':        sistema,
+        'nombreshape':      "SISTEMA",
+        'layer':            rutasimbologia + "SISTEMA.lyr",
+        'transparencia':    20,
+        'campo_rotulos':    'DESCRIP',
+    }
+    ESU.log(USH.carga_capa_y_formatea(valores),arch_log)
+    ESU.log(USH.zoom_extent(mxd,df,"SISTEMA",over=10),arch_log)
+    ESU.log("'cargalib' finalizado\n\n",arch_log)
 
-    log.log(repet,u"'cargalib' iniciando...")
 
-    global act_rot
-    global borrainn
-    global ccapas
-    global conabio
-    global dwgs
-    global exportma
-    global filtro
-    global formato
-    global inegi_comp
-    global inegi_tematicos
-    global renombra
-    global rural
-    global servicios
-    global simbologia
-    global tiempo
-    global transp
-    global urbano
-    global z_extent
-
-    act_rot = importlib.import_module(u"LIBRERIA.activa_rotulos")            #carga el script para activar y desactivar los rótulos de una capa  -----> funciones:
-    borrainn = importlib.import_module(u"LIBRERIA.borrainn")
-    ccapas = importlib.import_module(u"LIBRERIA.cargar_capas")               #carga el script de carga y remoción de capas  -----> funciones: carga_capas(ruta_arch, nombres_capas), remover_capas(capas_remover)
-    conabio = importlib.import_module(u"LIBRERIA.conabio")
-    dwgs = importlib.import_module(u"LIBRERIA.cuadro_de_localizacion")
-    exportma = importlib.import_module(u"LIBRERIA.exportar_mapas")           #carga el script para exportar mapas a pdf y jpg
-    filtro = importlib.import_module(u"LIBRERIA.filtro")                     #carga el script para aplicar filtros a una capa
-    formato = importlib.import_module(u"LIBRERIA.formato")                   #carga el script para aplicar formato a layout
-    inegi_comp = importlib.import_module(u"LIBRERIA.inegi_comp")
-    inegi_tematicos = importlib.import_module(u"LIBRERIA.inegi_tematicos")
-    renombra = importlib.import_module(u"LIBRERIA.renombrar_capa")           #carga el script para cambiar el nombre a capas
-    rural = importlib.import_module(u"LIBRERIA.rural_nacional")              # ejecuta rutina de zonas rurales
-    servicios = importlib.import_module(u"LIBRERIA.servicios")
-    simbologia = importlib.import_module(u"LIBRERIA.simbologia_lyr")         #carga el script para aplicar simbología a capas
-    tiempo = importlib.import_module(u"LIBRERIA.tiempo_total")
-    transp = importlib.import_module(u"LIBRERIA.aplica_transparencia")       #carga el script para aplicar transparencia a capas
-    urbano = importlib.import_module(u"LIBRERIA.urbano_nacional")            # ejecuta rutina de zonas urbanas
-    z_extent = importlib.import_module(u"LIBRERIA.zoom_extent")              #carga el script para aplicar zoom extent a una capa
-
-    # reload(ctrlcapa)
-    # reload(ccapas)
-    # reload(ctrlgrup)
-    # reload(exportma)
-    # reload(filtro)
-    # reload(formato)
-    # reload(simbologia)
-    # reload(z_extent)
-    # reload (act_rot)
-    # reload(buff_cl)
-    # reload(transp)
-    # reload(renombra)
-    # reload(urbano)
-    # reload(rural)
-    # reload(dwgs)
-    # reload(servicios)
-    # reload(cliptema)
-    # reload(idproy)
-    # reload(nearexp)
-    # reload(log)
-    # reload (leyenda)
-    # reload(tiempo)
-    # reload(conabio)
-    # reload(borrainn)
-    # reload(inegi_tematicos)
-    reload (inegi_comp)
-
-    ccapas.cargar(u"Y:/0_SIG_PROCESO/00 GENERAL/SISTEMA.shp")
-    simbologia.aplica_simb(u"SISTEMA")
-    transp.transp(u"SISTEMA",50)
-    act_rot.activar_rotulos("SISTEMA","DESCRIP")
-    z_extent.zoom_extent(arcpy.env.layout, u"SISTEMA")
-
-    log.log(repet,u"'cargalib' finalizado\n\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
 
     # nota, para poder cargar las librería y que se genere el archivo .pyc adecuadamente, cada librería debe iniciar con la línea: # -*- coding: utf-8 -*-
 
+def cargajson(adbas):
+    return UJ.lodicson(adbas)
 
-
-def mapaPais(nummapa):
-
-    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet
-    
+def mapaPais(dbasicos):
+    """
+    Proceso para generar mapa a nivel pais
+    """
+    carp_cliente=dbasicos['carpeta_proy']
 
     try:
+        ESU.log("Iniciando proceso para 'pais'",arch_log,presalto=1)
+        shapefile=dbasicos['rutamapadigital'] + "GEOPOLITICOS/ESTATAL decr185.shp"
+        proyecto=dbasicos['proyecto']
+        valorespais = {
+            'mxd': mxd,
+            'df': df,
+            'shapefile': shapefile,
+            'nombreshape': "Estados",
+            'layer': "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/ESTATAL decr185.lyr",
+            'transparencia': 50,
+            'campo_rotulos': "NOM_ENT",
+        }
+        ESU.log(USH.carga_capa_y_formatea(valorespais),arch_log)
+        ESU.log(USH.zoom_extent(mxd,df,valorespais['nombreshape'],over=10),arch_log)
+        ESU.log(USH.formato_layout(mxd, proyecto, 'mapa de entidades federativas'),arch_log)
+        ESU.log(USH.exportar(mxd, carp_cliente,'Pais',serial=True,jpg=False),arch_log,imprimir=False)
+        ESU.log("Proceso para 'pais' finalizado",arch_log,presalto=0,imprimir=False)
 
-        log.log(repet,u"Proceso 'mapaPais' iniciando...")
-
-        # -------------------------------------------------------------------------------
-        # Proceso para generar mapa a nivel pais
+    except Exception as e:
+        ESU.log(">>>>> ERROR en mapaPais: {}".format(e),arch_log)
         
-        nombre_capa = u"ESTATAL decr185"
-        ruta_arch = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
-        ccapas.carga_capas(ruta_arch, nombre_capa)
-        act_rot.activar_rotulos(nombre_capa,"NOM_ENT")
-        z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
-        simbologia.aplica_simb(nombre_capa)
-        formato.formato_layout(u"UBICACIÓN A NIVEL PAÍS")
-        r_dest = arcpy.env.carp_cliente
-        nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" pais"
-        nnomb = u"Entidades Federativas"
-        renombra.renomb(nombre_capa, nnomb)
-        exportma.exportar(r_dest,nombarch)
-        ccapas.remover_capas(nnomb)
-        arcpy.env.nummapa = nummapa + 1
-
-    except Exception as e:
-        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaPais'")
-        log.log(repet,str(e) + u"\n\n\n\n")
-        borrainn.borrainn()
+    finally:
+        ESU.log(USH.borrainn(mxd,df),arch_log,postsalto=2)
     
-    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Mapa País",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
-
-    log.log(repet,u"Proceso 'mapaPais' finalizado!...\n\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
-
-def mapaEstatal(nummapa):
-    # -------------------------------------------------------------------------------
-    # Proceso para generar mapa estatal
-
-    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet    
-
+def mapaEstatal(dbasicos):
+    """
+    Proceso para generar mapa del estado del proyecto
+    """
+    proyecto=dbasicos['proyecto']
+    estado=dbasicos['estado']
     try:
+        ESU.log("Iniciando proceso para 'estatal'",arch_log,presalto=1)
+        valoresestado = {
+            'mxd': mxd,
+            'df': df,
+            'shapefile': "Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS/ESTATAL decr185.shp",
+            'nombreshape': "Edo: {}".format(estado),
+            'layer': "Y:/0_SIG_PROCESO/MAPAS/SIMBOLOGIA/ESTATAL decr185.lyr",
+            'transparencia': 50,
+            'campo_rotulos': "NOM_ENT",
+        }
+        ESU.log(USH.carga_capa_y_formatea(valoresestado),arch_log)
+        filtr= """ "NOM_ENT" = '{}' """.format(estado)
+        ESU.log(USH.fil_expr(mxd, valoresestado['nombreshape'], filtr),arch_log)
+        ESU.log(USH.zoom_extent(mxd,df,valoresestado['nombreshape'],over=0),arch_log)
+        valorescaminos = {
+            'mxd': mxd,
+            'df': df,
+            'shapefile': rednalcaminos,
+            'nombreshape': "Red Vial",
+            'layer': rutasimbologia + "red_vial_wgs84utm.lyr",
+            'transparencia': 50,
+            'campo_rotulos': None,
+        }
+        ESU.log(USH.carga_capa_y_formatea(valorescaminos),arch_log)
+        # filtr="""("JURISDI" = 'Ags.' OR "JURISDI" = 'Fed.') AND ("TIPO_VIAL" = 'Carretera' OR "TIPO_VIAL" = 'Boulevard')"""
+        filtr="""("ADMINISTRA" = 'Federal' OR "ADMINISTRA" = 'Estatal' OR"ADMINISTRA" = 'Municipal')"""
+        # filtr="""("ADMINISTRA" = 'Federal.' OR "ADMINISTRA" = 'Estatal.' OR"ADMINISTRA" = 'Municipal.') AND ("TIPO_VIAL" = 'Carretera' OR "TIPO_VIAL" = 'Boulevard')"""
+        ESU.log(USH.fil_expr(mxd, valorescaminos['nombreshape'], filtr),arch_log)
+        valoreslocurb = {
+            'mxd': mxd,
+            'df': df,
+            'shapefile': "{}loc_urb.shp".format(rutascince2020),
+            'nombreshape': "Localidades urbanas",
+            'layer': rutasimbologia + "loc_urb.lyr",
+            'transparencia': 50,
+            'campo_rotulos': "NOMGEO",
+        }
+        ESU.log(USH.carga_capa_y_formatea(valoreslocurb),arch_log)
+        ESU.log(USH.formato_layout(mxd, proyecto, 'mapa del estado de {}'.format(estado)),arch_log)
+        ESU.log(USH.exportar(mxd, carpeta_proy,"Mapa Estatal",serial=True),arch_log)      
 
-
-        log.log(repet,u"Proceso 'mapaEstatal' iniciando...")
-
-        nombre_capa = u"MUNICIPAL CENSO 2020 DECRETO 185"
-        ruta_arch = u"Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/GEOPOLITICOS"
-        ruta_arch1 = u"Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/" + arcpy.env.estado + u"/cartografia"
-        nombre_capa1 = u"manzana_localidad"
-        ccapas.carga_capas(ruta_arch, nombre_capa)
-        filtr= "\"NOM_ENT\" = '{}'".format(arcpy.env.estado)
-        filtro.fil_expr(nombre_capa, filtr)
-        z_extent.zoom_extent(arcpy.env.layout, nombre_capa)
-        simbologia.aplica_simb(nombre_capa)
-        formato.formato_layout(u"UBICACIÓN A NIVEL ESTADO")
-        act_rot.activar_rotulos(nombre_capa,"NOM_MUN")
-        ccapas.carga_capas(ruta_arch1, u"red nacional de caminos")
-        simbologia.aplica_simb(u"red nacional de caminos")
-        transp.transp(u"red nacional de caminos",50)
-        ccapas.carga_capas(ruta_arch1, nombre_capa1)        # carga las manzanas del estado correspondiente.
-        simbologia.aplica_simb(nombre_capa1)
-        r_dest = arcpy.env.carp_cliente
-        nombarch = arcpy.env.proyecto + u" " + str(nummapa) + u" estado"
-        nnomb = u"Municipios " + arcpy.env.estado
-        renombra.renomb(nombre_capa, nnomb)
-        renombra.renomb(u"manzana_localidad", u"Manzanas urbanas")
-        exportma.exportar(r_dest,nombarch)
-        ccapas.remover_capas(nnomb)
-        ccapas.remover_capas(u"Manzanas urbanas")
-        ccapas.remover_capas(u"red nacional de caminos")
-        arcpy.env.nummapa = nummapa + 1
-    
     except Exception as e:
-        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaEstatal'")
-        log.log(repet,str(e) + u"\n\n\n\n")
-        borrainn.borrainn()
+        ESU.log(">>>>> ERROR, no se pudo ejecutar 'mapaEstatal': {}".format(e),arch_log)
+    finally:
+        ESU.log(USH.borrainn(mxd,df),arch_log)
 
-    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Ubicación a nivel estado",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
-
-    log.log(repet,u"Proceso 'mapaEstatal' finalizado!...\n\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
-
-def mapaMunicipal(nummapa):
+def mapaMunicipal(dbasicos):
 
     # -------------------------------------------------------------------------------
     # Proceso para generar mapa municipal
 
-    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    import sys
+    ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS/LIBRERIA/UTILERIAS"
+    sys.path.append(ruta_libreria)
 
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet    
-
+    arch_log=dbasicos['archivo_log']
+    print(arch_log)
+    ambito=dbasicos['ambito']
     try:
+        
+        tab = 1
+        # ambito = dbasicos['ambito']
+        ESU.log("Proceso 'mapaMunicipal' iniciando...",arch_log,presalto=2,tabuladores=tab)
+        ESU.log("Proceso 'mapaMunicipal' iniciando para '{}'...".format(ambito),arch_log,tabuladores=tab)
 
-        log.log(repet,u"Proceso 'mapaMunicipal' iniciando...")
-        log.log(repet,u"Ámbito urbano: " + arcpy.env.ambito + u" para mapa municipal")
-
-        if arcpy.env.ambito != "Rural":
+        if ambito == "Urbano":
             # proceso si el sistema es urbano
-            urbano.purbano(nummapa)
-
-            # 
-        else:
+            
+            import urbano_nacional
+            reload(urbano_nacional)
+            urbano_nacional.proyurbano(dbasicos)
+            
+        elif ambito == "Rural":
+            import rural_nacional
             # proceso si el sistema es rural
-            rural.prural(nummapa)
+            rural_nacional.proyrural(dbasicos)
+        else:
+            ESU.log(">>>>>ERROR en mapa municipal, no se ha definido 'ambito'",arch_log,tabuladores=tab,imprimir=False)
 
     except Exception as e:
-        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'mapaMunicipal'")
-        log.log(repet,str(e) + u"\n\n\n\n")
-        borrainn.borrainn()
+        ESU.log(">>>>> ERROR, no se pudo ejecutar 'mapaMunicipal': {}".format(e),arch_log)
+        
+    finally:
+        ESU.log(USH.borrainn(mxd,df),arch_log)
 
-    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Mapa municipal",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+def cuadrodeLocalizacion(dbasicos):
+    import sys
+    ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS/LIBRERIA/UTILERIAS"
+    sys.path.append(ruta_libreria)
 
-    log.log(repet,u"Proceso 'mapaMunicipal' finalizado!...\n\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
-
-def cuadrodeLocalizacion():
+    import cuadro_de_localizacion
+    reload(cuadro_de_localizacion)
+    from cuadro_de_localizacion import dwg
+    # reload(dwg)
+    
     # -------------------------------------------------------------------------------
     # Proceso para generar cuadros de construcción en formato dwg
-
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet
-
-    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
+    ESU.log("Iniciando proceso para cuadro de localización",arch_log, presalto=2)
 
     try:
-
-        log.log(repet,u"Proceso 'cuadrodeLocalizacion' iniciando...")
-        
-        dwgs.dxf()
-        log.log(repet,u"Proceso 'cuadrodeLocalizacion' finalizado! \n\n")
+        ESU.log(dwg(dbasicos),arch_log, imprimir=False)
+        ESU.log("Proceso para cuadro de localización finalizado",arch_log)
 
     except Exception as e:
-        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'cuadrodeLocalizacion'")
-        log.log(repet,str(e) + u"\n\n\n\n")
-        borrainn.borrainn()
+        ESU.log(">>>>>ERROR en 'cuadrodelocalización': {}".format(e),arch_log)
+    finally:
+        ESU.log(USH.borrainn(mxd,df),arch_log)
 
-    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(repet,u"tiempo total de proceso '{}': {}".format(u"Archivos dxf",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
+def servicios_urbanos(dbasicos):
+    """
+    Proceso para analizar servicios cercanos al sistema (5 minutos caminando a 5 km/hr)
+    """
+    import sys
+    ruta_libreria = u"Q:/09 SISTEMAS INFORMATICOS/GIS_PYTON/SOPORTE_GIS/LIBRERIA/UTILERIAS"
+    sys.path.append(ruta_libreria)
+    import servicios as serv
+    reload(serv)
 
-    log.log(repet,u"Proceso 'cuadrodeLocalizacion' finalizado!...\n\n")
+    ambito=dbasicos['ambito']
 
-    arcpy.env.repet = arcpy.env.repet - 1
-
-def servicios_urbanos(nummapa):
-    # -------------------------------------------------------------------------------
-    # Proceso para analizar servicios cercanos al sistema (5 minutos caminando a 5 km/hr)
-
-    arcpy.env.repet = arcpy.env.repet + 1
-    repet = arcpy.env.repet
-
-    tiempo_mapa_ini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    
-
+    minutos = 5 # Define el radio (en minutos) para el análisis
+    arch_log=dbasicos['archivo_log']
     try:
-
-        log.log(repet,u"Proceso 'servicios' iniciando...")
-
-        if  arcpy.env.ambito != "Rural":
-            # proceso si el sistema es urbano
-            log.log(repet,u"Iniciando proceso de servicios urbanos")
-            servicios.servicios(nummapa)
+        if  ambito == "Urbano":
+            ESU.log(u"Iniciando proceso de servicios urbanos",arch_log)
+            ESU.log(serv.servicios(dbasicos, minutos),arch_log)
+        elif ambito == "Rural":
+            ESU.log(u"El proceso de servicios no se aplica al ámbito rural",arch_log)
         else:
-            log.log(repet,u"El proceso de servicios no se aplica al ámbito rural")
-        log.log(repet,u"Proceso 'servicios' finalizado! \n\n")
+            ESU.log(u">>>>>ERROR en 'servicios_urbanos', no se ha definido 'ambito'.",arch_log)
+        ESU.log(u"Proceso 'servicios' finalizado",arch_log)
 
     except Exception as e:
-        log.log(repet,u"\n\n>> ERROR, no se pudo ejecutar 'servicio_urbanos'")
-        log.log(repet,str(e) + u"\n\n\n\n")
-        borrainn.borrainn()
-
-    tiempo_mapa_fin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-    log.log(repet,u"tiempo total de mapa '{}': {}".format(u"Servicios urbanos",tiempo.tiempo([tiempo_mapa_ini,tiempo_mapa_fin])))
-
-    log.log(repet,u"Proceso 'servicios' finalizado!...\n\n")
-
-    arcpy.env.repet = arcpy.env.repet - 1
-
+        ESU.log(u">>>>> ERROR: no se pudo ejecutar 'servicio_urbanos'. {}".format(e),arch_log)
+    finally:
+        ESU.log(USH.borrainn(mxd,df),arch_log)
 
 
 #========================================INICIO DEL PROCESO=============================================
 
 
-rutacarp()
-tiempoprocini = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-db()
-cargalib()
+datos_rutacarp = rutacarp()
+arch_log=datos_rutacarp[0]
+adbas=datos_rutacarp[1]
 
-borrainn.borrainn()
-arcpy.env.nummapa = 1
-nummapa = 1 # línea temporal cuando no se tiene definido el número de mapa
+dbasi(arch_log,adbas)
+cargalib()
+dbasicos = cargajson(adbas)
+
+#-----definición de datos generales para todo el proyecto-----
+estado=dbasicos['estado']
+
+if estado in sustitucion:
+    estadoSUS = sustitucion[estado]
+else:
+    estadoSUS = estado
+    
+# ambito=dbasicos['ambito']
+carpeta_proy=dbasicos['carpeta_proy']
+localidad=dbasicos['localidad']
+municipio=dbasicos['municipio']
+archivo_log=dbasicos['archivo_log']
+colonia=dbasicos['colonia']
+ambito=dbasicos['ambito']
+rutascince2020 = "Y:/GIS/MEXICO/VARIOS/INEGI/CENSALES/SCINCE 2020/{}/cartografia/".format(estado)
+rutaconabio="Y:/GIS/MEXICO/VARIOS/conabio/WGS84/"
+rutamapadigital="Y:/GIS/MEXICO/VARIOS/INEGI/Mapa Digital 6/WGS84/"
+rednalcaminos="Y:/GIS/MEXICO/VARIOS/INEGI/RED NACIONAL DE CAMINOS 2017/conjunto_de_datos/{0}/Caminos_RNC_{0}.shp".format(estadoSUS)
+rutadatosgis="Y:/GIS/MEXICO/VARIOS/"
+ESU.log(UJ.agdicson(adbas,"rednalcaminos",rednalcaminos), arch_log)
+ESU.log(UJ.agdicson(adbas,"rutascince2020",rutascince2020), arch_log)
+ESU.log(UJ.agdicson(adbas,"rutasimbologia",rutasimbologia), arch_log)
+ESU.log(UJ.agdicson(adbas,"rutamapadigital",rutamapadigital), arch_log)
+ESU.log(UJ.agdicson(adbas,"sistema","SISTEMA"), arch_log)
+ESU.log(UJ.agdicson(adbas,"rutaconabio",rutaconabio), arch_log)
+ESU.log(UJ.agdicson(adbas,"rutadatosgis",rutadatosgis), arch_log)
+ESU.log(UJ.agdicson(adbas,"archsistema",sistema), arch_log)
+
+
+dbasicos = cargajson(adbas)
+dbasicos['mxd']=mxd
+dbasicos['df']=df
+
+
+ESU.log(USH.borrainn(mxd, df),arch_log)
+
 
 # # ----------------------------MAPAS BÁSICOS
 
-# mapaPais(arcpy.env.nummapa)
-# mapaEstatal(arcpy.env.nummapa)
-# mapaMunicipal(arcpy.env.nummapa)
-# cuadrodeLocalizacion()
-# servicios_urbanos(arcpy.env.nummapa)
+# mapaPais(dbasicos)
+# mapaEstatal(dbasicos)
+# mapaMunicipal(dbasicos) 
+# cuadrodeLocalizacion(dbasicos)
+# servicios_urbanos(dbasicos)
 
 # # ----------------------------CARTOGRAFÍA MAPAS TEMÁTICOS INEGI (Y:\GIS\MEXICO\VARIOS\INEGI)
 
-# inegi_tematicos.curvasdeNivel(arcpy.env.nummapa)
-# inegi_tematicos.hidrologia(arcpy.env.nummapa)
-# inegi_tematicos.lineasElectricas(arcpy.env.nummapa)
-# inegi_tematicos.malpais(arcpy.env.nummapa)
-# inegi_tematicos.pantano(arcpy.env.nummapa)
-# inegi_tematicos.pistadeAviacion(arcpy.env.nummapa)
-# inegi_tematicos.presa(arcpy.env.nummapa) 
-# inegi_tematicos.rasgoArqueologico(arcpy.env.nummapa)
-# inegi_tematicos.salina(arcpy.env.nummapa)
-# inegi_tematicos.usodeSuelo(arcpy.env.nummapa)
-# inegi_tematicos.viaferrea(arcpy.env.nummapa)
-# inegi_tematicos.zonaarenosa(arcpy.env.nummapa)
+creajson = True
+# ESU.log(tematicos.curvasdenivel(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.usodesuelo(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.hidrologia(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.lineasElectricas(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.malpais(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.pantano(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.pistadeAviacion(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.presa(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.rasgoarqueologico(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.salina(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.viaferrea(dbasicos, creajson=True),arch_log,presalto=2)
+# ESU.log(tematicos.zonaarenosa(dbasicos, creajson=True),arch_log,presalto=2)
 
 # # ----------------------------CARTOGRAFÍA librería conabio (Y:\GIS\MEXICO\VARIOS\conabio\WGS84)
 
-# conabio.area_nat_protegida(arcpy.env.nummapa)
-# conabio.clima_koppen(arcpy.env.nummapa)
-# conabio.clima_olgyay(arcpy.env.nummapa)
-# conabio.cuenca(arcpy.env.nummapa)
-# conabio.edafologia(arcpy.env.nummapa)
-# conabio.humedad(arcpy.env.nummapa)
-# conabio.precip(arcpy.env.nummapa)
-# conabio.subcuenca(arcpy.env.nummapa)
-# conabio.subregion(arcpy.env.nummapa)
-# conabio.zonaecol(arcpy.env.nummapa)
+# ESU.log(conabio.area_nat_protegida(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.clima_koppen(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.clima_olgyay(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.cuenca(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.edafologia(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.humedad(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.precip(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.subcuenca(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.subregion(dbasicos,creajson),arch_log,presalto=2)
+# ESU.log(conabio.zonaecol(dbasicos,creajson),arch_log,presalto=2)
+
 
 # ----------------------------CARTOGRAFÍA INEGI COMPLEMENTOS
-# if arcpy.env.ambito == "Urbano":
-#     # inegi_comp.denue(arcpy.env.nummapa,100) # el segundo parámetro de la función es para definir la distancia de análisis
-#     None
-# else:
-#     log.log(repet, u"El ambito es rural, no se ejecutó el análisis DENUE")
+if ambito == "Urbano":
+    compl.denue(dbasicos,creajson)
+    pass
+else:
+    ESU.log(u"El ambito es rural, no se ejecutó el análisis DENUE",arch_log)
 
-inegi_comp.analisis_manz(arcpy.env.nummapa) # el segundo parámetro de la función es para definir la distancia de análisis
+# inegi_comp.analisis_manz() # el segundo parámetro de la función es para definir la distancia de análisis
+ESU.log(PDF.join(carpeta_proy, "Mapas", borrar=True),arch_log,imprimir=False,presalto=1)
 
-log.log(repet,u"FIN DE PROCESO")
-tiempoprocfin = datetime.datetime.now().strftime(u"%Y-%m-%d %H:%M:%S")
-log.log(repet,u"tiempo total de proceso de mapas: {}".format(tiempo.tiempo([tiempoprocini,tiempoprocfin])))
 
-print (u"\n\n\n\nPROCESO SIG finalizado! \nNo es necesario guardar el mapa.")
+print (u"\n\nPROCESO SIG finalizado! \nNo es necesario guardar el mapa.")
 print (u"Revisar archivo log para mayor informacion del proceso.")
