@@ -124,14 +124,19 @@ def denue(dbasicos,creajson=True):
     try:
         resultado = proc_integra(diccionariosnear,diccionariosidenti,valprocesofin,capas_a_cargar,creajson)
         valores={
-            "capabase"  :   dbasicos['archsistema'],
-            "capanear"  :   valoresbasicos['archivobase'],
-            "radio"     :   1000,
-            "carp_tmp"  :   dbasicos['carpeta_proy'] + "/temp/",
-            "archlog"   :   dbasicos['archivo_log']
+            "capabase"      :   dbasicos['archsistema'],
+            "capanear"      :   valoresbasicos['archivobase'],
+            "radio"         :   500,
+            "arch_tmp"      :   dbasicos['carpeta_proy'] + "/temp/denue_near_tmp.dbf",
+            "archlog"       :   dbasicos['archivo_log'],
+            "codificacion"  :   "latin-1",
+            "campo"         :   "NEAR_DIST",
         }
         lista_cercanos=USHP.listacercanos(valores)
-        print (lista_cercanos)
+        
+        if type(lista_cercanos) is list:
+            for elemento in lista_cercanos:
+                print(elemento)
         
         return resultado
     except Exception as e:

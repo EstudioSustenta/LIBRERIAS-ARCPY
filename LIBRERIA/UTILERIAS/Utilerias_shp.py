@@ -1127,7 +1127,9 @@ def listacercanos(valores):
         capabase:   capa base, generalmente llamada "SISTEMA"
         capanear:   Capa de la cual se desea saber su distancia al sistema.
         radio:      Radio de búsqueda
-        carp_tmp:   Carpeta del proyecto para los archivos temporales
+        arch_tmp:   archivo temporal
+        campo:      campo complementario a incluir en el diccionario
+        codificacion:   codificacion del texto del archivo dbf
         archlog:    Archivo log
 
     returns:    Lista de elementos o mensaje de error.
@@ -1138,13 +1140,14 @@ def listacercanos(valores):
     capabase=valores['capabase']
     capanear=valores['capanear']
     radio=valores['radio']
-    carp_tmp=valores['carp_tmp']
-    arch_tmp=carp_tmp + "denue_near_tmp.dbf"
+    arch_tmp=valores['arch_tmp']
+    campo=valores['campo']
+    codificacion=valores['codificacion']
     # log("Iniciando 'listacercanos'...")
+    carp_tmp=os.path.dirname
     if not os.path.exists(carp_tmp):
         os.makedirs(carp_tmp)
 
-    'arcpy.GenerateNearTable_analysis(in_features="Y:/GIS/MEXICO/VARIOS/INEGI/DENUE/2023/Aguascalientes/conjunto_de_datos/denue_wgs84z13.shp", near_features="SISTEMA", out_table="C:/Users/Gustavo/Documents/ArcGIS/Default.gdb/denue_wgs84z13_GenerateNearT", search_radius="1000 Meters", location="LOCATION", angle="ANGLE", closest="CLOSEST", closest_count="0", method="PLANAR")'
     arcpy.GenerateNearTable_analysis(
         in_features=capanear,
         near_features=capabase,
@@ -1156,8 +1159,11 @@ def listacercanos(valores):
         closest_count="0",
         method="PLANAR"
         )
-    import Utilerias_DBF as dbf
-    reload(dbf)
+    from Utilerias_DBF import obtener_distancias
+    reload(obtener_distancias)
+    resultados=obtener_distancias(arch_tmp,campo, codificacion)
+    return resultados
+    
 
     
 

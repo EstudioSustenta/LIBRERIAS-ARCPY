@@ -58,29 +58,35 @@ def cant_de_registros(archivo):
     
     from dbfread import DBF
 
-def obtener_distancias(archivo_dbf,campo,codificacion):
+def obtener_distancias(archivo_dbf,campo,codificacion='latin-1'):
     
     """
     Función para obtener un diccionario con el número de registro como clave
     y el valor del campo 'distancia' como valor para todos los registros
     de un archivo DBF.
 
-    Args:
+    Parámetros:
     - archivo_dbf: Ruta del archivo DBF.
+    - campo:    campo que se anexa al diccionario
+    - codificacion: codificación de texto del archivo dbf
+
 
     Returns:
     - Un diccionario con el número de registro como clave y el valor del campo como valor.
     """
-    valores = {}
+    lista=[]
     try:
         with DBF(archivo_dbf, encoding=codificacion) as dbf:
             for i, registro in enumerate(dbf):
                 fid = registro.get('IN_FID', 'Valor no disponible')
-                valores[fid] = registro.get(campo, 'Valor no disponible')
-                # valores[i] = registro
+                reg = registro.get(campo, 'Valor no disponible')
+                if type(reg) is float:
+                    reg=round(reg,2)
+                diccionario ={"valor" : reg,"FID" : fid}
+                lista.append(diccionario)
     except Exception as e:
         print("Error al leer el archivo DBF:", e)
-    return valores
+    return (sorted(lista, key=lambda x: x['valor']))
 
 
 
@@ -92,7 +98,7 @@ if __name__=="__main__":
         archivo_dbf = "Y:/GIS/MEXICO/VARIOS/INEGI/DENUE/2023/Aguascalientes/conjunto_de_datos/denue_wgs84z13.dbf"
         # Campos que deseas recuperar
         campos = ['nom_estab', 'raz_social', 'nombre_act', 'nom_vial']
-        fids=[156,842,846]
+        fids=[50147,51205,54882]
         codificacion="latin-1"
 
         resultados = recuperacamposdbf(archivo_dbf, campos,fids,codificacion)
@@ -108,8 +114,10 @@ if __name__=="__main__":
         codificacion="latin-1"
         campo="NEAR_DIST"
         resultados=obtener_distancias(archivo_dbf,campo, codificacion)
+        print(type(resultados))
+        # print(sorted(resultados, key=lambda x: x['valor']))
         for resultado in resultados:
+            print(resultado)
 
-            print(resultado, ":",resultados[resultado])
+    recuperac()
 
-    obtenerd()
